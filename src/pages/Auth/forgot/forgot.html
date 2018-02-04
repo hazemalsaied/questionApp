@@ -1,0 +1,25 @@
+<ion-header no-border>
+</ion-header>
+
+<ion-content [ngStyle]="{'background-image': 'url(' + backgroundImage +')'}">
+  <div class="login-container">
+    <img class="logo" src="./assets/medium_150.70391061453px_1202562_easyicon.net.png" />
+    <form [formGroup]="resetPasswordForm" (submit)="resetPassword()" novalidate>
+
+      <ion-item>
+        <ion-label stacked>البريد الالكتروني</ion-label>
+        <ion-input tappable formControlName="email" type="email" placeholder="Your email address" [class.invalid]="!resetPasswordForm.controls.email.valid && resetPasswordForm.controls.email.dirty"></ion-input>
+      </ion-item>
+
+      <ion-item class="error-message">
+        <p  *ngIf="!resetPasswordForm.controls.email.valid  && resetPasswordForm.controls.email.dirty">الرجاء ادخال بريد الكتروني صالح!</p>
+      </ion-item>
+
+      <button ion-button block type="submit" color="blue2">
+        إعادة ضبط كلمة
+      </button>
+
+    </form>
+
+  </div>
+</ion-content>

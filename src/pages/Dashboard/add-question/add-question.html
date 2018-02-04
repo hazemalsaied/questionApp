@@ -1,0 +1,154 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+
+    <ion-title>
+      {{getCaptions()}}
+    </ion-title>
+
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <ion-list>
+    <!-- Question Type -->
+    <ion-item  color="itemBckg"  color="background" >
+        <ion-label>نوع السؤال:</ion-label>
+        <ion-select [(ngModel)]="question.questionType" interface="action-sheet" cancelText="إلغاء">
+          <ion-option value="text" selected>نص</ion-option>
+          <ion-option value="image">صورة</ion-option>
+        </ion-select>
+      </ion-item>
+  
+    <!-- content -->
+    <ion-item   color="background" >
+      <ion-textarea [(ngModel)]="question.content">
+      </ion-textarea>
+    </ion-item>
+    <div *ngIf="question.imageUrl">
+      <img [src]="questionImage" alt="جاري تحميل الصورة!">
+    </div>
+
+    <ion-row>
+      <ion-col  color="itemBckg">
+        <button ion-button block outline color="primary" (click)="uploadImage()">
+          تحميل صورة!
+        </button>
+      </ion-col>
+      <ion-col *ngIf="question.imageUrl"   color="itemBckg">
+        <button ion-button block outline color="danger" (click)="removeImage()">
+          حذف
+        </button>
+      </ion-col>
+    </ion-row>
+ <!-- Answer Type -->
+ <ion-item   color="background" >
+    <ion-label>نوع الجواب:</ion-label>
+    <ion-select [(ngModel)]="question.answerType" (ionChange)="addDefaultAnswer()" 
+    interface="action-sheet" cancelText="إلغاء">
+      <ion-option value="multipleChoices" selected>خيارات متعددة</ion-option>
+      <ion-option value="fillBlanck" selected>إملأ الفراغ</ion-option>
+      <ion-option value="trueOrFalse" selected>صح أو خطأ</ion-option>
+    </ion-select>
+  </ion-item>
+    <!-- The answer -->
+    <p *ngIf="question.answerType != 'trueOrFalse'">
+      <ion-item   color="background" >
+        <ion-label>الجواب:</ion-label>
+        <ion-input [(ngModel)]="question.answer"></ion-input>
+      </ion-item>
+    </p>
+    <!-- The True or False answer -->
+    <p *ngIf="question.answerType === 'trueOrFalse'">
+      <ion-item   color="background" >
+        <ion-label>الجواب:</ion-label>
+        <ion-select [(ngModel)]="question.answer" interface="action-sheet" cancelText="إلغاء">
+          <ion-option value="true" selcted>صح</ion-option>
+          <ion-option value="false">خطأ</ion-option>
+        </ion-select>
+      </ion-item>
+    </p>
+
+    <!-- Other Choices -->
+    <p *ngIf="question.answerType == 'multipleChoices'">
+      <ion-item   color="background" >
+        <ion-label>الاحتمال الأول:</ion-label>
+        <ion-input [(ngModel)]="question.choices[0].text"></ion-input>
+      </ion-item>
+
+      <ion-item   color="background" >
+        <ion-label>الاحتمال الثاني:</ion-label>
+        <ion-input [(ngModel)]="question.choices[1].text"></ion-input>
+      </ion-item>
+
+      <ion-item   color="background" >
+        <ion-label>الاحتمال الثالث:</ion-label>
+        <ion-input [(ngModel)]="question.choices[2].text"></ion-input>
+      </ion-item>
+    </p>
+
+
+    <!-- Category -->
+    <ion-item   color="background" >
+      <ion-label>التبويب:</ion-label>
+      <ion-select [(ngModel)]="catSelectValue" interface="action-sheet" cancelText="إلغاء">
+        <ion-option *ngFor="let cat of catSelects" [value]="cat.value" (ionSelect)="getSubCatSelects()">
+          {{cat.name}}
+        </ion-option>
+      </ion-select>
+    </ion-item>
+    <!-- Sub Category -->
+    <ion-item   color="background" >
+      <ion-label>تبويبات فرعية:</ion-label>
+      <ion-select [(ngModel)]="subCatSelectValue" interface="action-sheet" cancelText="إلغاء">
+        <ion-option *ngFor="let cat of subCatSelects" [value]="cat.value">
+          {{cat.name}}
+        </ion-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Level -->
+    <ion-item   color="background" >
+        <ion-label>الصعوبة:</ion-label>
+        <ion-select [(ngModel)]="question.difficulty" interface="action-sheet" cancelText="إلغاء">
+          <ion-option value="1" selected>سهل</ion-option>
+          <ion-option value="2">متوسط</ion-option>
+          <ion-option value="3">صعب</ion-option>
+        </ion-select>
+      </ion-item>
+    <button ion-button (click)="addQuestion()" full>
+      {{getCaptions() }}
+    </button>
+
+    <div *ngIf="showErrorMsg">
+      <div *ngFor="let item of validationMsg">
+        <ion-item outline>
+          {{item}}
+        </ion-item>
+      </div>
+    </div>
+    
+    <!-- <button ion-button (click)="setVisibility()" full>{{visibilityButtonText}}</button> -->
+    <!-- Setting Panel -->
+    <!-- <p *ngIf="isVisible">
+    </p> -->
+   
+    
+    <!-- Language -->
+    <!-- <ion-item>
+        <ion-label>اللغة:</ion-label>
+        <ion-select [(ngModel)]="question.language" interface="action-sheet" cancelText="إلغاء">
+          <ion-option value="arabic" selected>عربي</ion-option>
+          <ion-option value="english">English</ion-option>
+          <ion-option value="german">German</ion-option>
+          <ion-option value="turkish">Turkish</ion-option>
+        </ion-select>
+      </ion-item> -->
+
+
+
+
+  </ion-list>
+
+</ion-content>

@@ -1,0 +1,107 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      بنك الاختبارات
+    </ion-title>
+    <ion-buttons end padding>
+      <button ion-button end icon-only (click)="openPage('AddQuestionPage')">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <!-- Search bar -->
+  <ion-searchbar placeholder="بحث" (ionInput)="filterQuestions($event)"></ion-searchbar>
+  <ion-list>
+    <ion-item color="background" *ngIf="showLoadingBtn">
+      <button ion-button outline block color="choice" (click)="loadMore()">
+        تحميل المزيد ..
+      </button>
+    </ion-item>
+    <ion-item-sliding *ngFor="let q of questions" color="background">
+      <ion-item color="background">
+        <!-- The Question -->
+        <ion-item color="primary" outline (click)="showPanel(q)">
+          {{q.content}}
+        </ion-item>
+
+        <div *ngIf="q.showMe">
+          <div *ngIf="q.imageUrl">
+            <img [src]="imageBeg + q.imageUrl + imageEnd" style="object-fit: cover">
+
+          </div>
+          <!-- Choices -->
+          <ion-item *ngFor="let c of q.choices" no-lines color="background">
+            <ion-icon small name="close-circle" item-start></ion-icon>
+            {{c.text}}
+          </ion-item>
+          <!-- The answer -->
+          <ion-item no-lines color="background" style="border-bottom: 1px solid #E9EBEE">
+            <ion-icon small name="checkmark-circle" item-start></ion-icon>
+            {{q.answer}}
+          </ion-item>
+          <!-- Categories and Sub categories-->
+          <div color="background">
+            <ion-row>
+              <!-- Categories -->
+              <ion-col clear>
+                <button color="choice" ion-button (click)="getQuestionsBy(q.cat,'cat')" block outline>
+                  {{getCatDisplayName(q.cat) }}
+                  <ion-icon name="pricetag" item-start></ion-icon>
+                </button>
+              </ion-col>
+              <!-- Sub Categories -->
+              <ion-col clear>
+                <button color="choice" ion-button (click)="getQuestionsBy(q.subCat,'subCat')" block outline>
+                  {{getCatDisplayName(q.subCat) }}
+                  <ion-icon name="pricetags" item-start></ion-icon>
+                </button>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <!-- User -->
+              <ion-col>
+                <button ion-button color="prgressBar" (click)="getQuestionsBy(q.user,'user')" block outline>
+                  {{ q.userName }}
+                </button>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col>
+                <button ion-button color="valid" outline block (click)="editQuestion(q)">
+                  تحرير
+                  <ion-icon item-start color="valid" name="create"></ion-icon>
+                </button>
+              </ion-col>
+              <ion-col>
+                <button color="primary" ion-button outline block (click)="removeQuestion(q)">
+                  حذف
+                  <ion-icon item-start color="primary" name="remove-circle"></ion-icon>
+                </button>
+              </ion-col>
+            </ion-row>
+          </div>
+        </div>
+      </ion-item>
+
+    </ion-item-sliding>
+    <ion-item color="background" *ngIf="showLoadingBtn">
+      <button ion-button outline color="choice" block (click)="loadMore()">
+        تحميل المزيد ..
+      </button>
+    </ion-item>
+
+    <ion-item color="background" *ngIf="showNoResultItem">
+      <button (click)="showQuestions()" ion-button outline block>
+        ما من نتائج للعرض!
+      </button>
+
+    </ion-item>
+  </ion-list>
+</ion-content>

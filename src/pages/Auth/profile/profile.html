@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      الحساب
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list  color="background">
+    <ion-avatar>
+      <img [src]="imageUrl" alt="جاري تحميل الصورة!">
+    </ion-avatar>
+    <button ion-button block outline color="primary" (click)="uploadImage()">
+      تحميل صورة!
+      <ion-icon name="camera" item-end></ion-icon>
+    </button>
+
+    <ion-row  color="background">
+      <ion-col>
+        <ion-badge item-start>
+          {{user.pointNum}}
+        </ion-badge>
+        نقطة
+      </ion-col>
+
+      <ion-col>
+        <ion-badge item-start>
+          {{user.jokerNum}}
+        </ion-badge>
+        جوكر
+      </ion-col>
+
+      <ion-col>
+        <ion-badge item-start>
+          {{user.hammerNum}}
+        </ion-badge>
+        مطرقة
+      </ion-col>
+    </ion-row>
+
+    <ion-item class="english"  color="background">
+      <ion-label>الاسم:</ion-label>
+      <ion-input [(ngModel)]="user.name"></ion-input>
+    </ion-item>
+
+    <ion-item class="english"  color="background">
+      <ion-label>البريد:</ion-label>
+      <ion-input [(ngModel)]="user.email"></ion-input>
+    </ion-item>
+
+
+    <ion-item color="background">
+      <ion-label>الجنس:</ion-label>
+      <ion-select [(ngModel)]="user.sex" interface="action-sheet" cancelText="إلغاء">
+        <ion-option value="male">ذكر</ion-option>
+        <ion-option value="female">أنثى</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item  color="background">
+      <ion-label>اللغة:</ion-label>
+      <ion-select [(ngModel)]="user.language" interface="action-sheet" cancelText="إلغاء">
+        <ion-option value="arabic">العربية</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item color="background">
+      <ion-label>البلد:</ion-label>
+      <ion-select [(ngModel)]="user.country" interface="action-sheet" cancelText="إلغاء">
+        <ion-option *ngFor="let c of countries" [value]="c">{{c}}</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <button ion-button (click)="saveUser()" full>
+      حفظ
+    </button>
+  </ion-list>
+</ion-content>

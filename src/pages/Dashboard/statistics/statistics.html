@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+
+    <ion-title>
+      إحصائيات
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-list>
+    <ion-item color="primary">
+      عدد الأسئلة
+      <ion-badge color="yellowC" item-end>{{totalQuestionNum}}</ion-badge>
+    </ion-item>
+    <ion-item color="primary">
+      التبويبات
+    </ion-item>
+    <div *ngFor="let cat of mainCats">
+      <ion-item (click)="showSubCatStats(cat)" color="yellowC">
+        {{cat.displayNameArabic}}
+        <ion-badge item-end>{{cat.questionNumber}}</ion-badge>
+      </ion-item>
+      <div *ngIf="cat.showSubCats">
+        <ion-item *ngFor="let cat of subCats" color="yellowCLight">
+          {{cat.displayNameArabic}}
+          <ion-badge item-end>{{cat.questionNumber}}</ion-badge>
+        </ion-item>
+      </div>
+    </div>
+
+    <ion-item color="primary">
+      مساهمات الأعضاء
+    </ion-item>
+
+    <ion-item *ngFor="let user of userStats " color="yellowC">
+      {{user.user}}
+      <ion-badge item-end>{{user.questionNumber}}</ion-badge>
+    </ion-item>
+  </ion-list>
+
+
+  <div *ngIf="hazemVisible">
+    <button ion-button (click)="addRandomIndices()" full color="danger">
+      توليد فهارس الأسئلة
+    </button>
+    <button ion-button (click)="setInitialQNumber()" full color="danger">
+      ضبط عدد الأسئلة
+    </button>
+    <button ion-button (click)="addTimeToColumns()" full color="danger">
+      ضبط التوقيت
+    </button>
+
+    <button ion-button (click)="denormalizeCats()" full color="danger">
+      ضبط التبويبات
+    </button>
+
+    <button ion-button (click)="setUser4All()" full color="danger">
+      تعيين المؤلف
+    </button>
+
+    <button ion-button (click)="setUsersInfo()" full color="danger">
+      ضبط معلومات المستخدمين
+    </button>
+  </div>
+</ion-content>

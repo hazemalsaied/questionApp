@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{getCaptions()}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+  <ion-list padding>
+    <ion-item   color="background" >
+      <ion-label>التبويب EN:</ion-label>
+      <ion-input [(ngModel)]="category.displayName"></ion-input>
+    </ion-item>
+
+    <ion-item   color="background" >
+      <ion-label>التبويب AR:</ion-label>
+      <ion-input [(ngModel)]="category.displayNameArabic"></ion-input>
+    </ion-item>
+
+    <ion-item   color="background" >
+      <ion-label>رابط التبويب:</ion-label>
+      <ion-input [(ngModel)]="category.alias"></ion-input>
+    </ion-item>
+
+    <ion-item   color="background" >
+      <ion-label>التبويب الأب:</ion-label>
+      <ion-select interface="action-sheet" cancelText="إلغاء">
+        <p *ngFor="let cat of categories">
+          <!-- *ngIf="!cat.hasParent" -->
+          <ion-option *ngIf="!cat.hasParent" (ionSelect)="catSelected(cat)">
+            {{cat.displayName}}
+          </ion-option>
+        </p>
+      </ion-select>
+    </ion-item>
+
+    <button ion-button (click)="addCategory()" full>{{ getCaptions()}}</button>
+
+  </ion-list>
+</ion-content>

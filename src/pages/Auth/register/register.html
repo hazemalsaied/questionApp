@@ -1,0 +1,63 @@
+<ion-header no-border>
+</ion-header>
+
+<ion-content [ngStyle]="{'background-image': 'url(' + backgroundImage +')'}">
+  <div class="login-container">
+    <img class="logo" src="./assets/medium_150.70391061453px_1202562_easyicon.net.png" />
+    <!--*********** Form ***********-->
+    <form [formGroup]="registerForm" (submit)="registerUser()" novalidate>
+
+      <!-- <ion-item>
+        <ion-label stacked>الاسم</ion-label>
+        <ion-input tappable formControlName="profileName" type="text" placeholder="اسمك!" [class.invalid]="!registerForm.controls.profileName.valid && registerForm.controls.profileName.dirty">
+        </ion-input>
+      </ion-item> -->
+
+      <ion-item>
+        <ion-label stacked>البريد</ion-label>
+        <ion-input tappable formControlName="email" type="email" placeholder="بريدك الالكتروني" [class.invalid]="!registerForm.controls.email.valid && registerForm.controls.email.dirty">
+        </ion-input>
+      </ion-item>
+
+      <!-- <ion-item>
+        <ion-label stacked>Phone</ion-label>
+        <ion-input tappable formControlName="phone" type="tel" placeholder="Phone number" [class.invalid]="!registerForm.controls.phone.valid && registerForm.controls.phone.dirty"></ion-input>
+      </ion-item> -->
+
+      <ion-item>
+        <ion-label stacked>كلمة المرور</ion-label>
+        <ion-input tappable formControlName="password" type="password" placeholder="كلمة المرور" [class.invalid]="!registerForm.controls.password.valid && registerForm.controls.password.dirty"></ion-input>
+      </ion-item>
+
+      <ion-item>
+          <ion-label>اللغة:</ion-label>
+          <!-- [(ngModel)]=""   formControlName="language"  -->
+          <ion-select  cancelText="إلغاء"  interface="action-sheet">
+            <ion-option value="arabic" selected>عربي</ion-option>
+            <ion-option value="english">English</ion-option>
+          </ion-select>
+        </ion-item>
+      
+
+      <ion-item class="error-message">
+        <!-- <p *ngIf="!registerForm.controls.profileName.valid  &&
+                registerForm.controls.profileName.dirty">*الرجاء ادخال اسم صالح!</p> -->
+        <p *ngIf="!registerForm.controls.email.valid  &&
+                registerForm.controls.email.dirty">*الرجاء ادخال بريد الكتروني صالح</p>
+        <!-- <p *ngIf="!registerForm.controls.phone.valid  &&
+                registerForm.controls.phone.dirty">*Please enter phone number.</p> -->
+        <p *ngIf="!registerForm.controls.language.valid  &&
+                registerForm.controls.language.dirty">*الرجاء اختيار اللغة !</p>
+        <p *ngIf="!registerForm.controls.password.valid  &&
+        registerForm.controls.password.dirty">*كلمة المرور يجب أن تحتوي على ستة محارف</p>
+      </ion-item>
+      <!-- [disabled]="!form.valid" -->
+      <button ion-button full type="submit"  color="blue2">
+        إنشاء حساب
+      </button>
+    </form>
+  </div>
+</ion-content>
+<ion-footer color="blue2">
+
+</ion-footer>

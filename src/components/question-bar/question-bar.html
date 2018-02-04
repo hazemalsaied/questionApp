@@ -1,0 +1,14 @@
+<div>
+    <ion-row>
+        <div *ngFor="let item of answerArr">
+            <ion-col *ngIf="item === 'true'">
+                    <!-- thumbs-up -->
+                <ion-icon name="checkmark-circle" color="valid"></ion-icon>
+            </ion-col>
+            <ion-col *ngIf="item === 'false'">
+                    <!-- thumbs-down -->
+                <ion-icon name="close-circle" color="danger"></ion-icon>
+            </ion-col>
+        </div>
+    </ion-row>
+</div>

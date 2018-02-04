@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      النتائج
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-item color="background" *ngIf="easyValidQNum + intermediateValidQNum + difficultValidQNum >= (questionNum/ 2) ">
+    مبروك لقد اجتزت الكويز بنجاح!
+  </ion-item>
+
+  <canvas #doughnutCanvas></canvas>
+
+  <ion-item color="background">
+    لقد أجبت على {{ questionNum }}/ {{easyValidQNum + intermediateValidQNum + difficultValidQNum}} سؤال بشكل صحيح.
+  </ion-item>
+  <ion-item *ngIf="newPoints > 0 " color="background">
+    لقد أضفت {{newPoints}} نقطة إلى رصيدك! أحسنت!
+  </ion-item>
+  <ion-item color="background">
+    {{easyQuestionNum}}/{{easyValidQNum}} سؤال سهل!
+  </ion-item>
+  <ion-item color="background">
+    {{intermediateQuestionNum}}/{{intermediateValidQNum}} سؤال متوسط!
+  </ion-item>
+  <ion-item color="background">
+    {{difficultQuestionNum+ '/' + difficultValidQNum}} سؤال صعب!
+  </ion-item>
+  <!-- <ion-item color="background"> -->
+    <button ion-button (click)="play()"  block>
+      إبدأ كويز آخر!
+    </button>
+  <!-- </ion-item> -->
+</ion-content>
