@@ -53,7 +53,7 @@ export class HomePage {
     this.showNoResultItem = false;
     this.showLoadingBtn = true;
 
-    this.questions$ =this.afd.list('questions', {query:{orderByKey:true, limitToLast: 10}});
+    this.questions$ = this.afd.list('questions', { query: { orderByKey: true, limitToLast: 10 } });
     //  this.questionProv.getQuestions({ orderByKey,  });
     this.getQuestions(loading);
   }
@@ -73,7 +73,7 @@ export class HomePage {
 
       });
       resolve();
-    }).then(_ => { this.categories =  categoryArr; });
+    }).then(_ => { this.categories = categoryArr; });
   }
 
   getQuestions(loading = null) {
@@ -141,19 +141,27 @@ export class HomePage {
       loading.present();
       this.showNoResultItem = false;
       this.showLoadingBtn = false;
-      this.questions$ = this.questionProv.getQuestions({ orderByChild: "answer", startAt: query, limitToLast: 20 });
+      // orderByChild: "answer", startAt: query,
+      // this.questions$ = this.questionProv.getQuestions({limitToLast: 10000 });
       let questionArr = [];
       new Promise((resolve, reject) => {
-        let ref = firebase.database().ref("questions").orderByChild("answer").
-          startAt(query).limitToFirst(10);
+        // .orderByChild("content").          startAt("[ا-ي0-9]*"  +query)
+        let ref = firebase.database().ref("questions").limitToLast(10000);//.once("value");
         ref.on("value", function (snapshot) {
           snapshot.forEach(function (child) {
-            questionArr.push(child.val());
+            let question = child.val();
+            if (question.content.indexOf(query) !== -1) {
+              questionArr.push(child.val());
+            }
+            if (questionArr.length == 50) {
+              return true;
+            }
             return false;
           });
           resolve();
         });
       }).then(_ => {
+        console.log(questionArr.length);
         this.questions = questionArr;
         this.getQuestionUserName(this.questions);
         if (this.questions.length <= 0) {
@@ -161,11 +169,12 @@ export class HomePage {
         }
         loading.dismiss();
       });
-    } else {
+    } else if (this.questions.length != 10) {
       this.questions$ = this.questionProv.
         getQuestions({ orderByChild: "time", limitToLast: 10 });
       this.getQuestions();
     }
+
   }
 
   getCatByKey(key: string): Category {
@@ -228,11 +237,13 @@ export class HomePage {
     this.currentPageIdx += 1;
     let questionNum = (this.currentPageIdx) * 10;
     if (this.queryChild !== '' && this.queryKey !== '') {
-      this.questions$ = this.questionProv.getQuestions({ orderByChild: this.queryChild, equalTo: this.queryKey, limitToLast: questionNum });
+      this.questions$ = this.afd.list('questions', { query: { orderByKey: true, limitToLast: questionNum } });
+      // this.questions$ = this.questionProv.getQuestions({ orderByChild: this.queryChild, equalTo: this.queryKey, limitToLast: questionNum });
     } else {
-      this.questions$ = this.questionProv.getQuestions({ orderByChild: 'time', limitToLast: questionNum });
+      this.questions$ = this.afd.list('questions', { query: { orderByKey: true, limitToLast: questionNum } });
+      // this.questions$ = this.questionProv.getQuestions({ orderByChild: 'time', limitToLast: questionNum });
     }
-    this.getQuestions();
-    loading.dismiss();
+    this.getQuestions(loading);
+    // loading.dismiss();
   }
 }

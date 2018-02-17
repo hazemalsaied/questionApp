@@ -1,14 +1,14 @@
-import { ProgressBarComponent } from './../../components/progress-bar/progress-bar';
+import { ProgressBar2Component } from './../../components/progress-bar.2/progress-bar-2';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { InfiniteTestPage } from './infinite-test';
-import { QuestionBarComponent } from '../../components/question-bar/question-bar';
+import { QuestionBar2Component } from '../../components/question-bar.2/question-bar-2';
 
 @NgModule({
   declarations: [
     InfiniteTestPage,
-    // ProgressBarComponent,
-    // QuestionBarComponent
+    ProgressBar2Component,
+    QuestionBar2Component
   ],
   imports: [
     IonicPageModule.forChild(InfiniteTestPage),

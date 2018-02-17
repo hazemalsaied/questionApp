@@ -10,6 +10,9 @@ import firebase from 'firebase';
 import { Question, Category } from '../../shared/models/question';
 import { ResultsPage } from '../results/results';
 import { AngularFireDatabase } from 'angularfire2/database-deprecated';
+import { QuestionBarComponent } from './../../components/question-bar/question-bar';
+import { ProgressBarComponent } from './../../components/progress-bar/progress-bar';
+
 @IonicPage()
 
 @Component({
@@ -83,6 +86,20 @@ export class PlayPage {
     public catProvider: CategoryProvider,
     public loadingCtrl: LoadingController) {
     this.showAll = true;
+    this.getAllCats().then(_ => {
+      this.getMainCats();
+    });
+    this.getLastIdx();
+  }
+  easyLastIdx: number = 4500;
+  interLastIdx: number = 4500;
+  diffLastIdx: number = 4500;
+  getLastIdx() {
+    this.afd.object('statistics').subscribe(stats => {
+      this.easyLastIdx = stats["easyQuestNum"];
+      this.interLastIdx = stats["interQuestNum"];
+      this.diffLastIdx = stats["diffQuestNum"];
+    });
   }
 
   getCompetitionQuestions() {
@@ -90,37 +107,24 @@ export class PlayPage {
       content: 'جاري تحميل الكويز'
     });
     loading.present();
-    let questionArr = []
-    new Promise((resolve, reject) => {
-      this.getRef("1").on("value", function (snapshot) {
-        snapshot.forEach(function (child) {
-          questionArr.push(child.val());
-          return false;
-        });
-        resolve();
+    this.getQuestions("1", Settings.easyQuestionNum).then(questions1 => {
+
+      questions1.forEach(q => {
+        this.questions.push(q);
       });
-    }).then(_ => {
-      new Promise((resolve, reject) => {
-        this.getRef("2").on("value", function (snapshot) {
-          snapshot.forEach(function (child) {
-            questionArr.push(child.val());
-            return false;
-          });
-          resolve();
+      this.getQuestions("2", Settings.intermediateQuestionNum).then(questions2 => {
+
+        questions2.forEach(q => {
+          this.questions.push(q);
         });
-      }).then(_ => {
-        new Promise((resolve, reject) => {
-          this.getRef("3").on("value", function (snapshot) {
-            snapshot.forEach(function (child) {
-              questionArr.push(child.val());
-              return false;
-            });
-            resolve();
+        this.getQuestions("3", Settings.difficultQuestionNum).then(questions3 => {
+          questions3.forEach(q => {
+            this.questions.push(q);
           });
-        }).then(_ => {
+          console.log(this.questions);
+          this.questions.push.apply(questions3);
           this.userAnswerArr = this.getQuestionIdxArr();
           this.showQuiz = true;
-          this.questions = questionArr;
           this.getNextQuestion();
           this.loadQuestion();
           loading.dismiss();
@@ -130,8 +134,46 @@ export class PlayPage {
     });
   }
 
+
+
+  getQuestions(diff, quesNum) {
+    let questionArr = [];
+    return new Promise((resolve, reject) => {
+      let promises = [];
+      for (let i = 0; i < quesNum; i++) {
+        let p = new Promise((resolve, reject) => {
+          this.getRef(diff, true).on("value", function (snapshot) {
+            snapshot.forEach(function (child) {
+              questionArr.push(child.val());
+              return false;
+            });
+            resolve();
+          });
+        });
+        promises.push(p);
+      }
+      Promise.all(promises).then(function (values) {
+        let arr = [];
+        for (var key in questionArr) {
+          if (questionArr.hasOwnProperty(key)) {
+            arr.push(questionArr[key]);
+          }
+        }
+        resolve(arr);
+      });
+    });
+  }
+
   getRef(diff, oneQuestion = false) {
-    let randomNum1 = Math.floor((Math.random() * 100) + 1);
+    let randomNum;
+    if (diff == "1") {
+      randomNum = parseInt(String(Math.random() * (this.easyLastIdx - 1) + 1));
+    } else if (diff == "2") {
+      randomNum = parseInt(String(Math.random() * (this.interLastIdx - 1) + 1));
+    } else if (diff == "3") {
+      randomNum = parseInt(String(Math.random() * (this.diffLastIdx - 1) + 1));
+    }
+    console.log(randomNum);
     let catInfo = '';
     let field = 'DiffIdx';
     let questionNum = Settings.easyQuestionNum;
@@ -152,7 +194,7 @@ export class PlayPage {
       questionNum = Settings.difficultQuestionNum;
     }
     return firebase.database().ref("questions").orderByChild(field).
-      startAt(diff + catInfo + randomNum1.toString()).
+      startAt(diff + catInfo + randomNum.toString()).
       limitToFirst(questionNum);
   }
 
@@ -184,7 +226,8 @@ export class PlayPage {
       setTimeout(() => {
         this.navCtrl.setRoot(ResultsPage, {
           answerArr: this.userAnswerArr,
-          userPoints: this.userPoints
+          userPoints: this.userPoints,
+          type: 'play'
         });
       }, Settings.waitingTime);
     }
@@ -358,73 +401,69 @@ export class PlayPage {
     }
   }
 
-  setSettingVis() {
-    this.showQuiz = !this.showQuiz;
-    if (!this.showQuiz) {
-      this.categories$ = this.catProvider.getCats();
-    }
-  }
+  allCats: Array<Category> = [];
+  mainCats: Array<Category> = [];
+  subCats: Array<Category> = [];
 
-  hideSelects() {
-    this.showCatSelect = false;
-    this.showSubCatSelect = false;
-  }
-
-  showCatSelects() {
-    this.showCatSelect = true;
-    this.showSubCatSelect = false;
-    this.getCats();
-  }
-
-  showSubCatSelects(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.getCats().then(_ => {
-        this.showCatSelect = true;
-        this.selectedCat = this.catSelects[0].value;
-        this.getSubCats().then(_ => {
-          this.showSubCatSelect = true;
-          if (this.subCatSelects.length > 0) {
-            this.selectedSubCat = this.subCatSelects[0].value;
-          }
-        });
-      });
-      resolve();
+  getAllCats(): Promise<any> {
+    let loading = this.loadingCtrl.create({
+      content: 'جاري تحميل الكويز'
     });
-  }
-
-  getCats(loading = null): Promise<any> {
+    loading.present();
     return new Promise((resolve, reject) => {
-      if (this.catSelects.length === 0) {
+      if (this.allCats.length === 0) {
         this.categories$.subscribe(cats => {
           cats.forEach(cat => {
-            if (!cat.hasParent) {
-              this.catSelects.push({ value: cat.$key, name: cat.displayNameArabic });
-            }
+            cat.showMe = false;
+            this.allCats.push(cat);
           });
-          this.selectedCat = this.catSelects[0].value;
-          if (loading) {
-            loading.dismiss();
-          }
+          loading.dismiss();
           resolve();
         });
       } else {
+        loading.dismiss();
         resolve();
       }
     });
   }
+  getMainCats() {
+    for (let cat of this.allCats) {
+      if (!cat.hasParent) {
+        this.mainCats.push(cat);
+      }
+    }
+  }
 
-  getSubCats() {
-    return new Promise((resolve, reject) => {
-      this.subCatSelects = [];
-      this.categories$.subscribe(cats => {
-        cats.forEach(cat => {
-          if (cat.hasParent && cat.parentKey === this.selectedCat) {
-            this.subCatSelects.push({ value: cat.$key, name: cat.displayNameArabic });
-          }
-        });
-        resolve();
-      });
-    });
+  getSubCats(parentKey) {
+    this.subCats = [];
+    for (let cat of this.allCats) {
+      if (cat.hasParent && cat.parentKey === parentKey) {
+        this.subCats.push(cat);
+      }
+    }
+  }
+
+  selectSubCat(cat) {
+    this.selectedCat = '';
+    this.selectedSubCat = cat.$key;
+    this.getCompetitionQuestions();
+  }
+  selectCat(cat) {
+    if (cat == null) {
+      this.selectedCat = '';
+      this.selectedSubCat = '';
+      this.getCompetitionQuestions();
+    } else if (this.selectedCat == cat.$key) {
+      this.getCompetitionQuestions();
+    } else {
+      this.selectedSubCat = '';
+      this.selectedCat = cat.$key;
+      for (let c of this.mainCats) {
+        c.showMe = false;
+      }
+      cat.showMe = true;
+      this.getSubCats(cat.$key);
+    }
   }
 
   replaceNumbers(s: string) {

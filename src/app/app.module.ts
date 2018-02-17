@@ -1,4 +1,3 @@
-import { ProgressBarComponent } from './../components/progress-bar/progress-bar';
 import { AuxiliaryProvider } from './../providers/auxiliary/auxiliary';
 import { PlayOnlinePageModule } from './../pages/play-online/play-online.module';
 import { PlayPageModule } from './../pages/play/play.module';
@@ -12,14 +11,9 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { AuthData } from '../providers/auth-data/auth-data';
 import { QuestionProvider } from '../providers/question/question';
 
-// Import the AF2 Module
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
-// import  { storage } from 'firebase';
 import { AngularFireDatabaseModule } from 'angularfire2/database-deprecated';
-// import { AngularFireDatabaseModule } from 'angularfire2/database';
-
-
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/Dashboard/home/home';
@@ -61,8 +55,8 @@ import { InfiniteTestPage } from '../pages/infinite-test/infinite-test';
 import { InfiniteTestPageModule } from '../pages/infinite-test/infinite-test.module';
 import { SpeedTestPageModule } from '../pages/speed-test/speed-test.module';
 import { QuestionBarComponent } from '../components/question-bar/question-bar';
-// import { ComponentsModule } from '../components/components.module';
-// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ProgressBarComponent } from '../components/progress-bar/progress-bar';
+
 
 
 export const config = {
@@ -87,9 +81,6 @@ export const config = {
   declarations: [
     MyApp,
     SortQuestionNum,
-    // ComponentsModule,
-    // ProgressBarComponent,
-    // QuestionBarComponent
   ],
   imports: [
     BrowserModule,
@@ -111,9 +102,7 @@ export const config = {
     PlayOnlinePageModule,
     InfiniteTestPageModule,
     SpeedTestPageModule,
-    ResultsPageModule
-    // BrowserAnimationsModule
-
+    ResultsPageModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -132,7 +121,7 @@ export const config = {
     PlayOnlinePage,
     SpeedTestPage,
     InfiniteTestPage,
-    ResultsPage   
+    ResultsPage
   ],
   providers: [
     StatusBar,

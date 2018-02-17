@@ -1,14 +1,19 @@
 // import { NgModule } from '@angular/core';
+// import { QuestionBarComponent } from './question-bar/question-bar';
 // import { ProgressBarComponent } from './progress-bar/progress-bar';
-// import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
 // @NgModule({
 //     declarations: [
-//         // ProgressBarComponent
+//         // ProgressBarComponent,
+//         QuestionBarComponent
 //     ],
-//     imports: [],
+//     imports: [
+        
+//     ],
 //     exports: [
-//         // ProgressBarComponent
-//     ],
-//     // schemas: [CUSTOM_ELEMENTS_SCHEMA]
+//         // ProgressBarComponent,
+//         QuestionBarComponent
+//     ]
+
 // })
 // export class ComponentsModule { }

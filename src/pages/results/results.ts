@@ -34,15 +34,55 @@ export class ResultsPage {
     imageUrl: '',
     sex: 'male'
   };
+  sadFaceImageUrl = "./assets/sadface.png";
+  happyFaceImageUrl = "./assets/happyface.png";
+
+  showInfiniteTest: boolean = false;
+  showPlay: boolean = false;
+  showSpeedTest: boolean = false;
+
+  infiniteTrueQuestionNum = 0;
+  oldInfiniteScore;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public afa: AngularFireAuth,
     public afd: AngularFireDatabase) {
 
+    if (navParams.get('type') == 'infinite-test') {
+      this.parametrizeInfiniteResults();
+    }
+    else if (navParams.get('type') == 'play') {
+      this.parametrizePlayResults();
+    }
+  }
+  hasWon = false;
+  parametrizeInfiniteResults() {
+    this.showInfiniteTest = true;
+    this.answerArr = this.navParams.get("answerArr");
+    for (var ii = 0; ii < this.answerArr.length; ii++) {
+      if (this.answerArr[ii] === "true") {
+        this.infiniteTrueQuestionNum += 1
+      }
+    }
+    this.getInfiniteScore().then(_ => {
+      console.log(this.oldInfiniteScore);
+      console.log(this.infiniteTrueQuestionNum);
+      if (typeof this.oldInfiniteScore === "undefined" || this.infiniteTrueQuestionNum > this.oldInfiniteScore) {
+        this.getInfiniteScore(true).then(user=>{
+          this.hasWon = true;
+          this.afd.list('/userProfile/').update(user.$key, user);
+        });
+      }
+    });
+    
+  }
+
+  parametrizePlayResults() {
+    this.showPlay = true;
     this.questionNum = Settings.questionNum;
 
-    if (navParams.get('answerArr')) {
-      this.answerArr = navParams.get("answerArr");
+    if (this.navParams.get('answerArr')) {
+      this.answerArr = this.navParams.get("answerArr");
       for (var i = 0; i < Settings.easyQuestionNum; i++) {
         if (this.answerArr[i] === "true") {
           this.easyValidQNum += 1
@@ -59,12 +99,12 @@ export class ResultsPage {
         }
       }
     }
-    if (navParams.get('userPoints')) {
-      this.userPoints = navParams.get("userPoints");
+    if (this.navParams.get('userPoints')) {
+      this.userPoints = this.navParams.get("userPoints");
     }
     this.updateUserNumber();
-
   }
+
   newPoints = 0;
   userOldScore;
   userNewScore;
@@ -90,6 +130,22 @@ export class ResultsPage {
   difficultValidMsg = 'صعبة لكن صحيحة ';
 
 
+  getInfiniteScore(set = false) {
+    return new Promise((resolve, reject) => {
+      if (firebase.auth().currentUser) {
+        let uid = firebase.auth().currentUser.uid;
+        this.afd.object('/userProfile/' + uid).subscribe(snapshot => {
+          if (set) {
+            console.log(snapshot);
+            snapshot.infiniteScore = this.infiniteTrueQuestionNum;
+          } else {
+            this.oldInfiniteScore = snapshot.infiniteScore;
+          }
+          resolve(snapshot);
+        });
+      }
+    });
+  }
   updateUserNumber() {
 
     this.validQNum = this.easyValidQNum + this.intermediateValidQNum + this.difficultValidQNum;
@@ -116,28 +172,30 @@ export class ResultsPage {
   }
 
   ionViewDidLoad() {
-    this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
-      type: 'doughnut',
-      data: {
-        labels: [this.easyValidMsg, this.easyMsg, this.intermediateValidMsg, this.intermediateMsg, this.difficultValidMsg, this.difficultMsg],
-        datasets: [{
-          label: '',
-          data: [this.easyValidQNum, (Settings.easyQuestionNum - this.easyValidQNum),
-          this.intermediateValidQNum, (Settings.intermediateQuestionNum - this.intermediateValidQNum),
-          this.difficultValidQNum, (Settings.difficultQuestionNum - this.difficultValidQNum)],
-          backgroundColor: [
-            this.easyValidColor,
-            this.easyColor,
-            this.intermediateValidColor,
-            this.intermediateColor,
-            this.difficultValidColor,
-            this.difficultColor
-          ],
-          hoverBackgroundColor: [],
-          borderWidth: 2
-        }]
-      }
-    });
+    if (this.navParams.get('type') == 'play') {
+      this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
+        type: 'doughnut',
+        data: {
+          labels: [this.easyValidMsg, this.easyMsg, this.intermediateValidMsg, this.intermediateMsg, this.difficultValidMsg, this.difficultMsg],
+          datasets: [{
+            label: '',
+            data: [this.easyValidQNum, (Settings.easyQuestionNum - this.easyValidQNum),
+            this.intermediateValidQNum, (Settings.intermediateQuestionNum - this.intermediateValidQNum),
+            this.difficultValidQNum, (Settings.difficultQuestionNum - this.difficultValidQNum)],
+            backgroundColor: [
+              this.easyValidColor,
+              this.easyColor,
+              this.intermediateValidColor,
+              this.intermediateColor,
+              this.difficultValidColor,
+              this.difficultColor
+            ],
+            hoverBackgroundColor: [],
+            borderWidth: 2
+          }]
+        }
+      });
+    }
   }
 
   refreshUserPoints() {
@@ -146,5 +204,9 @@ export class ResultsPage {
 
   play() {
     this.navCtrl.setRoot('PlayPage');
+  }
+
+  infiniteTest() {
+    this.navCtrl.setRoot('InfiniteTestPage');
   }
 }

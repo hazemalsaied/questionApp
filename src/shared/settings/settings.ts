@@ -9,11 +9,13 @@ export class Settings {
   static readonly intermediateQuestionNum = 2;
   static readonly difficultQuestionNum = 2;
   static readonly questionNum = Settings.easyQuestionNum + Settings.intermediateQuestionNum + Settings.difficultQuestionNum;
-
+  
   static readonly questionPoint = 15;
   
+  static readonly  initQuesNumForInfiniteTest = 3;
+  
   static readonly waitingTime = 2000;
-  static readonly progressBarSep = 500;
+  static readonly progressBarSep = 1500;
   static readonly loadingStep = 400;
 
   static readonly jokerPoints = 20;

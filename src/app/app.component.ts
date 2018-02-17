@@ -73,10 +73,10 @@ export class MyApp {
     // this.nav.setRoot(PlayOnlinePage);
   }
   openSpeedTestPage(){
-    // this.nav.setRoot(SpeedTestPage);
+    this.nav.setRoot(SpeedTestPage);
   }
   openInfiniteTestPage(){
-    // this.nav.setRoot(InfiniteTestPage);
+    this.nav.setRoot(InfiniteTestPage);
   }
   
   logout() {

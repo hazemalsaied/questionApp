@@ -1,3 +1,5 @@
+import { QuestionBarComponent } from './../../components/question-bar/question-bar';
+import { ProgressBarComponent } from './../../components/progress-bar/progress-bar';
 import { Settings } from './../../shared/settings/settings';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 import { Component } from '@angular/core';
@@ -30,16 +32,13 @@ export class SpeedTestPage {
   loadingValue: number = 0;
 
   questions: Array<Question> = [];
-  categories$: FirebaseListObservable<Category[]>;
+  categories$: FirebaseListObservable<Category[]> = this.catProvider.getCats();;
 
   currentChoices = [];
   choiceBkgs = {};
-
   quizType: string = 'all';
   selectedCat: string = '';
   selectedSubCat: string = '';
-
-  loadingBarText: string = ''
 
   userAnswer: string = ''
   hasAnswered: boolean = false;
@@ -48,10 +47,10 @@ export class SpeedTestPage {
   subCatSelects = [];
 
   showAll: boolean = false;
-  showQuiz: boolean = true;
+  showQuiz: boolean = false;
   showCatSelect: boolean = false;
   showSubCatSelect: boolean = false;
-  showLoadingBar: boolean = true;
+
   showStormBtn: boolean = false;
 
 
@@ -81,8 +80,10 @@ export class SpeedTestPage {
     public questionProv: QuestionProvider,
     public catProvider: CategoryProvider,
     public loadingCtrl: LoadingController) {
-
-    this.getCompetitionQuestions();
+    this.showAll = true;
+    this.getAllCats().then(_ => {
+      this.getMainCats();
+    });
   }
 
   getCompetitionQuestions() {
@@ -90,37 +91,40 @@ export class SpeedTestPage {
       content: 'جاري تحميل الكويز'
     });
     loading.present();
-    let questionArr = []
-    new Promise((resolve, reject) => {
-      this.getRef("1").on("value", function (snapshot) {
-        snapshot.forEach(function (child) {
-          questionArr.push(child.val());
-          return false;
-        });
-        resolve();
+    this.getQuestions("1", Settings.easyQuestionNum).then(questions1 => {
+      // let arr1 = [];
+      // for (var key in questions1) {
+      //   if (questions1.hasOwnProperty(key)) {
+      //     arr1.push([key, questions1[key]]);
+      //   }
+      // }
+      questions1.forEach(q => {
+        this.questions.push(q);
       });
-    }).then(_ => {
-      new Promise((resolve, reject) => {
-        this.getRef("2").on("value", function (snapshot) {
-          snapshot.forEach(function (child) {
-            questionArr.push(child.val());
-            return false;
-          });
-          resolve();
+      this.getQuestions("2", Settings.intermediateQuestionNum).then(questions2 => {
+        // let arr2 = [];
+        // for (var key in questions2) {
+        //   if (questions2.hasOwnProperty(key)) {
+        //     arr2.push([key, questions1[key]]);
+        //   }
+        // }
+        questions2.forEach(q => {
+          this.questions.push(q);
         });
-      }).then(_ => {
-        new Promise((resolve, reject) => {
-          this.getRef("3").on("value", function (snapshot) {
-            snapshot.forEach(function (child) {
-              questionArr.push(child.val());
-              return false;
-            });
-            resolve();
+        this.getQuestions("3", Settings.difficultQuestionNum).then(questions3 => {
+          // let arr3 = [];
+          // for (var key in questions3) {
+          //   if (questions3.hasOwnProperty(key)) {
+          //     arr3.push([key, questions3[key]]);
+          //   }
+          // }
+          questions3.forEach(q => {
+            this.questions.push(q);
           });
-        }).then(_ => {
+          console.log(this.questions);
+          this.questions.push.apply(questions3);
           this.userAnswerArr = this.getQuestionIdxArr();
           this.showQuiz = true;
-          this.questions = questionArr;
           this.getNextQuestion();
           this.loadQuestion();
           loading.dismiss();
@@ -130,8 +134,34 @@ export class SpeedTestPage {
     });
   }
 
+  getQuestions(diff, quesNum) {
+    let questionArr = [];
+    return new Promise((resolve, reject) => {
+      let promises = [];
+      for (let i = 0; i < quesNum; i++) {
+        let p = new Promise((resolve, reject) => {
+          this.getRef(diff, true).on("value", function (snapshot) {
+            snapshot.forEach(function (child) {
+              questionArr.push(child.val());
+              return false;
+            });
+            resolve();
+          });
+        });
+        promises.push(p);
+      }
+      Promise.all(promises).then(function (values) {
+        resolve(questionArr);
+      });
+    });
+  }
+
   getRef(diff, oneQuestion = false) {
-    let randomNum1 = Math.floor((Math.random() * 100) + 1);
+    let randomNum = Math.floor((Math.random() * 10000) + 1);
+    while (randomNum < 1000) {
+      randomNum = Math.floor((Math.random() * 10000) + 1);
+    }
+    console.log(randomNum);
     let catInfo = '';
     let field = 'DiffIdx';
     let questionNum = Settings.easyQuestionNum;
@@ -152,30 +182,19 @@ export class SpeedTestPage {
       questionNum = Settings.difficultQuestionNum;
     }
     return firebase.database().ref("questions").orderByChild(field).
-      startAt(diff + catInfo + randomNum1.toString()).
+      startAt(diff + catInfo + randomNum.toString()).
       limitToFirst(questionNum);
   }
 
 
-  loadingInterval;
+
   progressInterval;
 
   loadQuestion() {
-    this.loadingValue = 0;
     this.progressValue = 0;
-    this.showLoadingBar = true;
-    this.loadingBarText = this.currentQuestion.content;
-    this.loadingInterval = setInterval(() => {
-      if (this.loadingValue < 100) {
-        this.loadingValue = this.loadingValue + 10;
-      } else if (this.loadingValue === 100) {
-        this.showLoadingBar = false;
-        this.progressInterval = setInterval(() => {
-          this.increaseProgress(this.progressInterval)
-        }, Settings.progressBarSep);
-        clearInterval(this.loadingInterval);
-      }
-    }, Settings.loadingStep);
+    this.progressInterval = setInterval(() => {
+      this.increaseProgress(this.progressInterval)
+    }, Settings.progressBarSep);
   }
 
   increaseProgress(interval) {
@@ -210,13 +229,11 @@ export class SpeedTestPage {
 
   next(choice) {
     this.selectChoice(choice);
-    clearInterval(this.loadingInterval);
     clearInterval(this.progressInterval);
     if (this.progressValue < 100) {
       this.validate();
     }
     setTimeout(() => {
-      this.showLoadingBar = true;
       this.loadingValue = 0;
       this.initializeQuestionPanel();
       this.getNextQuestion();
@@ -261,7 +278,6 @@ export class SpeedTestPage {
 
   useJoker() {
     if (this.progressValue < 100) {
-      clearInterval(this.loadingInterval);
       clearInterval(this.progressInterval);
       this.userPoints = this.userPoints - Settings.jokerPoints;
       this.userPoints += Settings.questionPoint;
@@ -269,7 +285,6 @@ export class SpeedTestPage {
       this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
       this.terminateQuestionPanel();
       setTimeout(() => {
-        this.showLoadingBar = true;
         this.loadingValue = 0;
         this.initializeQuestionPanel();
         this.getNextQuestion();
@@ -280,7 +295,6 @@ export class SpeedTestPage {
 
   useHammer() {
     if (this.progressValue < 100) {
-      clearInterval(this.loadingInterval);
       clearInterval(this.progressInterval);
       let loading = this.loadingCtrl.create({
         content: 'جاري تحميل سؤال بديل'
@@ -302,7 +316,6 @@ export class SpeedTestPage {
         this.questions.push(ques);
         this.questions.splice(this.questionIdx, 1);
         this.questionIdx -= 1;
-        this.showLoadingBar = true;
         this.loadingValue = 0;
         this.initializeQuestionPanel();
         this.getNextQuestion();
@@ -375,68 +388,69 @@ export class SpeedTestPage {
     }
   }
 
-  setSettingVis() {
-    this.showQuiz = !this.showQuiz;
-    if (!this.showQuiz) {
-      this.categories$ = this.catProvider.getCats();
-    }
-  }
+  allCats: Array<Category> = [];
+  mainCats: Array<Category> = [];
+  subCats: Array<Category> = [];
 
-  hideSelects() {
-    this.showCatSelect = false;
-    this.showSubCatSelect = false;
-  }
-
-  showCatSelects() {
-    this.showCatSelect = true;
-    this.showSubCatSelect = false;
-    this.getCats();
-  }
-
-  showSubCatSelects(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.getCats().then(_ => {
-        this.showCatSelect = true;
-        this.selectedCat = this.catSelects[0].value;
-        this.getSubCats().then(_ => {
-          this.showSubCatSelect = true;
-          if (this.subCatSelects.length > 0) {
-            this.selectedSubCat = this.subCatSelects[0].value;
-          }
-        });
-      });
-      resolve();
+  getAllCats(): Promise<any> {
+    let loading = this.loadingCtrl.create({
+      content: 'جاري تحميل الكويز'
     });
-  }
-
-  getCats(): Promise<any> {
+    loading.present();
     return new Promise((resolve, reject) => {
-      if (this.catSelects.length === 0) {
+      if (this.allCats.length === 0) {
         this.categories$.subscribe(cats => {
           cats.forEach(cat => {
-            if (!cat.hasParent) {
-              this.catSelects.push({ value: cat.$key, name: cat.displayNameArabic });
-            }
+            cat.showMe = false;
+            this.allCats.push(cat);
           });
-          this.selectedCat = this.catSelects[0].value;
+          loading.dismiss();
           resolve();
         });
+      } else {
+        loading.dismiss();
+        resolve();
       }
     });
   }
+  getMainCats() {
+    for (let cat of this.allCats) {
+      if (!cat.hasParent) {
+        this.mainCats.push(cat);
+      }
+    }
+  }
 
-  getSubCats() {
-    return new Promise((resolve, reject) => {
-      this.subCatSelects = [];
-      this.categories$.subscribe(cats => {
-        cats.forEach(cat => {
-          if (cat.hasParent && cat.parentKey === this.selectedCat) {
-            this.subCatSelects.push({ value: cat.$key, name: cat.displayNameArabic });
-          }
-        });
-        resolve();
-      });
-    });
+  getSubCats(parentKey) {
+    this.subCats = [];
+    for (let cat of this.allCats) {
+      if (cat.hasParent && cat.parentKey === parentKey) {
+        this.subCats.push(cat);
+      }
+    }
+  }
+
+  selectSubCat(cat) {
+    this.selectedCat = '';
+    this.selectedSubCat = cat.$key;
+    this.getCompetitionQuestions();
+  }
+  selectCat(cat) {
+    if (cat == null) {
+      this.selectedCat = '';
+      this.selectedSubCat = '';
+      this.getCompetitionQuestions();
+    } else if (this.selectedCat == cat.$key) {
+      this.getCompetitionQuestions();
+    } else {
+      this.selectedSubCat = '';
+      this.selectedCat = cat.$key;
+      for (let c of this.mainCats) {
+        c.showMe = false;
+      }
+      cat.showMe = true;
+      this.getSubCats(cat.$key);
+    }
   }
 
   replaceNumbers(s: string) {

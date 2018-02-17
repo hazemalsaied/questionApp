@@ -12,30 +12,58 @@
 
 <ion-content padding>
 
-  <ion-item color="background" *ngIf="easyValidQNum + intermediateValidQNum + difficultValidQNum >= (questionNum/ 2) ">
-    مبروك لقد اجتزت الكويز بنجاح!
-  </ion-item>
+  <div *ngIf="showPlay">
+    <ion-item color="background" *ngIf="easyValidQNum + intermediateValidQNum + difficultValidQNum >= (questionNum/ 2) ">
+      مبروك لقد اجتزت الكويز بنجاح!
+    </ion-item>
 
-  <canvas #doughnutCanvas></canvas>
+    <canvas #doughnutCanvas></canvas>
 
-  <ion-item color="background">
-    لقد أجبت على {{ questionNum }}/ {{easyValidQNum + intermediateValidQNum + difficultValidQNum}} سؤال بشكل صحيح.
-  </ion-item>
-  <ion-item *ngIf="newPoints > 0 " color="background">
-    لقد أضفت {{newPoints}} نقطة إلى رصيدك! أحسنت!
-  </ion-item>
-  <ion-item color="background">
-    {{easyQuestionNum}}/{{easyValidQNum}} سؤال سهل!
-  </ion-item>
-  <ion-item color="background">
-    {{intermediateQuestionNum}}/{{intermediateValidQNum}} سؤال متوسط!
-  </ion-item>
-  <ion-item color="background">
-    {{difficultQuestionNum+ '/' + difficultValidQNum}} سؤال صعب!
-  </ion-item>
-  <!-- <ion-item color="background"> -->
-    <button ion-button (click)="play()"  block>
+    <ion-item color="background">
+      لقد أجبت على {{easyValidQNum + intermediateValidQNum + difficultValidQNum}} اسئلة بشكل صحيح من أصل {{ questionNum }}.
+    </ion-item>
+    <ion-item *ngIf="newPoints > 0 " color="background">
+      لقد أضفت {{newPoints}} نقطة إلى رصيدك! أحسنت!
+    </ion-item>
+    <ion-item color="background">
+      {{easyQuestionNum}}/{{easyValidQNum}} سؤال سهل!
+    </ion-item>
+    <ion-item color="background">
+      {{intermediateQuestionNum}}/{{intermediateValidQNum}} سؤال متوسط!
+    </ion-item>
+    <ion-item color="background">
+      {{difficultQuestionNum+ '/' + difficultValidQNum}} سؤال صعب!
+    </ion-item>|
+    <button ion-button (click)="play()" block>
       إبدأ كويز آخر!
     </button>
-  <!-- </ion-item> -->
+  </div>
+  <div *ngIf="">
+
+  </div>
+
+  <div *ngIf="showInfiniteTest">
+
+    <div *ngIf="hasWon">
+      <ion-avatar>
+        <img [src]="happyFaceImageUrl" alt="جاري تحميل الصورة!">
+      </ion-avatar>
+      <ion-item color="background">
+        مبروك، لقد تجاوزت رقمك القياسي السابق، وأجبت على {{infiniteTrueQuestionNum}} سؤال!
+      </ion-item>
+    </div>
+
+    <div *ngIf="!hasWon">
+      <ion-avatar>
+        <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
+      </ion-avatar>
+      <ion-item color="background">
+        للأسف، لم يحالفك الحظ في تحطيم رقمك القياسي السابق
+      </ion-item>
+    </div>
+
+    <button ion-button (click)="infiniteTest()" block>
+      عاود اللعب!
+    </button>
+  </div>
 </ion-content>

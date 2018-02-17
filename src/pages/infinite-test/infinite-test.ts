@@ -30,16 +30,13 @@ export class InfiniteTestPage {
   loadingValue: number = 0;
 
   questions: Array<Question> = [];
-  categories$: FirebaseListObservable<Category[]>;
+  categories$: FirebaseListObservable<Category[]> = this.catProvider.getCats();;
 
   currentChoices = [];
   choiceBkgs = {};
-
   quizType: string = 'all';
   selectedCat: string = '';
   selectedSubCat: string = '';
-
-  loadingBarText: string = ''
 
   userAnswer: string = ''
   hasAnswered: boolean = false;
@@ -48,12 +45,11 @@ export class InfiniteTestPage {
   subCatSelects = [];
 
   showAll: boolean = false;
-  showQuiz: boolean = true;
+  showQuiz: boolean = false;
   showCatSelect: boolean = false;
   showSubCatSelect: boolean = false;
-  showLoadingBar: boolean = true;
-  showStormBtn: boolean = false;
 
+  showStormBtn: boolean = false;
 
   currentQuestion: Question = {
     content: '',
@@ -81,8 +77,21 @@ export class InfiniteTestPage {
     public questionProv: QuestionProvider,
     public catProvider: CategoryProvider,
     public loadingCtrl: LoadingController) {
-
-    this.getCompetitionQuestions();
+    this.showAll = true;
+    this.getAllCats().then(_ => {
+      this.getMainCats();
+    });
+    this.getLastIdx();
+  }
+  easyLastIdx: number = 4500;
+  interLastIdx: number = 4500;
+  diffLastIdx: number = 4500;
+  getLastIdx() {
+    this.afd.object('statistics').subscribe(stats => {
+      this.easyLastIdx = stats["easyQuestNum"];
+      this.interLastIdx = stats["interQuestNum"];
+      this.diffLastIdx = stats["diffQuestNum"];
+    });
   }
 
   getCompetitionQuestions() {
@@ -90,151 +99,32 @@ export class InfiniteTestPage {
       content: 'جاري تحميل الكويز'
     });
     loading.present();
-    let questionArr = []
-    new Promise((resolve, reject) => {
-      this.getRef("1").on("value", function (snapshot) {
-        snapshot.forEach(function (child) {
-          questionArr.push(child.val());
-          return false;
-        });
-        resolve();
+    this.getQuestions(Settings.initQuesNumForInfiniteTest).then(questions3 => {
+      questions3.forEach(q => {
+        this.questions.push(q);
       });
-    }).then(_ => {
-      new Promise((resolve, reject) => {
-        this.getRef("2").on("value", function (snapshot) {
-          snapshot.forEach(function (child) {
-            questionArr.push(child.val());
-            return false;
-          });
-          resolve();
-        });
-      }).then(_ => {
-        new Promise((resolve, reject) => {
-          this.getRef("3").on("value", function (snapshot) {
-            snapshot.forEach(function (child) {
-              questionArr.push(child.val());
-              return false;
-            });
-            resolve();
-          });
-        }).then(_ => {
-          this.userAnswerArr = this.getQuestionIdxArr();
-          this.showQuiz = true;
-          this.questions = questionArr;
-          this.getNextQuestion();
-          this.loadQuestion();
-          loading.dismiss();
-          this.showAll = true;
-        });
-      });
+      this.questions.push.apply(questions3);
+      this.userAnswerArr = this.getQuestionIdxArr();
+      this.showQuiz = true;
+      this.getNextQuestion();
+      this.loadQuestion();
+      loading.dismiss();
+      this.showAll = true;
     });
-  }
-
-  getRef(diff, oneQuestion = false) {
-    let randomNum1 = Math.floor((Math.random() * 100) + 1);
-    let catInfo = '';
-    let field = 'DiffIdx';
-    let questionNum = Settings.easyQuestionNum;
-    if (this.selectedSubCat) {
-      field = 'DiffSubCatIdx';
-      catInfo = this.selectedSubCat;
-    }
-    else if (this.selectedCat) {
-      field = 'DiffCatIdx';
-      catInfo = this.selectedCat;
-    }
-    if (oneQuestion) {
-      questionNum = 1;
-    } else if (diff == "2") {
-      questionNum = Settings.intermediateQuestionNum;
-    }
-    else if (diff == "3") {
-      questionNum = Settings.difficultQuestionNum;
-    }
-    return firebase.database().ref("questions").orderByChild(field).
-      startAt(diff + catInfo + randomNum1.toString()).
-      limitToFirst(questionNum);
-  }
-
-
-  loadingInterval;
-  progressInterval;
-
-  loadQuestion() {
-    this.loadingValue = 0;
-    this.progressValue = 0;
-    this.showLoadingBar = true;
-    this.loadingBarText = this.currentQuestion.content;
-    this.loadingInterval = setInterval(() => {
-      if (this.loadingValue < 100) {
-        this.loadingValue = this.loadingValue + 10;
-      } else if (this.loadingValue === 100) {
-        this.showLoadingBar = false;
-        this.progressInterval = setInterval(() => {
-          this.increaseProgress(this.progressInterval)
-        }, Settings.progressBarSep);
-        clearInterval(this.loadingInterval);
-      }
-    }, Settings.loadingStep);
-  }
-
-  increaseProgress(interval) {
-    if (this.progressValue < 100) {
-      this.progressValue += 5;
-    } else if (this.progressValue == 100) {
-      if (!this.hasAnswered) {
-        this.userAnswerArr[this.questionIdx] = 'false';
-      }
-      clearInterval(this.progressValue);
-    }
-  }
-
-  terminateQuestionPanel() {
-    this.progressValue = 100;
-    if (this.questionIdx === Settings.questionNum - 1) {
-      setTimeout(() => {
-        this.navCtrl.setRoot(ResultsPage, {
-          answerArr: this.userAnswerArr,
-          userPoints: this.userPoints
-        });
-      }, Settings.waitingTime);
-    }
-  }
-
-  initializeQuestionPanel() {
-    this.setDefaultColor();
-    this.hasAnswered = false;
-    this.progressValue = 0;
-    this.userAnswer = '';
   }
 
   next(choice) {
     this.selectChoice(choice);
-    clearInterval(this.loadingInterval);
     clearInterval(this.progressInterval);
     if (this.progressValue < 100) {
       this.validate();
     }
     setTimeout(() => {
-      this.showLoadingBar = true;
       this.loadingValue = 0;
       this.initializeQuestionPanel();
       this.getNextQuestion();
       this.loadQuestion();
     }, Settings.waitingTime);
-  }
-
-  getNextQuestion() {
-    if (this.questionIdx < (this.questions.length - 1)) {
-      this.questionIdx += 1;
-      this.currentQuestion = this.questions[this.questionIdx];
-      this.currentChoices = this.getChoices(this.currentQuestion);
-      if (this.currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse') {
-        this.showStormBtn = false;
-      } else {
-        this.showStormBtn = true;
-      }
-    }
   }
 
   validate() {
@@ -259,9 +149,137 @@ export class InfiniteTestPage {
     this.terminateQuestionPanel();
   }
 
+  getQuestions(quesNum) {
+    let questionArr = [];
+    return new Promise((resolve, reject) => {
+      let promises = [];
+      for (let i = 0; i < quesNum; i++) {
+        let p = new Promise((resolve, reject) => {
+          let diff = parseInt(String(Math.random() * (4 - 1) + 1));
+          this.getRef(diff, true).on("value", function (snapshot) {
+            snapshot.forEach(function (child) {
+              questionArr.push(child.val());
+              return false;
+            });
+            resolve();
+          });
+        });
+        promises.push(p);
+      }
+      Promise.all(promises).then(function (values) {
+        let arr = [];
+        for (var key in questionArr) {
+          if (questionArr.hasOwnProperty(key)) {
+            arr.push(questionArr[key]);
+          }
+        }
+        resolve(arr);
+      });
+    });
+  }
+
+  getRef(diff, oneQuestion = false) {
+    let randomNum;
+    if (diff == "1") {
+      randomNum = parseInt(String(Math.random() * (this.easyLastIdx - 1) + 1));
+    } else if (diff == "2") {
+      randomNum = parseInt(String(Math.random() * (this.interLastIdx - 1) + 1));
+    } else if (diff == "3") {
+      randomNum = parseInt(String(Math.random() * (this.diffLastIdx - 1) + 1));
+    }
+    let catInfo = '';
+    let field = 'DiffIdx';
+    let questionNum = Settings.easyQuestionNum;
+    if (this.selectedSubCat) {
+      field = 'DiffSubCatIdx';
+      catInfo = this.selectedSubCat;
+    }
+    else if (this.selectedCat) {
+      field = 'DiffCatIdx';
+      catInfo = this.selectedCat;
+    }
+    if (oneQuestion) {
+      questionNum = 1;
+    } else if (diff == "2") {
+      questionNum = Settings.intermediateQuestionNum;
+    }
+    else if (diff == "3") {
+      questionNum = Settings.difficultQuestionNum;
+    }
+    return firebase.database().ref("questions").orderByChild(field).
+      startAt(diff + catInfo + randomNum.toString()).
+      limitToFirst(questionNum);
+  }
+
+
+  terminateQuestionPanel() {
+    this.progressValue = 100;
+    if (this.userAnswerArr[this.questionIdx] === 'false') {
+      setTimeout(() => {
+        this.navCtrl.setRoot(ResultsPage, {
+          answerArr: this.userAnswerArr,
+          // userPoints: this.userPoints,
+          type: 'infinite-test'
+
+        });
+      }, Settings.waitingTime);
+    }
+    else if (this.questionIdx == (this.questions.length - 1)) {
+      this.getQuestions(Settings.initQuesNumForInfiniteTest).then(questions3 => {
+        questions3.forEach(q => {
+          this.questions.push(q);
+        });
+      });
+    }
+  }
+
+  initializeQuestionPanel() {
+    this.setDefaultColor();
+    this.hasAnswered = false;
+    this.progressValue = 0;
+    this.userAnswer = '';
+  }
+
+
+  progressInterval;
+
+  loadQuestion() {
+    this.progressValue = 0;
+    this.progressInterval = setInterval(() => {
+      this.increaseProgress(this.progressInterval)
+    }, Settings.progressBarSep);
+  }
+
+  increaseProgress(interval) {
+    if (this.progressValue < 100) {
+      this.progressValue += 5;
+    } else if (this.progressValue == 100) {
+      if (!this.hasAnswered) {
+        this.userAnswerArr[this.questionIdx] = 'false';
+      }
+      clearInterval(this.progressValue);
+    }
+  }
+
+
+
+  getNextQuestion() {
+    if (this.questionIdx < (this.questions.length - 1)) {
+      this.questionIdx += 1;
+      this.currentQuestion = this.questions[this.questionIdx];
+      this.currentChoices = this.getChoices(this.currentQuestion);
+      if (this.currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse') {
+        this.showStormBtn = false;
+      } else {
+        this.showStormBtn = true;
+      }
+    }
+  }
+
+
+
   useJoker() {
     if (this.progressValue < 100) {
-      clearInterval(this.loadingInterval);
       clearInterval(this.progressInterval);
       this.userPoints = this.userPoints - Settings.jokerPoints;
       this.userPoints += Settings.questionPoint;
@@ -269,7 +287,6 @@ export class InfiniteTestPage {
       this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
       this.terminateQuestionPanel();
       setTimeout(() => {
-        this.showLoadingBar = true;
         this.loadingValue = 0;
         this.initializeQuestionPanel();
         this.getNextQuestion();
@@ -280,7 +297,6 @@ export class InfiniteTestPage {
 
   useHammer() {
     if (this.progressValue < 100) {
-      clearInterval(this.loadingInterval);
       clearInterval(this.progressInterval);
       let loading = this.loadingCtrl.create({
         content: 'جاري تحميل سؤال بديل'
@@ -302,7 +318,6 @@ export class InfiniteTestPage {
         this.questions.push(ques);
         this.questions.splice(this.questionIdx, 1);
         this.questionIdx -= 1;
-        this.showLoadingBar = true;
         this.loadingValue = 0;
         this.initializeQuestionPanel();
         this.getNextQuestion();
@@ -375,68 +390,69 @@ export class InfiniteTestPage {
     }
   }
 
-  setSettingVis() {
-    this.showQuiz = !this.showQuiz;
-    if (!this.showQuiz) {
-      this.categories$ = this.catProvider.getCats();
-    }
-  }
+  allCats: Array<Category> = [];
+  mainCats: Array<Category> = [];
+  subCats: Array<Category> = [];
 
-  hideSelects() {
-    this.showCatSelect = false;
-    this.showSubCatSelect = false;
-  }
-
-  showCatSelects() {
-    this.showCatSelect = true;
-    this.showSubCatSelect = false;
-    this.getCats();
-  }
-
-  showSubCatSelects(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.getCats().then(_ => {
-        this.showCatSelect = true;
-        this.selectedCat = this.catSelects[0].value;
-        this.getSubCats().then(_ => {
-          this.showSubCatSelect = true;
-          if (this.subCatSelects.length > 0) {
-            this.selectedSubCat = this.subCatSelects[0].value;
-          }
-        });
-      });
-      resolve();
+  getAllCats(): Promise<any> {
+    let loading = this.loadingCtrl.create({
+      content: 'جاري تحميل الكويز'
     });
-  }
-
-  getCats(): Promise<any> {
+    loading.present();
     return new Promise((resolve, reject) => {
-      if (this.catSelects.length === 0) {
+      if (this.allCats.length === 0) {
         this.categories$.subscribe(cats => {
           cats.forEach(cat => {
-            if (!cat.hasParent) {
-              this.catSelects.push({ value: cat.$key, name: cat.displayNameArabic });
-            }
+            cat.showMe = false;
+            this.allCats.push(cat);
           });
-          this.selectedCat = this.catSelects[0].value;
+          loading.dismiss();
           resolve();
         });
+      } else {
+        loading.dismiss();
+        resolve();
       }
     });
   }
+  getMainCats() {
+    for (let cat of this.allCats) {
+      if (!cat.hasParent) {
+        this.mainCats.push(cat);
+      }
+    }
+  }
 
-  getSubCats() {
-    return new Promise((resolve, reject) => {
-      this.subCatSelects = [];
-      this.categories$.subscribe(cats => {
-        cats.forEach(cat => {
-          if (cat.hasParent && cat.parentKey === this.selectedCat) {
-            this.subCatSelects.push({ value: cat.$key, name: cat.displayNameArabic });
-          }
-        });
-        resolve();
-      });
-    });
+  getSubCats(parentKey) {
+    this.subCats = [];
+    for (let cat of this.allCats) {
+      if (cat.hasParent && cat.parentKey === parentKey) {
+        this.subCats.push(cat);
+      }
+    }
+  }
+
+  selectSubCat(cat) {
+    this.selectedCat = '';
+    this.selectedSubCat = cat.$key;
+    this.getCompetitionQuestions();
+  }
+  selectCat(cat) {
+    if (cat == null) {
+      this.selectedCat = '';
+      this.selectedSubCat = '';
+      this.getCompetitionQuestions();
+    } else if (this.selectedCat == cat.$key) {
+      this.getCompetitionQuestions();
+    } else {
+      this.selectedSubCat = '';
+      this.selectedCat = cat.$key;
+      for (let c of this.mainCats) {
+        c.showMe = false;
+      }
+      cat.showMe = true;
+      this.getSubCats(cat.$key);
+    }
   }
 
   replaceNumbers(s: string) {

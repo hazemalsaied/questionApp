@@ -1,17 +1,16 @@
-import { ProgressBarComponent } from './../../components/progress-bar/progress-bar';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { SpeedTestPage } from './speed-test';
-import { QuestionBarComponent } from '../../components/question-bar/question-bar';
-
+import { QuestionBar1Component } from '../../components/question-bar.1/question-bar-1';
+import { ProgressBar1Component } from './../../components/progress-bar.1/progress-bar-1';
 @NgModule({
   declarations: [
     SpeedTestPage,
-    // ProgressBarComponent,
-    // QuestionBarComponent
-  ],
+    ProgressBar1Component,
+    QuestionBar1Component],
   imports: [
-    IonicPageModule.forChild(SpeedTestPage),
+    IonicPageModule.forChild(SpeedTestPage)
   ],
+  exports: []
 })
-export class SpeedTestPageModule {}
+export class SpeedTestPageModule { }

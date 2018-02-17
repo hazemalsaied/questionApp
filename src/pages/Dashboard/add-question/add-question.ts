@@ -101,6 +101,9 @@ export class AddQuestionPage {
       this.question.cat = this.catSelectValue;
       this.question.subCat = this.subCatSelectValue;
       let randomNum1 = Math.floor((Math.random() * 1000) + 1);
+      while(randomNum1< 100){
+        randomNum1 = Math.floor((Math.random() * 1000) + 1);
+      }
       this.question.DiffIdx = this.question.difficulty + randomNum1.toString();
       this.question.DiffCatIdx = this.question.difficulty + this.question.cat + randomNum1.toString();
       this.question.DiffCatIdx = this.question.difficulty + this.question.subCat + randomNum1.toString();
