@@ -1,6 +1,24 @@
+import { UserCardComponent } from './../components/user-card/user-card';
+import { MainPageModule } from './../pages/main/main.module';
+import { MainPage } from './../pages/main/main';
+import { QuizQuestionsPageModule } from './../pages/Results/quiz-questions/quiz-questions.module';
+import { MarketPageModule } from './../pages/UserServices/market/market.module';
+import { ReportedQuestionsPageModule } from './../pages/Dashboard/reported-questions/reported-questions.module';
+import { AddTeamPageModule } from './../pages/UserServices/add-team/add-team.module';
+import { MyTeamsPageModule } from './../pages/UserServices/my-teams/my-teams.module';
+import { MyQuestionsPageModule } from './../pages/UserServices/my-questions/my-questions.module';
+import { QuizQuestionsPage } from './../pages/Results/quiz-questions/quiz-questions';
+import { MarketPage } from './../pages/UserServices/market/market';
+import { ReportedQuestionsPage } from './../pages/Dashboard/reported-questions/reported-questions';
+import { AddTeamPage } from './../pages/UserServices/add-team/add-team';
+import { MyTeamsPage } from './../pages/UserServices/my-teams/my-teams';
+import { InfiniteResultPageModule } from './../pages/Results/infinite-result/infinite-result.module';
+import { SpeedResultPageModule } from './../pages/Results/speed-result/speed-result.module';
+import { SpeedResultPage } from './../pages/Results/speed-result/speed-result';
+import { InfiniteResultPage } from './../pages/Results/infinite-result/infinite-result';
 import { AuxiliaryProvider } from './../providers/auxiliary/auxiliary';
-import { PlayOnlinePageModule } from './../pages/play-online/play-online.module';
-import { PlayPageModule } from './../pages/play/play.module';
+import { PlayOnlinePageModule } from './../pages/Quiz/play-online/play-online.module';
+import { PlayPageModule } from './../pages/Quiz/play/play.module';
 import { SortQuestionNum } from './../pipes/sortByQuestionNum';
 import { Camera } from '@ionic-native/camera';
 import { BrowserModule } from '@angular/platform-browser';
@@ -46,17 +64,20 @@ import { StatisticsPageModule  } from '../pages/Dashboard/statistics/statistics.
 import { StatisticsPage  } from '../pages/Dashboard/statistics/statistics';
 
 import { UserProvider } from '../providers/user/user';
-import { PlayPage } from '../pages/play/play';
-import { PlayOnlinePage } from '../pages/play-online/play-online';
-import { ResultsPageModule } from '../pages/results/results.module';
-import { ResultsPage } from '../pages/results/results';
-import { SpeedTestPage } from '../pages/speed-test/speed-test';
-import { InfiniteTestPage } from '../pages/infinite-test/infinite-test';
-import { InfiniteTestPageModule } from '../pages/infinite-test/infinite-test.module';
-import { SpeedTestPageModule } from '../pages/speed-test/speed-test.module';
-import { QuestionBarComponent } from '../components/question-bar/question-bar';
-import { ProgressBarComponent } from '../components/progress-bar/progress-bar';
-
+import { PlayPage } from '../pages/Quiz/play/play';
+import { PlayOnlinePage } from '../pages/Quiz/play-online/play-online';
+import { ResultsPageModule } from '../pages/Results/results/results.module';
+import { ResultsPage } from '../pages/Results/results/results';
+import { SpeedTestPage } from '../pages/Quiz/speed-test/speed-test';
+import { InfiniteTestPage } from '../pages/Quiz/infinite-test/infinite-test';
+import { InfiniteTestPageModule } from '../pages/Quiz/infinite-test/infinite-test.module';
+import { SpeedTestPageModule } from '../pages/Quiz/speed-test/speed-test.module';
+import { MyQuestionsPage } from '../pages/UserServices/my-questions/my-questions';
+import { TeamProvider } from '../providers/team/team';
+import { ImageProvider } from '../providers/image/image';
+import { PayPal } from '@ionic-native/paypal';
+import { Facebook } from '@ionic-native/facebook'
+import { GooglePlus } from '@ionic-native/google-plus';
 
 
 export const config = {
@@ -103,6 +124,15 @@ export const config = {
     InfiniteTestPageModule,
     SpeedTestPageModule,
     ResultsPageModule,
+    SpeedResultPageModule,
+    InfiniteResultPageModule,
+    MyQuestionsPageModule,
+    MyTeamsPageModule,
+    AddTeamPageModule,
+    ReportedQuestionsPageModule,
+    MarketPageModule,
+    QuizQuestionsPageModule,
+    MainPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -121,7 +151,16 @@ export const config = {
     PlayOnlinePage,
     SpeedTestPage,
     InfiniteTestPage,
-    ResultsPage
+    ResultsPage,
+    InfiniteResultPage,
+    SpeedResultPage, 
+    MyQuestionsPage,
+    MyTeamsPage,
+    AddTeamPage,
+    ReportedQuestionsPage,
+    MarketPage,
+    QuizQuestionsPage,
+    MainPage
   ],
   providers: [
     StatusBar,
@@ -132,8 +171,9 @@ export const config = {
     CategoryProvider,
     Camera,
     UserProvider,
-    UserProvider,
-    AuxiliaryProvider
+    AuxiliaryProvider,
+    TeamProvider,
+    ImageProvider
   ]
 }) 
 export class AppModule {}

@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database-deprecated';
 import { Question } from '../../shared/models/question'
-import { query } from '@angular/core/src/animation/dsl';
 
 @Injectable()
 export class QuestionProvider {
@@ -85,22 +84,22 @@ export class QuestionProvider {
   }
 
 
-  updateQuestionCatStruture(q: Question) {
-    if (q.cats != null) {
-      for (var i = 0; i < q.cats.length; i++) {
-        let catAlias = q.cats[i];
-        let cat = this.catProv.getCatByKey(catAlias.key);
-        if (cat !== null) {
-          if (cat.hasParent) {
-            q.subCat = catAlias.key;
-          } else {
-            q.cat = catAlias.key;
-          }
-        }
-      }
-    }
-    return q;
-  }
+  // updateQuestionCatStruture(q: Question) {
+  //   if (q.cats != null) {
+  //     for (var i = 0; i < q.cats.length; i++) {
+  //       let catAlias = q.cats[i];
+  //       let cat = this.catProv.getCatByKey(catAlias.key);
+  //       if (cat !== null) {
+  //         if (cat.hasParent) {
+  //           q.subCat = catAlias.key;
+  //         } else {
+  //           q.cat = catAlias.key;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return q;
+  // }
 
   setUser4AllQuestions() {
     let result = 0;

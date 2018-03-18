@@ -1,0 +1,41 @@
+<div>
+  hazem
+
+    <ion-row color="background">
+      <ion-col>
+        <ion-avatar>
+          <img [src]="imageUrl" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-col>
+      <ion-col>
+        <ion-row>
+          <ion-label>{{user.name}}</ion-label>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-badge item-start>
+              {{user.pointNum}}
+            </ion-badge>
+            نقطة
+          </ion-col>
+
+          <ion-col>
+            <ion-badge item-start>
+              {{user.jokerNum}}
+            </ion-badge>
+            جوكر
+          </ion-col>
+
+          <ion-col>
+            <ion-badge item-start>
+              {{user.hammerNum}}
+            </ion-badge>
+            مطرقة
+          </ion-col>
+        </ion-row>
+
+      </ion-col>
+    </ion-row>
+
+
+</div>

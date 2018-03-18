@@ -1,0 +1,37 @@
+page-add-team {
+    ion-avatar img, ion-thumbnail img {
+        margin-bottom: 6 em;
+        margin-right: auto !important;
+        margin-left: auto !important;
+        border-radius: 50%;
+        border: 3px solid black;
+        max-width: 55%;
+        height: 13em;
+        
+     }
+     .col{
+         color: white;
+     }
+     .english .text-input-md{
+        direction:ltr; 
+        text-align:left;
+      }
+      .icon-md{
+        //   position: relative;
+      }
+      .fab-close-icon {
+        padding-right: 35%;
+        padding-left: 35%;  
+    }
+     .playBtn{
+        padding-right: 25%;
+        padding-left: 25%;
+    }
+    .smallPlayBtn{
+        padding-right: 15%;
+        padding-left: 15%;
+    }
+    ion-row.row {
+        margin: 2em 0;
+    }
+}

@@ -1,0 +1,21 @@
+page-my-teams {
+    .item-md [item-end] {
+        margin: 9px 8px 9px 9px;
+    }
+    ion-item.item.item-block.item-md.item-md-primary {
+        margin: 1em !important;
+        width: 92%;
+        padding: 0 !important;
+        border-radius: 20px;
+    }
+    .innerIonItem{
+        margin: 0 !important;
+    }
+    h2 {
+        border-bottom: 1px solid;
+        font-size: 2em !important;
+    }
+    ion-label.label.label-md {
+        margin: 0;
+    }
+}

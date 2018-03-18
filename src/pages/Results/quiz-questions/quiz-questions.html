@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      اسئلة الاختبار
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let q of questions" color="background">
+      <!-- The Question -->
+      <ion-card color="primary" outline (click)="showPanel(q)">
+        {{q.content}}
+      </ion-card>
+
+      <div *ngIf="q.showMe">
+        <div *ngIf="q.imageUrl">
+          <img [src]="imageBeg + q.imageUrl + imageEnd" style="object-fit: cover">
+        </div>
+        <ion-item no-lines color="valid">
+          <ion-icon small name="checkmark-circle" item-start></ion-icon>
+          {{getAnswerTxt(q)}}
+        </ion-item>
+        <ion-item no-lines *ngIf="q.answer !== q.userChoice" color="yellowC">
+          <ion-icon small name="close-circle" item-start></ion-icon>
+          {{getAnswerTxt(q, false)}}
+        </ion-item>
+
+
+        <ion-row>
+          <ion-col>
+            <button ion-button color="valid" outline block (click)="save(q)">
+              حفظ السؤال
+              <ion-icon item-start color="valid" name="bookmark"></ion-icon>
+            </button>
+          </ion-col>
+          <ion-col>
+            <button color="primary" ion-button outline block (click)="report(q)">
+              تبليغ
+              <ion-icon item-start color="primary" name="warning"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
+      </div>
+
+      <!-- </div> -->
+    </ion-item>
+    <ion-item *ngIf="showSavingErrorMsg" color="primary" outline>
+      لا يحق لك حفظ المزيد من الأسئلة مجاناً!
+      <button ion-button (click)="openMarketPage()">
+
+      </button>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      المتجر
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list color="background">
+    <ion-item color="background">
+      <ion-label>عاصفة</ion-label>
+      <<ion-input type="number" [(ngModel)]='stormNum' maxlength="10" min="0"></ion-input>
+    </ion-item>
+
+    <ion-item color="background">
+      <ion-label>مطرقة</ion-label>
+      <<ion-input type="number" [(ngModel)]='hammerNum' maxlength="10" min="0"></ion-input>
+    </ion-item>
+    <ion-item color="background">
+      <ion-label>جوكر</ion-label>
+      <<ion-input type="number" [(ngModel)]='jokerNum' maxlength="10" min="0"></ion-input>
+    </ion-item>
+    <ion-item color="background">
+      <ion-label>تعطيل الإعلانات</ion-label>
+      <ion-toggle [(ngModel)]='disableAds' ></ion-toggle>
+    </ion-item>
+
+      <button ion-button (click)="pay()" outline block>دفع</button>
+
+  </ion-list>
+</ion-content>

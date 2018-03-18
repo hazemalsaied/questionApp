@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      إضافة فريق
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list  color="background">
+    <ion-avatar>
+      <img [src]="imageUrl" alt="جاري تحميل الصورة!">
+    </ion-avatar>
+    <button ion-button block outline color="primary" (click)="uploadImage()">
+      تحميل صورة!
+      <ion-icon name="camera" item-end></ion-icon>
+    </button>
+
+    <ion-item class="english"  color="background">
+      <ion-label>اسم الفريق</ion-label>
+      <ion-input [(ngModel)]="team.name"></ion-input>
+    </ion-item>
+
+    <ion-item class="english"  color="background">
+      <ion-label>الشعار</ion-label>
+      <ion-input [(ngModel)]="team.slogan"></ion-input>
+    </ion-item>
+
+    <button ion-button (click)="save()" full>
+      حفظ
+    </button>
+  </ion-list>
+</ion-content>

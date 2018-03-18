@@ -1,0 +1,19 @@
+page-results {
+    .button-block {
+        width: 96%;
+    }
+
+    .card-md-background {
+        box-shadow: none !important;
+    }
+    
+    ion-avatar img, ion-thumbnail img {
+        margin-bottom: 6 em;
+        margin-right: auto !important;
+        margin-left: auto !important;
+        border-radius: 50%;
+        border: 3px solid black;
+        height: 20em;
+        width: 20em;
+    }
+}

@@ -1,0 +1,96 @@
+
+      <ion-header>
+          <ion-navbar color="primary">
+            <button ion-button menuToggle>
+              <ion-icon name="menu"></ion-icon>
+            </button>
+            <ion-title>
+                تحدي الإجابات الصحيحة
+            </ion-title>
+        
+            <ion-buttons end padding>
+              <button ion-button end icon-only (click)="setSettingVis()">
+                <ion-icon name="settings"></ion-icon>
+              </button>
+            </ion-buttons>
+          </ion-navbar>
+        </ion-header>
+        
+        <ion-content padding>
+          <div *ngIf="showAll">
+            <ion-list *ngIf="!showQuiz">
+              <ion-card color="background" class="start">
+                اختر التبويب الرئيسي، نقرتين، أوالتبويب الفرعي لنقرة واحدة لتبدأ اللعب
+              </ion-card>
+              <button ion-button block full class="startBtn" (click)="selectCat(null)">
+                كافة التبويبات
+              </button>
+              <div *ngFor="let cat of mainCats">
+                <button ion-button block full class="startBtn" (click)="selectCat(cat)">
+                  {{cat.displayNameArabic}}
+                </button>
+                <div *ngIf="cat.showMe">
+                  <div *ngFor="let subCat of subCats">
+                    <button ion-button block full color="choice" class="startBtn" (click)="selectSubCat(subCat)">
+                      {{subCat.displayNameArabic}}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ion-list>
+        
+            <ion-list *ngIf="showQuiz">
+              <progress-bar-2 [progress]="progressValue" [text]=""></progress-bar-2>
+              <ion-item class="questionBar" color="background">
+                <question-bar-2 [answerArr]="userAnswerArr"></question-bar-2>
+                <!-- <ion-badge item-end>{{userPoints}}</ion-badge> -->
+              </ion-item>
+        
+              <ion-card>
+                <div class="imgContainer" *ngIf="currentQuestion.imageUrl !== ''">
+                  <img [src]="imageBeg + currentQuestion.imageUrl + imageEnd">
+                </div>
+                <ion-card-content color="questioBck">
+                  <ion-card class='content1' color="questioBck"> {{questionIdx + 1}} - {{currentQuestion.content}} </ion-card>
+                </ion-card-content>
+              </ion-card>
+        
+              <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices' && currentQuestion.imageUrl === '' ">
+                <button ion-button block class='choice' [style.background]="choiceBkgs[c.text]" 
+                *ngFor="let c of currentChoices" (click)="next(c.text)">
+                  {{c.text}}
+                </button>
+              </div>
+        
+              <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices' && currentQuestion.imageUrl !== '' ">
+                <ion-row>
+                  <ion-col *ngFor="let c of currentChoices.slice(0,2)">
+                    <button ion-button block class="choice" [style.background]="choiceBkgs[c.text]" (click)="next(c.text)">
+                      {{c.text}}
+                    </button>
+                  </ion-col>
+                </ion-row> 
+                <ion-row>
+                  <ion-col *ngFor="let c of currentChoices.slice(2,4)">
+                    <button ion-button block class="choice" [style.background]="choiceBkgs[c.text]" (click)="next(c.text)">
+                      {{c.text}}
+                    </button>
+                  </ion-col>
+                </ion-row>
+              </div>
+        
+              <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse' ">
+                <button ion-button class='choice' [style.background]="choiceBkgs['true']" block (click)="next('true')">
+                  صح
+                </button>
+                <button ion-button class='choice' [style.background]="choiceBkgs['false']" block (click)="next('false')">
+                  خطأ
+                </button>
+              </div>
+              <ion-item *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck' ">
+                <ion-input [(ngModel)]="userAnswer"></ion-input>
+              </ion-item>
+        
+            </ion-list>
+          </div>
+        </ion-content>

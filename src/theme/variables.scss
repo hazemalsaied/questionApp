@@ -35,7 +35,8 @@ $app-direction: ltr;
 
 // $background: #E9EBEB;
 // $background: #022048;
-$background:#207EA6;
+// $background:#207EA6;
+$background:#17577e;
 
 $colors: (
   primary:#D01E29,
@@ -46,14 +47,15 @@ $colors: (
   dark:       rgb(4, 90, 128),
   facebook:   rgb(68, 104, 172),
   google:     rgb(234, 65, 60),
-  valid:      #38c51c,
+  valid:      #35b31c,
   orange: #fcad04,
   // choice: #FCC744, 
-  choice:#4C4C4C,
+  choice:#FFF,
   activeChoice: #ebae15, 
   yellowC: #FCC744, 
   // background:#022048,
-  background:#207EA6,
+  // background:#207EA6,
+  background:#17577e,
   questioBck:#DFDFDF,
   // background: #E9EBEB,
   yellowCDark: #d19601, 

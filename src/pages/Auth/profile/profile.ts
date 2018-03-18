@@ -53,7 +53,6 @@ export class ProfilePage {
       this.user$ = this.afd.object('/userProfile/' + uid);
       this.user$.subscribe(snapshot => {
         this.user = snapshot;
-        console.log(this.user);
       });
     }
   }

@@ -50,7 +50,9 @@ export class AuthData {
         jokerNum : 3, 
         hammerNum : 6,
         pointNum : 150,
-        role : 'user'
+        role : 'user',
+        unlimitedSavedQuestionNum: false
+
       });
     });
   }

@@ -1,5 +1,4 @@
 import { AuxiliaryProvider } from './../../../providers/auxiliary/auxiliary';
-import { SortQuestionNum } from './../../../pipes/sortByQuestionNum';
 import { User } from './../../../shared/models/user';
 import { UserProvider } from './../../../providers/user/user';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database-deprecated';

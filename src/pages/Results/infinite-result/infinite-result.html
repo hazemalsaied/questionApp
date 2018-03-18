@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      النتائج
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <div *ngIf="hasWon">
+    <ion-avatar>
+      <img [src]="happyFaceImageUrl" alt="جاري تحميل الصورة!">
+    </ion-avatar>
+    <ion-item color="background">
+      مبروك، لقد تجاوزت رقمك القياسي السابق، وأجبت على {{infiniteTrueQuestionNum}} سؤال!
+    </ion-item>
+  </div>
+
+  <div *ngIf="!hasWon">
+    <ion-avatar>
+      <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
+    </ion-avatar>
+    <ion-card color="background">
+      للأسف، لم يحالفك الحظ في تحطيم رقمك القياسي السابق
+    </ion-card>
+  </div>
+
+  <button ion-button (click)="infiniteTest()" block>
+    عاود اللعب!
+  </button>
+  <button ion-button (click)="showQuestions()" block>
+    شاهد الأسئلة
+  </button>
+
+</ion-content>

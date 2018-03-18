@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      اسئلتي
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let q of questions" color="background">
+      <!-- The Question -->
+      <ion-card color="primary" outline (click)="showPanel(q)">
+        {{q.content}}
+      </ion-card>
+
+      <div *ngIf="q.showMe">
+        <div *ngIf="q.imageUrl">
+          <img [src]="imageBeg + q.imageUrl + imageEnd" style="object-fit: cover">
+        </div>
+        <ion-item no-lines color="valid">
+          <ion-icon small name="checkmark-circle" item-start></ion-icon>
+          {{getAnswerTxt(q)}}
+        </ion-item>
+        <button ion-button color="valid" outline block (click)="remove(q)">
+          حذف السؤال
+          <ion-icon item-start color="valid" name="remove-circle"></ion-icon>
+        </button>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

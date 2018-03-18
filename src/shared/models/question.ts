@@ -9,15 +9,16 @@ export interface Question {
     language: string;
     difficulty: string;
     time: string;
-    showMe: boolean;
+    showMe?: boolean;
     user: string;
     userName: string;
     cat: string;
     subCat: string;
-    cats: [{key:string}];
     DiffIdx:  string;
     DiffCatIdx:  string;
     DiffSubCatIdx:  string;
+    userChoice?:string;
+    reported?:boolean;
 }
 
 export interface Category {

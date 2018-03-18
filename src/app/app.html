@@ -22,10 +22,17 @@
           تحدي الإجابات الصحيحة!
         </button>
 
+        <ion-item-divider color="primary">خدمات</ion-item-divider>
+        <button menuClose ion-item *ngFor="let p of servicePages" (click)="openPage(p)" color="background">
+          {{p.title}}
+        </button>
+
+
         <ion-item-divider color="primary">لوحة التحكم</ion-item-divider>
         <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)" color="background">
           {{p.title}}
         </button>
+       
         <ion-item-divider color="primary">الحساب</ion-item-divider>
         <button menuClose ion-item (click)="openProfilePage()" color="background">
           الحساب

@@ -1,8 +1,7 @@
+import { AngularFireAuth } from 'angularfire2/auth';
 import { QuestionProvider } from './../question/question';
 import { User } from './../../shared/models/user';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
-import firebase from 'firebase';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database-deprecated';
 
 @Injectable()
@@ -12,8 +11,47 @@ export class UserProvider {
 
 
   constructor(public afd: AngularFireDatabase,
-    public questionProv: QuestionProvider) {
+    public questionProv: QuestionProvider,
+    public afa: AngularFireAuth) {
 
+  }
+
+  getUser(): Promise<User> {
+    let currentUserId = this.afa.auth.currentUser.uid;
+    return new Promise((resolve, reject) => {
+      this.afd.object('/userProfile/' + currentUserId).subscribe(us => {
+        resolve(us);
+      });
+    });
+  }
+
+  getUserByKey(key):Promise<User> {
+    return new Promise((resolve, reject) => {
+      this.afd.object('/userProfile/' + key).subscribe(us => {
+        resolve(us);
+      });
+    });
+  }
+
+  addTeam(user, teamKey) {
+    if (typeof user.teams == "undefined") {
+      user.teams = [];
+    }
+    user.teams.push({ key: teamKey });
+    console.log(user);
+    this.afd.list('/userProfile/').update(user.$key, user).then(_ => {
+      console.log('user updated');
+    });
+  }
+
+  addQuiz(user, quizKey):Promise<any> {
+    return new Promise((resolve, reject) => {
+      user.quiz = quizKey;
+      this.afd.list('/userProfile/').update(user.$key, user).then(us => {
+        console.log('quiz added');
+        resolve(us);
+      });
+    });
   }
 
   setAllUserInfo() {
@@ -69,7 +107,6 @@ export class UserProvider {
 
     this.afd.list('/userProfile').
       subscribe(userList => {
-        let bufArr = [];
         userList.forEach(user => {
           this.questionProv.getQuestions({ orderByChild: 'user', equalTo: user.$key }).
             subscribe(questionList => {

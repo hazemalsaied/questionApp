@@ -14,7 +14,7 @@ export class ProgressBar3Component {
 
   progressInnerClass = 'progress-inner';
   constructor() {
-    if (this.isQuestionContent) {
+    if (this.isQuestionContent){
       this.progressInnerClass = 'red-progress-inner';
     }
   }

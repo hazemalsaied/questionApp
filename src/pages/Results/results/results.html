@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      النتائج
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+  <div *ngIf="hasWon">
+    <ion-avatar>
+      <img [src]="happyFaceImageUrl" alt="جاري تحميل الصورة!">
+    </ion-avatar>
+  </div>
+
+  <div *ngIf="!hasWon">
+    <ion-avatar>
+      <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
+    </ion-avatar>
+  </div>
+
+
+  <ion-card color="background" *ngIf="validQNum >= (questionNum/ 2) ">
+    مبروك لقد اجتزت الكويز بنجاح!
+  </ion-card>
+
+  <canvas #doughnutCanvas></canvas>
+
+  <ion-card color="background">
+    لقد أجبت على {{validQNum}} اسئلة بشكل صحيح من أصل {{ questionNum }}.
+  </ion-card>
+  <ion-card *ngIf="newPoints > 0 " color="background">
+    لقد أضفت {{newPoints}} نقطة إلى رصيدك! أحسنت!
+  </ion-card>
+
+  <button ion-button (click)="play()" block>
+    إبدأ كويز آخر!
+  </button>
+
+  <button ion-button (click)="showQuestions()" block>
+    شاهد الأسئلة
+  </button>
+
+</ion-content>

@@ -7,7 +7,7 @@ import { QuestionProvider } from '../../../providers/question/question';
 import { CategoryProvider } from './../../../providers/category/category';
 import { AuthData } from './../../../providers/auth-data/auth-data';
 import firebase from 'firebase';
-import { Question, Choice, Category } from '../../../shared/models/question';
+import { Question, Category } from '../../../shared/models/question';
 
 import { AddQuestionPage } from '../add-question/add-question';
 

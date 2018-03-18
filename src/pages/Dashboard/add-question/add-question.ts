@@ -58,10 +58,9 @@ export class AddQuestionPage {
     userName: null,
     cat: '',
     subCat: '',
-    cats: [{ key: '' }],
     DiffIdx: '',
     DiffCatIdx: '',
-    DiffSubCatIdx: ''
+    DiffSubCatIdx: '',
   };
   noContentMsg = 'ولكن، ما هو سؤالك؟!';
   noAnswerMsg = 'لا يوجد جواب لهذا السؤال!';
@@ -95,13 +94,19 @@ export class AddQuestionPage {
   }
 
   addQuestion() {
+    let wasReported = false
     this.showErrorMsg = false;
     if (this.validate()) {
+      if (this.question.reported) {
+        wasReported = true;
+        this.question.reported = null;
+        this.question.showMe = null;
+      }
       this.question.showMe = null;
       this.question.cat = this.catSelectValue;
       this.question.subCat = this.subCatSelectValue;
       let randomNum1 = Math.floor((Math.random() * 1000) + 1);
-      while(randomNum1< 100){
+      while (randomNum1 < 100) {
         randomNum1 = Math.floor((Math.random() * 1000) + 1);
       }
       this.question.DiffIdx = this.question.difficulty + randomNum1.toString();
@@ -109,7 +114,11 @@ export class AddQuestionPage {
       this.question.DiffCatIdx = this.question.difficulty + this.question.subCat + randomNum1.toString();
       if (this.question.$key) {
         this.questionProv.updateQuestion(this.question);
-        this.showToast('bottom', 'تم تحرير السؤال بنجاح!');
+        if (wasReported) {
+          this.showToast('bottom', 'تم تصحيح السؤال بنجاح!');
+        } else {
+          this.showToast('bottom', 'تمت إضافة السؤال بنجاح!');
+        }
       } else {
         this.question.time = new Date().toISOString().slice(0, 16);
         if (this.question.answerType.toLowerCase() == 'trueorfalse'
@@ -119,6 +128,8 @@ export class AddQuestionPage {
         this.questionsRef.push(this.question);
         this.auxProv.changeQuestionNumber(this.question);
         this.showToast('bottom', 'تمت إضافة السؤال بنجاح!');
+
+
       }
       if (this.isChildPage) {
         this.navCtrl.pop();
