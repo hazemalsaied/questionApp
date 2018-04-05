@@ -1,9 +1,12 @@
+import { TeamProvider } from './../../../providers/team/team';
+import { UserProvider } from './../../../providers/user/user';
+import { AddTeamPage } from './../add-team/add-team';
 import { MarketPage } from './../../UserServices/market/market';
 import firebase from 'firebase';
 import { User } from './../../../shared/models/user';
 import { AngularFireDatabase } from 'angularfire2/database-deprecated';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { Question } from '../../../shared/models/question';
 import { Settings } from '../../../shared/settings/settings';
 import { Team } from '../../../shared/models/team';
@@ -16,53 +19,51 @@ import { Team } from '../../../shared/models/team';
 })
 export class MyTeamsPage {
 
-  teams: Array<Team> = [];
-  imageBeg = 'https://firebasestorage.googleapis.com/v0/b/questionapp-fdb6a.appspot.com/o/pictures%2F';
-  imageEnd = '?alt=media';
+  teams: Array<any> = [];
+  invitations: Array<any> = [];
+
   showSavingErrorMsg = false;
   user: User;
+
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private toastCtrl: ToastController,
-    public afd: AngularFireDatabase) {
+    public afd: AngularFireDatabase,
+    public alertCtrl: AlertController,
+    public userP: UserProvider,
+    public teamP: TeamProvider
+  ) {
 
-    this.getUser().then(user => {
+    this.userP.getUser().then(user => {
       this.user = user;
-      this.getTeams(user).then(teams => {
+      this.teamP.getTeams(user).then(teams => {
         this.teams = teams;
+        for (let t of this.teams) {
+          t.realUsers = [];
+          for (let u of t.users)
+            userP.getUserByKey(u.key).then(user => {
+              this.userP.setVirtualSettings(user);
+              t.realUsers.push(user)
+            });
+        }
         console.log(this.teams);
       });
-    })
-
-  }
-
-  getTeams(user: User): Promise<Array<Team>> {
-    return new Promise((resolve, reject) => {
-      if (typeof user.teams != "undefined") {
-        let teamArr = [];
-        let promises = [];
-        for (let i = 0; i < user.teams.length; i++) {
-          let p = new Promise((resolve, reject) => {
-            this.afd.object('/teams/' + user.teams[i].key).subscribe(item => {
-              if (typeof(item.imageUrl) != "undefined") {
-                item.imageUrl = "./assets/team.jpg";
-              } else {
-                item.imageUrl = this.imageBeg + item.imageUrl + this.imageEnd;
-              }
-              teamArr.push(item);
-              resolve();
-            });
-          });
-          promises.push(p);
-        }
-        Promise.all(promises).then(function (values) {
-          resolve(teamArr);
-        });
-      } else {
-        resolve([]);
-      }
+      this.getInvitations(user)
     });
   }
+  getInvitations(user) {
+    this.teamP.getInvitations(user).then(invitations => {
+      this.invitations = invitations;
+    });
+  }
+
+  getTeams(user) {
+    this.teamP.getTeams(user).then(teams => {
+      this.teams = teams;
+    });
+  }
+
+
   remove(t) {
     let qIdx = this.teams.indexOf(t);
     this.teams.splice(qIdx, 1);
@@ -73,20 +74,78 @@ export class MyTeamsPage {
       }
     }
     this.afd.list('/userProfile').update(this.user.$key, this.user).then(_ => {
-      this.showToast('bottom', 'تم حذف السؤال بنجاح!');
+      this.showToast('bottom', 'تم حذف الفريق بنجاح!');
     });
   }
 
+  // getUser(): Promise<any> {
+  //   let userId = firebase.auth().currentUser.uid;
+  //   return new Promise((resolve, reject) => {
+  //     this.afd.object('/userProfile/' + userId).subscribe(us => {
+  //       resolve(us);
+  //     });
+  //   })
+  // }
 
-  getUser(): Promise<any> {
-    let userId = firebase.auth().currentUser.uid;
-    return new Promise((resolve, reject) => {
-      this.afd.object('/userProfile/' + userId).subscribe(us => {
-        resolve(us);
-      });
-    })
+  goToTeamPage(t) {
+    this.navCtrl.push(AddTeamPage, { team: t });
   }
+  acceptInvitation(t: Team) {
+    this.teamP.acceptInvitation(this.user, t).then(accepted => {
+      if (accepted) {
+        this.showToast('bottom', 'لقد تمت إضافتك للفريق!');
+        // this.getInvitations(this.user);
+        // this.getTeams(this.user);
+      } else {
+        this.showToast('bottom', 'أنت عضو في الفريق مسبقاً!');
+      }
 
+    });
+  }
+  removeTeam(t: Team) {
+    let alert = this.alertCtrl.create({
+      title: 'هل تريد حذف الفريق',
+      buttons: [
+        {
+          text: 'إلغاء',
+          handler: data => { }
+        }, {
+          text: 'حذف',
+          handler: data => {
+            let teamLength = this.user.teams.length;
+            for (let i = 0; i < teamLength; i++) {
+              let teamAlias = this.user.teams[i];
+              if (teamAlias.key === t.$key) {
+                if (t.admin == this.user.$key) {
+                  this.user.teams.splice(i, 1);
+                  this.afd.list('userProfile').update(this.user.$key, this.user).
+                    then(userRef => {
+                      this.teamP.getTeams(this.user).then(teams => {
+                        this.teams = teams;
+                        for (let t of this.teams) {
+                          t.realUsers = [];
+                          for (let u of t.users)
+                            this.userP.getUserByKey(u.key).then(user => {
+                              this.userP.setVirtualSettings(user);
+                              t.realUsers.push(user)
+                            });
+                        }
+                        console.log(this.teams);
+                      });
+                    });
+                  // teamAlias.key = null;
+                  break;
+                } else {
+                  this.showToast('bottom', 'لست مدير هذا الفريق لتقوم بحذفه!');
+                }
+              }
+            }
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
 
   showPanel(team: Question) {
     for (let q of this.teams) {
@@ -108,6 +167,7 @@ export class MyTeamsPage {
     toast.onDidDismiss(this.dismissHandler);
     toast.present();
   }
+
   private dismissHandler() {
   }
 }

@@ -6,8 +6,9 @@
     <ion-title>
       النتائج
     </ion-title>
-  </ion-navbar> 
+  </ion-navbar>
 </ion-header>
+
 
 
 <ion-content padding>
@@ -25,20 +26,31 @@
     <ion-avatar>
       <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
     </ion-avatar>
-    <ion-card color="background">
+    <ion-card *ngIf="!hasPonus" color="background">
+      مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية بالإجابة على {{trueAnswers}} سؤال، ولكنك لم تتمكن من تجاوز رقمك
+      القياسي السابق !
+    </ion-card>
+    <ion-card *ngIf="hasPonus" color="background">
+      مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية وتجاوزت رقمك القياسي السابق بالإجابة على {{trueAnswers}} سؤال!
+    </ion-card>
+
+
+    <!-- <ion-card color="background">
        لقد أجبت على {{speedTrueQuestionNum}} سؤال بشكل صحيح!
     </ion-card>
     <ion-card color="background">
       ،لكن للأسف، لم يحالفك الحظ في تحطيم رقمك القياسي السابق
-    </ion-card>
+    </ion-card> -->
   </div>
 
   <canvas #doughnutCanvas></canvas>
+  <div class='choices'>
+    <button ion-button (click)="speedTest()" block>
+      عاود اللعب!
+    </button>
+    <button ion-button (click)="showQuestions()" block>
+      شاهد الأسئلة
+    </button>
+  </div>
 
-  <button ion-button (click)="speedTest()" block>
-    عاود اللعب!
-  </button>
-  <button ion-button (click)="showQuestions()" block>
-    شاهد الأسئلة
-  </button>
 </ion-content>

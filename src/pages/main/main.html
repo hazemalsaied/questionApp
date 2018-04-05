@@ -4,69 +4,142 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>
-      بنك الأسئلة
+      {{appName}}
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
 
+  <ion-item class="user" color="background">
+    <ion-avatar item-start class="userAvatar">
+      <img [src]="user.imageLink" alt="جاري تحميل الصورة!">
+      <ion-icon *ngIf="user.role === 'admin'" name="bowtie"></ion-icon>
+    </ion-avatar>
+    <div>
+      <h1>{{user.name}}</h1>
+      <p> {{user.email}}</p>
+      <ion-badge small item-end>{{user.pointNum}} نقطة</ion-badge>
+    </div>
+  </ion-item>
 
-  <ion-list color="background">
-    <ion-item color="background">
-      <ion-row color="background">
-        <ion-col>
-          <ion-avatar>
-            <img [src]="imageUrl" alt="جاري تحميل الصورة!">
+
+  <ion-row class='scores'>
+    <ion-col>
+      <img src="./assets/gold64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.goldenPoints}}</ion-badge>
+      </div>
+    </ion-col>
+    <ion-col>
+      <img src="./assets/jocker64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.jokerNum}}</ion-badge>
+      </div>
+    </ion-col>
+    <ion-col>
+      <img src="./assets/hammar64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.hammarNum}}</ion-badge>
+      </div>
+    </ion-col>
+    <ion-col>
+      <img src="./assets/storm64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.stormNum}}</ion-badge>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <main-slider></main-slider>
+
+  <ion-slides class="order" autoplay="3000" [pager]="true" [paginationType]="progress">
+    <ion-slide class='slider1'>
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل اللاعبين </h1>
+        <div class="info">
+          <h1 class="">{{bestUser.name}} </h1>
+          <ion-badge small item-start>{{bestUser.pointNum}} نقطة</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="bestUser.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+    </ion-slide>
+
+
+    <ion-slide class='slider1'>
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل اللاعبين هذا الشهر </h1>
+        <div class="info">
+          <h1 class="">{{bestMonthUser.name}} </h1>
+          <ion-badge small item-start>{{bestMonthUser.pointNum}} نقطة</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="bestMonthUser.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+    </ion-slide>
+
+    <ion-slide class='slider1'>
+        <ion-item class="user" color="background">
+          <h1 class='sliderTitle'> أفضل اللاعبين في كويز السلسلة </h1>
+          <div class="info">
+            <h1 class="">{{infiniteBestUser.name}} </h1>
+            <ion-badge small item-start>{{infiniteBestUser.infiniteTest}} سؤال</ion-badge>
+          </div>
+          <ion-avatar item-end class="userAvatar">
+            <img [src]="infiniteBestUser.imageLink" alt="جاري تحميل الصورة!">
           </ion-avatar>
-        </ion-col>
-        <ion-col>
-          <ion-badge item-start>
-            {{user.pointNum}}
-          </ion-badge>
-          نقطة
-        </ion-col>
+        </ion-item>
+        <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+      </ion-slide>
 
-        <ion-col>
-          <ion-badge item-start>
-            {{user.jokerNum}}
-          </ion-badge>
-          جوكر
-        </ion-col>
+      <ion-slide class='slider1'>
+          <ion-item class="user" color="background">
+            <h1 class='sliderTitle'> أفضل اللاعبين في كويز السرعة </h1>
+            <div class="info">
+              <h1 class="">{{speedBestUser.name}} </h1>
+              <ion-badge small item-start>{{speedBestUser.speedTest}} سؤال</ion-badge>
+            </div>
+            <ion-avatar item-end class="userAvatar">
+              <img [src]="speedBestUser.imageLink" alt="جاري تحميل الصورة!">
+            </ion-avatar>
+          </ion-item>
+          <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+        </ion-slide>
 
-        <ion-col>
-          <ion-badge item-start>
-            {{user.hammerNum}}
-          </ion-badge>
-          مطرقة
-        </ion-col>
-      </ion-row>
-    </ion-item>
+        <ion-slide class='slider1'>
+            <ion-item class="user" color="background">
+              <h1 class='sliderTitle'> أفضل اللاعبين في اختبار المعلومات </h1>
+              <div class="info">
+                <h1 class="">{{playBestUser.name}} </h1>
+                <ion-badge small item-start>{{playBestUser.play}} سؤال</ion-badge>
+              </div>
+              <ion-avatar item-end class="userAvatar">
+                <img [src]="playBestUser.imageLink" alt="جاري تحميل الصورة!">
+              </ion-avatar>
+            </ion-item>
+            <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+          </ion-slide>
 
-  </ion-list>
+    <ion-slide class='slider1'>
 
-
-  <!-- <ion-slides pager>
-    <ion-slide>
-      <h1>Slide 1</h1>
-      <button ion-button (click)="openPage('PlayPage')" block>
-        اختبر معلوماتك
-      </button>
-
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل الفرق </h1>
+        <div class="info">
+          <h1 class="">{{bestTeam.name}} </h1>
+          <p class="">{{bestTeam.slogan}} </p>
+          <ion-badge small item-start>{{bestTeam.points}} نقطة</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="bestTeam.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <button ion-button small (click)='openPage("TeamOrderPage")'>شاهد ترتيب الفرق</button>
     </ion-slide>
-    <ion-slide>
-      <h1>Slide 2</h1>
-      <button ion-button (click)="openPage('InfiniteTestPage')" block>
-        اختبار الأسئلة
-      </button>
 
-    </ion-slide>
-    <ion-slide>
-      <h1>Slide 3</h1>
-      <button ion-button (click)="openPage('SpeedTestPage')" block>
-        اختبار السرعة
-      </button>
-    </ion-slide>
-  </ion-slides> -->
-
+  </ion-slides>
 </ion-content>

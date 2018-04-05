@@ -13,7 +13,7 @@
 <ion-content padding>
 
   <ion-list>
-    <ion-item color="primary">
+    <ion-item class="questionNum" color="primary">
       عدد الأسئلة
       <ion-badge color="yellowC" item-end>{{totalQuestionNum}}</ion-badge>
     </ion-item>
@@ -21,15 +21,30 @@
       التبويبات
     </ion-item>
     <div *ngFor="let cat of mainCats">
-      <ion-item (click)="showSubCatStats(cat)" color="yellowC">
+      <ion-item class="cat" (click)="showSubCatStats(cat)" color="background">
         {{cat.displayNameArabic}}
         <ion-badge item-end>{{cat.questionNumber}}</ion-badge>
       </ion-item>
       <div *ngIf="cat.showSubCats">
-        <ion-item *ngFor="let cat of subCats" color="yellowCLight">
+        <ion-item class="subCat" *ngFor="let cat of subCats" color="background">
           {{cat.displayNameArabic}}
+          <ion-badge class='badgeDiff' item-end>{{cat.questionNumber_1}} س</ion-badge>
+          <ion-badge class='badgeDiff' item-end>{{cat.questionNumber_2}} م</ion-badge>
+          <ion-badge class='badgeDiff' item-end>{{cat.questionNumber_3}} ص</ion-badge>
           <ion-badge item-end>{{cat.questionNumber}}</ion-badge>
+          <!-- <ion-row>
+            <ion-col>
+                <ion-badge item-end>{{cat.questionNumber_1}} س</ion-badge>
+            </ion-col>
+            <ion-col>
+              <ion-badge item-end>{{cat.questionNumber_2}} م</ion-badge>
+            </ion-col>
+            <ion-col>
+              <ion-badge item-end>{{cat.questionNumber_3}} ص</ion-badge>
+            </ion-col>
+          </ion-row> -->
         </ion-item>
+
       </div>
     </div>
 
@@ -37,7 +52,10 @@
       مساهمات الأعضاء
     </ion-item>
 
-    <ion-item *ngFor="let user of userStats " color="yellowC">
+    <ion-item *ngFor="let user of userStats " color="background">
+      <ion-avatar item-start class="userAvatar">
+        <img [src]="user.imageLink" alt="جاري تحميل الصورة!">
+      </ion-avatar>
       {{user.user}}
       <ion-badge item-end>{{user.questionNumber}}</ion-badge>
     </ion-item>

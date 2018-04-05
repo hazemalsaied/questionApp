@@ -2,7 +2,16 @@ page-infinite-result {
     .button-block {
         width: 96%;
     }
-    
+    ion-card.card {
+        text-align: center;
+    }
+    .choices {
+        position: absolute;
+        left: 4%;
+        right: 4%;
+        bottom: 1em;
+        width: 92%;
+    }
     .card-md-background {
         box-shadow: none !important;
     }

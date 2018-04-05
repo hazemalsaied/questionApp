@@ -19,6 +19,40 @@
 ion-content.content.content-md, ion-list.list.list-md {
     background: $background;
 }
+ion-item-divider.item.item-divider {
+    font-size: 1.4em;
+}
 .item-md {
     padding-left: 0;
+}
+
+.icnClass img {
+    width: 48px !important;
+    height: 48px !important;
+    /* max-width: none; */
+    max-height: none;
+    border: none;
+    margin: 0 auto;
+    min-width: 48px !important;
+    max-width: 48px;
+}
+.icnClass {
+    float: left;
+    width: 30%;
+    background: #17577e;
+    // box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2), 1px 1px 1px 1px rgba(0, 0, 0, 0.19);
+    margin: 1em 1%;
+    // padding: .5em;
+    // border-radius: 20px;
+    
+}
+.icnsClass {
+    display: block;
+    overflow: hidden;
+    
+}
+.icnClass ion-badge.badge.badge-md {    
+    margin: .5em auto 0;
+    display: block;
+    width: 40%;
 }

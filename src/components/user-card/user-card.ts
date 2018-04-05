@@ -9,14 +9,12 @@ export class UserCardComponent {
 
   @Input("user") user;
 
-  imageUrl;
+  imageUrl ="./assets/profile.png";
 
   constructor() {
     console.log(this.user);
     if (this.user != null && this.user.imageUrl != '') {
-      this.imageUrl = Settings.imageBeg + this.user.imageUrl + Settings.imageEnd;
-    } else {
-      this.imageUrl = "./assets/profile.png";
+      this.imageUrl = Settings.profileImageBeg + this.user.imageUrl + Settings.profileImageEnd;
     }
   }
 

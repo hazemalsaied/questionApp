@@ -11,14 +11,14 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let q of questions" color="background">
+    <div *ngFor="let q of questions" color="background">
       <!-- The Question -->
       <ion-card color="primary" outline (click)="showPanel(q)">
         {{q.content}}
       </ion-card>
 
-      <div *ngIf="q.showMe">
-        <div *ngIf="q.imageUrl">
+      <div class="choices" *ngIf="q.showMe">
+        <div class="imgContainer" *ngIf="q.imageUrl">
           <img [src]="imageBeg + q.imageUrl + imageEnd" style="object-fit: cover">
         </div>
         <ion-item no-lines color="valid">
@@ -48,7 +48,7 @@
       </div>
 
       <!-- </div> -->
-    </ion-item>
+    </div>
     <ion-item *ngIf="showSavingErrorMsg" color="primary" outline>
       لا يحق لك حفظ المزيد من الأسئلة مجاناً!
       <button ion-button (click)="openMarketPage()">

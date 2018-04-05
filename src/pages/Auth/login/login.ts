@@ -4,8 +4,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { AuthData } from '../../../providers/auth-data/auth-data';
 import { AngularFireAuth } from 'angularfire2/auth';
 import firebase from 'firebase';
-import { Facebook } from '@ionic-native/facebook';
-import { GooglePlus } from '@ionic-native/google-plus';
+// import { Facebook } from '@ionic-native/facebook';
+// import { GooglePlus } from '@ionic-native/google-plus';
 
 
 @IonicPage()
@@ -24,8 +24,9 @@ export class LoginPage {
     public alertCtrl: AlertController,
     public loadingCtrl: LoadingController,
     public afAuth: AngularFireAuth,
-    public facebook: Facebook,
-    private googlePlus: GooglePlus) {
+    // public facebook: Facebook,
+    // private googlePlus: GooglePlus
+  ) {
 
 
     this.afAuth.authState.subscribe((user) => {
@@ -80,36 +81,36 @@ export class LoginPage {
     }
   }
 
-  facebookLogin(): Promise<any> {
-    return this.facebook.login(['email'])
-      .then(response => {
-        const facebookCredential = firebase.auth.FacebookAuthProvider
-          .credential(response.authResponse.accessToken);
+  // facebookLogin(): Promise<any> {
+  //   return this.facebook.login(['email'])
+  //     .then(response => {
+  //       const facebookCredential = firebase.auth.FacebookAuthProvider
+  //         .credential(response.authResponse.accessToken);
 
-        firebase.auth().signInWithCredential(facebookCredential)
-          .then(success => {
-            console.log("Firebase success: " + JSON.stringify(success));
-          });
+  //       firebase.auth().signInWithCredential(facebookCredential)
+  //         .then(success => {
+  //           console.log("Firebase success: " + JSON.stringify(success));
+  //         });
 
-      }).catch((error) => { console.log(error) });
-  }
+  //     }).catch((error) => { console.log(error) });
+  // }
 
-  googleLogin(): void {
-    this.googlePlus.login({
-      'webClientId': '235551466519-6ra9kjh1k1rgvdg8sius8nct0ke78ok9.apps.googleusercontent.com',
-      'offline': true
-    }).then(res => {
-      const googleCredential = firebase.auth.GoogleAuthProvider
-        .credential(res.idToken);
+  // googleLogin(): void {
+  //   this.googlePlus.login({
+  //     'webClientId': '235551466519-6ra9kjh1k1rgvdg8sius8nct0ke78ok9.apps.googleusercontent.com',
+  //     'offline': true
+  //   }).then(res => {
+  //     const googleCredential = firebase.auth.GoogleAuthProvider
+  //       .credential(res.idToken);
 
-      firebase.auth().signInWithCredential(googleCredential)
-        .then(response => {
-          console.log("Firebase success: " + JSON.stringify(response));
-        });
-    }, err => {
-      console.error("Error: ", err)
-    });
-  }
+  //     firebase.auth().signInWithCredential(googleCredential)
+  //       .then(response => {
+  //         console.log("Firebase success: " + JSON.stringify(response));
+  //       });
+  //   }, err => {
+  //     console.error("Error: ", err)
+  //   });
+  // }
 
   forgot() {
     this.navCtrl.push('ForgotPage');

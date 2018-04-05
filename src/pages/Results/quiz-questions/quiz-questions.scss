@@ -1,11 +1,35 @@
 page-quiz-questions {
-    ion-card.card.card-md.card-md-primary {
+    .imgContainer {
+        border:1px solid white;
+    }
+    .choices img {
+        max-height: 12em;
+        margin: auto;
+        display: block;
+    }
+    .card-md-primary {
         padding: 1em;
-        margin: 0;
-        width: 100%;
-        font-size: 1.1em;
+        width: 96%;
+        margin: .5em auto 0;
+        font-size: 1.3em !important;
+    }
+    .choices {
+        width: 96%;
+        margin: 0 auto .5em;
+        font-size: 1.3em !important;
+    }
+    // ion-card.card.card-md.card-md-primary {
+    //     padding: 1em;
+    //     margin: 0;
+    //     font-size: 1.1em;
+    // }
+    .choices{
+        width: 96%;
     }
     .list-md .item-block .item-inner {
         border-bottom: 0px solid #dedede;
+    }
+    ion-card.card.card-md.card-md-primary {
+        width: 96%;
     }
 }

@@ -1,0 +1,110 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      ترتيب الأعضاء
+    </ion-title>
+
+    <ion-buttons end padding>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<!--   
+  <ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>ترتيب الأعضاء</ion-title>
+  </ion-navbar>
+</ion-header> -->
+
+
+<ion-content padding>
+
+  <div *ngIf="showCriteriaPanel">
+
+    <button ion-button block full class="startBtn" (click)="getUsers('pointNum')">
+      أفضل اللاعبين
+    </button> 
+    <button ion-button block full class="startBtn" (click)="getUsers('month')">
+      هذا الشهر
+    </button>
+
+    <button ion-button block full class="startBtn" (click)="getUsers('play')">
+      اختبار المعلومات
+    </button>
+    <button ion-button block full class="startBtn" (click)="getUsers('infiniteTest')">
+      كويز السلسلة
+    </button>
+    <button ion-button block full class="startBtn" (click)="getUsers('speedTest')">
+      كويز السرعة
+    </button>
+
+
+    <div *ngFor="let cat of mainCats">
+      <button ion-button block full class="startBtn" (click)="showSubCats(cat)">
+        {{cat.displayNameArabic}}
+      </button>
+      <div *ngIf="cat.showMe">
+        <div *ngFor="let subCat of subCats">
+          <button ion-button block full color="choice" class="startBtn" (click)="getUsers(subCat.$key)">
+            {{subCat.displayNameArabic}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showUserList">
+    <div *ngFor="let u of users" color="background">
+      <ion-item class="user" color="background">
+        <ion-row color="background">
+          <ion-col col-3>
+            <ion-avatar item-start class="userAvatar">
+              <img [src]="u.imageLink" alt="جاري تحميل الصورة!">
+            </ion-avatar>
+          </ion-col>
+          <ion-col col-6>
+            <ion-row class="userRow">
+              <ion-col class="userCol" col-9>
+                <div>
+                  <h2>{{u.name}}</h2>
+                  <p> {{u.email}}</p>
+                  <ion-badge small item-end>{{u.points}}</ion-badge>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+          <ion-col col-3>
+            <p class="helpTool">
+              <ion-badge small item-start>
+                {{u.jokerNum}} جوكر
+              </ion-badge>
+            </p>
+            <p class="helpTool">
+              <ion-badge item-start>
+                {{u.hammarNum}} مطرقة
+              </ion-badge>
+            </p>
+            <p class="helpTool">
+              <ion-badge small item-start>
+                {{u.stormNum}} عاصفة
+              </ion-badge>
+            </p>
+
+
+          </ion-col>
+        </ion-row>
+
+
+
+
+
+      </ion-item>
+    </div>
+  </div>
+
+</ion-content>

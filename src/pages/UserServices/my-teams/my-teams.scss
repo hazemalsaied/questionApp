@@ -1,4 +1,26 @@
 page-my-teams {
+    .userCol{
+        color:white;
+        font-size: .8em;
+    }
+     .userRow {
+        margin: 0 !important;
+    }
+    .infoCol h2 {
+        color: white;
+        font-size: 1.4em;
+    }
+    .userCard {
+        margin: 1em !important;
+        padding:0;
+        border-bottom: 1px solid white;
+        width: 94%;
+    }
+
+    ion-item.team.item.item-block.item-md.item-md-background {
+        border-bottom: 2px solid;
+    }
+    
     .item-md [item-end] {
         margin: 9px 8px 9px 9px;
     }
@@ -12,7 +34,7 @@ page-my-teams {
         margin: 0 !important;
     }
     h2 {
-        border-bottom: 1px solid;
+        //border-bottom: 1px solid;
         font-size: 2em !important;
     }
     ion-label.label.label-md {

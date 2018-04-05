@@ -17,14 +17,14 @@
 
 <ion-content padding>
   <ion-list *ngIf="showCats">
-    <ion-card color="background" class="start">
+    <!-- <ion-card color="background" class="start">
       اختر التبويب الرئيسي، نقرتين، أوالتبويب الفرعي لنقرة واحدة لتبدأ اللعب
-    </ion-card>
-    <button ion-button block full class="startBtn" (click)="waitOrFindAPartner('all')">
+    </ion-card> -->
+    <!-- <button ion-button block full class="startBtn" (click)="waitOrFindAPartner('all')">
       كافة التبويبات
-    </button>
+    </button> -->
     <div *ngFor="let cat of mainCats">
-      <button ion-button block full class="startBtn" (click)="waitOrFindAPartner(cat.$key, true)">
+      <button ion-button block full class="startBtn" (click)="changeSubCatVis(cat.$key)">
         {{cat.displayNameArabic}}
       </button>
       <div *ngIf="cat.showMe">
@@ -37,87 +37,151 @@
     </div>
   </ion-list>
 
-  <ion-list *ngIf="showQuiz">
-    <progress-bar-3 [progress]="progressValue" [text]=""></progress-bar-3>
-    <ion-item class="questionBar" color="background">
-      <question-bar-3 [answerArr]="userAnswerArr"></question-bar-3>
-      <ion-badge item-end>{{userPoints}}</ion-badge>
-    </ion-item>
-
-    <ion-card>
-      <div class="imgContainer" *ngIf="currentQuestion.imageUrl !== ''">
-        <img [src]="imageBeg + currentQuestion.imageUrl + imageEnd">
-      </div>
-      <ion-card-content color="questioBck">
-        <ion-card class='content1' color="questioBck"> {{questionIdx + 1}} - {{currentQuestion.content}} </ion-card>
-      </ion-card-content>
-    </ion-card>
-
-    <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices' && currentQuestion.imageUrl === '' ">
-      <button ion-button block class='choice' [style.background]="choiceBkgs[c.text]" *ngFor="let c of currentChoices" (click)="next(c.text)">
-        {{c.text}}
-      </button>
-    </div>
-
-    <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices' && currentQuestion.imageUrl !== '' ">
-      <ion-row>
-        <ion-col *ngFor="let c of currentChoices.slice(0,2)">
-          <button ion-button block class="choice" [style.background]="choiceBkgs[c.text]" (click)="next(c.text)">
-            {{c.text}}
-          </button>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col *ngFor="let c of currentChoices.slice(2,4)">
-          <button ion-button block class="choice" [style.background]="choiceBkgs[c.text]" (click)="next(c.text)">
-            {{c.text}}
-          </button>
-        </ion-col>
-      </ion-row>
-    </div>
-
-    <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse' ">
-      <button ion-button class='choice' [style.background]="choiceBkgs['true']" block (click)="next('true')">
-        صح
-      </button>
-      <button ion-button class='choice' [style.background]="choiceBkgs['false']" block (click)="next('false')">
-        خطأ
-      </button>
-    </div>
-    <ion-item *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck' ">
-      <ion-input [(ngModel)]="userAnswer"></ion-input>
-    </ion-item>
+  <div *ngIf="showQuiz">
 
     <ion-row>
-      <ion-col>
-        <button ion-button (click)="useJoker()" color="google" full>
-          جوكر
-        </button>
+      <ion-col class="oddUserAnswers">
+        <div *ngFor="let item of oddUserAnswers">
+          <div *ngIf="item == true">
+            <div class="pos">
+              <ion-icon name="checkmark-circle" color="valid"></ion-icon>
+            </div>
+          </div>
+          <div *ngIf="item == false">
+            <div class="neg">
+              <ion-icon name="close-circle" color="danger"></ion-icon>
+            </div>
+          </div>
+        </div>
       </ion-col>
-      <ion-col>
-        <button ion-button (click)="useHammer()" color="facebook" full>
-          مطرقة
-        </button>
+      <ion-col class="questionCol">
+
+        <progress-bar-3 [progress]="progressValue" [text]=""></progress-bar-3>
+        <!-- <ion-row>
+          <ion-col>
+            <button ion-button (click)="useJoker()" color="google" full>
+              جوكر
+            </button>
+          </ion-col>
+          <ion-col>
+            <button ion-button (click)="useHammer()" color="facebook" full>
+              مطرقة
+            </button>
+          </ion-col>
+          <ion-col *ngIf="showStormBtn">
+            <button ion-button (click)="useStorm()" color="primary" full>
+              العاصفة
+            </button>
+          </ion-col>
+        </ion-row> -->
+        <ion-card>
+          <div class="imgContainer" *ngIf="currentQuestion.imageUrl !== ''">
+            <img [src]="imageBeg + currentQuestion.imageUrl + imageEnd">
+          </div>
+          <ion-card-content color="questioBck">
+            <ion-card class='content1' color="questioBck">{{currentQuestion.content}} </ion-card>
+          </ion-card-content>
+        </ion-card>
+          <div class='choices'>
+
+            <ion-row class='info'>
+              <ion-col color="background">
+                <button (click)="useJoker()" color="background">
+                  <img src="./assets/jocker64.png" color="background">
+                  <div>
+                    <ion-badge item-end>{{currentUser.jokerNum}}</ion-badge>
+                  </div>
+                </button>
+              </ion-col>
+              <ion-col color="background">
+                <button (click)="useHammar()" color="background">
+                  <img src="./assets/hammar64.png" color="background">
+                  <div>
+                    <ion-badge item-end>{{currentUser.hammarNum}}</ion-badge>
+                  </div>
+                </button>
+              </ion-col>
+              <ion-col *ngIf="showStormBtn" color="background">
+                <button (click)="useStorm()" color="background">
+                  <img src="./assets/storm64.png" color="background">
+                  <div>
+                    <ion-badge item-end>{{currentUser.stormNum}}</ion-badge>
+                  </div>
+                </button>
+              </ion-col>
+            </ion-row>
+            <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices' && currentQuestion.imageUrl === '' ">
+              <button ion-button block class='choice' [style.background]="choiceBkgs[c.text]" *ngFor="let c of currentChoices" (click)="nextBtn(c.text)">
+                {{c.text}}
+              </button>
+            </div>
+
+            <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices' && currentQuestion.imageUrl !== '' ">
+              <ion-row>
+                <ion-col *ngFor="let c of currentChoices.slice(0,2)">
+                  <button ion-button block class="choice" [style.background]="choiceBkgs[c.text]" (click)="nextBtn(c.text)">
+                    {{c.text}}
+                  </button>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col *ngFor="let c of currentChoices.slice(2,4)">
+                  <button ion-button block class="choice" [style.background]="choiceBkgs[c.text]" (click)="nextBtn(c.text)">
+                    {{c.text}}
+                  </button>
+                </ion-col>
+              </ion-row>
+            </div>
+
+            <div *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse' ">
+              <button ion-button class='choice' [style.background]="choiceBkgs['true']" block (click)="nextBtn('true')">
+                صح
+              </button>
+              <button ion-button class='choice' [style.background]="choiceBkgs['false']" block (click)="nextBtn('false')">
+                خطأ
+              </button>
+            </div>
+            <ion-item *ngIf="currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck' ">
+              <ion-input [(ngModel)]="userAnswer"></ion-input>
+            </ion-item>
+
+          </div>
       </ion-col>
-      <ion-col *ngIf="showStormBtn">
-        <button ion-button (click)="useStorm()" color="primary" full>
-          العاصفة
-        </button>
+
+
+      <ion-col class="evenUserAnswers">
+        <div *ngFor="let item of evenUserAnswers">
+          <div *ngIf="item === true">
+            <div class="pos">
+              <!-- <ion-icon name="checkmark-circle" color="valid"></ion-icon> -->
+            </div>
+          </div>
+          <div *ngIf="item === false">
+            <div class="neg">
+              <!-- <ion-icon name="close-circle" color="danger"></ion-icon> -->
+            </div>
+          </div>
+        </div>
       </ion-col>
     </ion-row>
-  </ion-list>
+  </div>
 
 
   <div *ngIf="showWaitingPanel">
-    <ion-item color="background">
+    <div class="text" color="background">
       جاري البحث عن متسابق!
-      <ion-spinner name="crescent"></ion-spinner>
-    </ion-item>
+    </div>
+    <ion-spinner name="crescent"></ion-spinner>
+    <img class='searching' [src]="searchingImg" alt="جاري تحميل الصورة!">
   </div>
 
   <div *ngIf="showQuizStart">
-    <user-card [user]="currentUser"></user-card>
-    <user-card user="partner"></user-card>
+    <user-card [user]="oddUser"></user-card>
+    <div class="text" color="background">
+        ضد:
+      </div>
+    
+    <user-card [user]="evenUser"></user-card>
   </div>
 
 </ion-content>

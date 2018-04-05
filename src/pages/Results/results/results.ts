@@ -7,6 +7,7 @@ import { Chart } from 'chart.js';
 import firebase from 'firebase';
 import { AngularFireDatabase, FirebaseObjectObservable } from 'angularfire2/database-deprecated';
 import { User } from '../../../shared/models/user';
+import { UserProvider } from '../../../providers/user/user';
 
 @IonicPage()
 @Component({
@@ -19,33 +20,23 @@ export class ResultsPage {
   doughnutChart: any;
 
   questionNum;
-  easyQuestionNum = Settings.easyQuestionNum;
-  intermediateQuestionNum = Settings.intermediateQuestionNum;
-  difficultQuestionNum = Settings.difficultQuestionNum;
+
   userPoints = 0;
-  user$: FirebaseObjectObservable<User[]>;
-  user: any = {
-    key$: '',
-    email: '',
-    password: '',
-    jokerNum: '',
-    hammerNum: 3,
-    pointNum: 150,
-    name: '',
-    role: '',
-    imageUrl: '',
-    sex: 'male'
-  };
+  user: User = Settings.emptyUser;
+
   sadFaceImageUrl = "./assets/sadface.png";
   happyFaceImageUrl = "./assets/happyface.png";
 
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
-    public afd: AngularFireDatabase) {
+    public afd: AngularFireDatabase,
+    public userP: UserProvider) {
   }
   hasWon = false;
   oldSpeedScore = 0;
+  userOldScore;
+  validQNum = 0;
 
   parametrizePlayResults() {
 
@@ -64,32 +55,37 @@ export class ResultsPage {
     if (this.navParams.get('userPoints')) {
       this.userPoints = this.navParams.get("userPoints");
     }
-    this.updateUserNumber();
+    this.updateUserNumber(this.navParams.get('cat'));
   }
-  userOldScore;
-  validQNum = 0;
 
 
-  updateUserNumber() {
 
+  updateUserNumber(catKey) {
     if (this.validQNum >= (this.questionNum / 2)) {
-      new Promise((resolve, reject) => {
-        if (firebase.auth().currentUser) {
-          let uid = firebase.auth().currentUser.uid;
-          this.user$ = this.afd.object('/userProfile/' + uid);
-          this.user$.subscribe(snapshot => {
-            this.user = snapshot;
-            this.userOldScore = this.user.pointNum;
-            this.user.pointNum += this.userPoints;//this.newPoints;
-            resolve();
-          });
-        }
-      }).then(_ => {
-        this.afd.list('/userProfile/').update(this.user.$key, this.user).
-          then(_ => { console.log('User edited'); });
+      this.userP.getUser().then(us => {
+        this.userOldScore = this.user.pointNum;
+        this.userP.updateScores(us, 'pointNum', this.userPoints,catKey,'play');
       });
     }
   }
+  // if (this.validQNum >= (this.questionNum / 2)) {
+  //   new Promise((resolve, reject) => {
+  //     if (firebase.auth().currentUser) {
+  //       let uid = firebase.auth().currentUser.uid;
+  //       this.afd.object('/userProfile/' + uid).subscribe(
+  //         snapshot => {
+  //           this.user = snapshot;
+  //           this.userOldScore = this.user.pointNum;
+  //           this.user.pointNum += this.userPoints;//this.newPoints;
+  //           resolve();
+  //         });
+  //     }
+  //   }).then(_ => {
+  //     this.afd.list('/userProfile/').update(this.user.$key, this.user).
+  //       then(_ => { console.log('User edited'); });
+  //   });
+  // }
+
 
   ionViewDidLoad() {
     if (this.navParams.get('type') == 'play') {
@@ -106,7 +102,6 @@ export class ResultsPage {
             backgroundColor: [
               '#38c51c',
               '#D01E29'
-
             ],
             hoverBackgroundColor: [],
             borderWidth: 2
@@ -120,7 +115,7 @@ export class ResultsPage {
     this.navCtrl.setRoot(PlayPage);
   }
   showQuestions() {
-    this.navCtrl.setRoot(QuizQuestionsPage,
+    this.navCtrl.push(QuizQuestionsPage,
       { questions: this.navParams.get('questions') });
   }
 

@@ -1,0 +1,18 @@
+page-all-user {
+    ion-item.user {
+        border-bottom: 1px solid;
+    }
+    .role{
+        border-bottom: 2px solid;
+    }
+    ion-icon.icon.icon-md.ion-md-bowtie {
+        display: block;
+        text-align: center;
+    }
+    .list-md .item-block .item-inner{
+        border-bottom: 0px solid; 
+    }
+    h2 {
+        font-size: 1.5em !important;
+    }
+}

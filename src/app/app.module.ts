@@ -1,4 +1,7 @@
-import { UserCardComponent } from './../components/user-card/user-card';
+import { TeamOrderPageModule } from './../pages/team-order/team-order.module';
+import { TeamOrderPage } from './../pages/team-order/team-order';
+
+// import { UserCardComponent } from './../components/user-card/user-card';
 import { MainPageModule } from './../pages/main/main.module';
 import { MainPage } from './../pages/main/main';
 import { QuizQuestionsPageModule } from './../pages/Results/quiz-questions/quiz-questions.module';
@@ -76,8 +79,12 @@ import { MyQuestionsPage } from '../pages/UserServices/my-questions/my-questions
 import { TeamProvider } from '../providers/team/team';
 import { ImageProvider } from '../providers/image/image';
 import { PayPal } from '@ionic-native/paypal';
-import { Facebook } from '@ionic-native/facebook'
-import { GooglePlus } from '@ionic-native/google-plus';
+import { AllUserPage } from '../pages/all-user/all-user';
+import { AllUserPageModule } from '../pages/all-user/all-user.module';
+import { UserOrderPage } from '../pages/user-order/user-order';
+import { UserOrderPageModule } from '../pages/user-order/user-order.module';
+// import { Facebook } from '@ionic-native/facebook'
+// import { GooglePlus } from '@ionic-native/google-plus';
 
 
 export const config = {
@@ -132,7 +139,10 @@ export const config = {
     ReportedQuestionsPageModule,
     MarketPageModule,
     QuizQuestionsPageModule,
-    MainPageModule
+    MainPageModule,
+    AllUserPageModule,
+    // UserOrderPageModule,
+    // TeamOrderPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -160,7 +170,10 @@ export const config = {
     ReportedQuestionsPage,
     MarketPage,
     QuizQuestionsPage,
-    MainPage
+    MainPage,
+    AllUserPage,
+    // UserOrderPage,
+    // TeamOrderPage
   ],
   providers: [
     StatusBar,
@@ -173,7 +186,8 @@ export const config = {
     UserProvider,
     AuxiliaryProvider,
     TeamProvider,
-    ImageProvider
+    ImageProvider,
+    PayPal
   ]
 }) 
 export class AppModule {}

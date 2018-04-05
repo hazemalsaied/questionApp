@@ -1,3 +1,4 @@
+import { Settings } from './../../../shared/settings/settings';
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Chart } from 'chart.js';
@@ -26,90 +27,54 @@ export class SpeedResultPage {
   oldSpeedScore = 0;
   oldInfiniteScore;
 
+  hasPonus = false;
+  trueAnswers = 0;
+  falseAnswers = 0;
+  points = 0;
+
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public afa: AngularFireAuth,
     public afd: AngularFireDatabase) {
 
-  }
-
-  parametrizeSpeedTestResults() {
-    let answerArr = this.navParams.get("answerArr");
-    for (var ii = 0; ii < answerArr.length; ii++) {
-      if (answerArr[ii] === "true") {
-        this.speedTrueQuestionNum += 1
-      }
-      else if (answerArr[ii] === "false") {
-        this.speedFalseQuestionNum += 1
-      }
+    if (this.navParams.get('userPoints') != null) {
+      this.points = this.navParams.get('userPoints');
     }
-    console.log(this.speedTrueQuestionNum);
-    this.mainpulateUser().then(_ => {
-      if (typeof this.oldSpeedScore === "undefined" || this.speedTrueQuestionNum > this.oldSpeedScore) {
-        this.mainpulateUser(true).then(user => {
-          this.hasWon = true;
-          console.log(user);
-          this.afd.list('/userProfile/').update(user.$key, user);
-        });
-      }
-    });
+
+    if (this.navParams.get('trueAnswers') != null && this.navParams.get('trueAnswers') > 4) {
+      this.trueAnswers = this.navParams.get('trueAnswers');
+      this.hasWon = true;
+    }
+    if (this.navParams.get('falseAnswers') != null) {
+      this.falseAnswers = this.navParams.get('falseAnswers');
+    }
+    if (this.navParams.get('userPoints') != null
+      && this.navParams.get('userPoints') > this.trueAnswers * Settings.questionPoint) {
+      this.hasPonus = true;
+    }
   }
 
-  easyColor: string = 'rgba(174, 251, 121, 1)';
-  easyMsg = 'سهلة لكن غير صحيحة';
-  easyValidColor: string = 'rgba(93, 215, 68, 1)';
-  easyValidMsg = 'سهلة وصحيحة ';
-
-  intermediateColor: string = 'rgba(255, 219, 151, 1)';
-  intermediateMsg = 'متوسطة غير صحيحة';
-  intermediateValidColor: string = 'rgba(254, 218, 74, 1)';
-  intermediateValidMsg = 'متوسطة وصحيحة ';
-
-  difficultColor: string = 'rgba(255, 122, 106, 1)';
-  difficultMsg = 'صعبة وغير صحيحة';
-  difficultValidColor: string = 'rgba(254, 27, 28, 1)';
-  difficultValidMsg = 'صعبة لكن صحيحة ';
-
-
-  mainpulateUser(setScore = false): Promise<User> {
-    return new Promise((resolve, reject) => {
-      if (firebase.auth().currentUser) {
-        let uid = firebase.auth().currentUser.uid;
-        this.afd.object('/userProfile/' + uid).subscribe(user => {
-          if (setScore) {
-            user.speedTestScore = this.speedTrueQuestionNum;
-          } else {
-            this.oldSpeedScore = user.speedTestScore;
-          }
-          resolve(user);
-        });
-      }
-    });
-  }
 
   ionViewDidLoad() {
-    if (this.navParams.get('type') == 'speed-test') {
-      this.parametrizeSpeedTestResults();
-    }
-    if (this.navParams.get('type') == 'speed-test') {
-      this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
-        type: 'doughnut',
-        data: {
-          labels: ["إجابات صحيحة", "إجابات خاطئة"],
-          datasets: [{
-            label: '',
-            data: [this.speedTrueQuestionNum, this.speedFalseQuestionNum],
-            backgroundColor: [
-              '#38c51c',
-              '#D01E29'
 
-            ],
-            hoverBackgroundColor: [],
-            borderWidth: 2
-          }]
-        }
-      });
-    }
+    this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels: ["إجابات صحيحة", "إجابات خاطئة"],
+        datasets: [{
+          label: '',
+          data: [this.trueAnswers, this.falseAnswers],
+          backgroundColor: [
+            '#38c51c',
+            '#D01E29'
+
+          ],
+          hoverBackgroundColor: [],
+          borderWidth: 2
+        }]
+      }
+    });
+
   }
 
   speedTest() {
@@ -117,7 +82,7 @@ export class SpeedResultPage {
   }
 
   showQuestions() {
-    this.navCtrl.setRoot(QuizQuestionsPage,
+    this.navCtrl.push(QuizQuestionsPage,
       { questions: this.navParams.get('questions') });
   }
 }

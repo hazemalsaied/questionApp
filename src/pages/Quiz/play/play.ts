@@ -1,7 +1,9 @@
+import { User } from './../../../shared/models/user';
+import { QuestionProvider } from './../../../providers/question/question';
 import { Settings } from './../../../shared/settings/settings';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 import { Component } from '@angular/core';
-import { NavController, IonicPage } from 'ionic-angular';
+import { NavController, IonicPage, ToastController } from 'ionic-angular';
 import { FirebaseListObservable } from 'angularfire2/database-deprecated';
 
 import { CategoryProvider } from './../../../providers/category/category';
@@ -9,6 +11,7 @@ import firebase from 'firebase';
 import { Question, Category } from '../../../shared/models/question';
 import { ResultsPage } from '../../Results/results/results';
 import { AngularFireDatabase } from 'angularfire2/database-deprecated';
+import { UserProvider } from '../../../providers/user/user';
 
 @IonicPage()
 
@@ -28,7 +31,6 @@ export class PlayPage {
 
   userPoints = 0;
   progressValue: number = 0;
-  loadingValue: number = 0;
 
   questions: Array<Question> = [];
   categories$: FirebaseListObservable<Category[]> = this.catProvider.getCats();;
@@ -39,7 +41,8 @@ export class PlayPage {
   quizType: string = 'all';
   selectedCat: string = '';
   selectedSubCat: string = '';
-
+  trueAnswers = 0;
+  falseAnswers = 0;
 
 
   userAnswer: string = ''
@@ -56,46 +59,29 @@ export class PlayPage {
   showStormBtn: boolean = false;
 
 
-  currentQuestion: Question = {
-    content: '',
-    questionType: 'text',
-    answer: '',
-    answerType: 'multipleChoices',
-    choices: [{ text: '' }, { text: '' }, { text: '' }],
-    imageUrl: '',
-    language: 'arabic',
-    difficulty: "2",
-    time: new Date().toISOString().slice(0, 16),
-    showMe: false,
-    user: '',
-    userName: null,
-    cat: '',
-    subCat: '',
-    DiffIdx: '',
-    DiffCatIdx: '',
-    DiffSubCatIdx: '',
-    userChoice: ''
-  };
+  currentQuestion: Question = Settings.emptyQuestion;
+  currentUser: User = Settings.emptyUser;
 
   constructor(public navCtrl: NavController,
     public afd: AngularFireDatabase,
     public catProvider: CategoryProvider,
-    public loadingCtrl: LoadingController) {
-    this.showAll = true;
-    this.getAllCats().then(_ => {
-      this.getMainCats();
-    });
-    this.getLastIdx();
-  }
-  easyLastIdx: number = 4500;
-  interLastIdx: number = 4500;
-  diffLastIdx: number = 4500;
+    public questionP: QuestionProvider,
+    public userP: UserProvider,
+    public loadingCtrl: LoadingController,
+    public toasCtrl: ToastController) {
 
-  getLastIdx() {
-    this.afd.object('statistics').subscribe(stats => {
-      this.easyLastIdx = stats["easyQuestNum"];
-      this.interLastIdx = stats["interQuestNum"];
-      this.diffLastIdx = stats["diffQuestNum"];
+    let loading = this.loadingCtrl.create({
+      content: 'جاري تهيئة الكويز'
+    });
+    loading.present();
+    this.userP.getUser().then(us => {
+      this.currentUser = us;
+      this.showAll = true;
+      this.catProvider.getAllCats().then(allCats => {
+        this.mainCats = this.catProvider.getMainCats(allCats);
+        loading.dismiss();
+
+      });
     });
   }
 
@@ -104,17 +90,17 @@ export class PlayPage {
       content: 'جاري تحميل الكويز'
     });
     loading.present();
-    this.getQuestions("1", Settings.easyQuestionNum).then(questions1 => {
+    this.questionP.getRandomQuestions("1", this.selectedSubCat, Settings.easyQuestionNum).then(questions1 => {
 
       questions1.forEach(q => {
         this.questions.push(q);
       });
-      this.getQuestions("2", Settings.intermediateQuestionNum).then(questions2 => {
+      this.questionP.getRandomQuestions("2", this.selectedSubCat, Settings.intermediateQuestionNum).then(questions2 => {
 
         questions2.forEach(q => {
           this.questions.push(q);
         });
-        this.getQuestions("3", Settings.difficultQuestionNum).then(questions3 => {
+        this.questionP.getRandomQuestions("3", this.selectedSubCat, Settings.difficultQuestionNum).then(questions3 => {
           questions3.forEach(q => {
             this.questions.push(q);
           });
@@ -130,94 +116,24 @@ export class PlayPage {
     });
   }
 
-  getQuestions(diff, quesNum): Promise<Array<any>> {
-    let questionArr = [];
-    return new Promise((resolve, reject) => {
-      let promises = [];
-      for (let i = 0; i < quesNum; i++) {
-        let p = new Promise((resolve, reject) => {
-          // this.getRef(diff, true).on("value", function (snapshot) {
-          //   snapshot.forEach(function (child) {
-          //     // child.val().$key = child.key;
-          //     questionArr.push(child.val());
-          //     return false;
-          //   });
-          //   resolve();
-          // });
-          this.getRef(diff, true).subscribe(questions => {
-            questions.forEach(function (child) {
-              questionArr.push(child);
-              // return false;
-            });
-            resolve();
-          });
-        });
-        promises.push(p);
-      }
-      Promise.all(promises).then(function (values) {
-        let arr = [];
-        for (var key in questionArr) {
-          if (questionArr.hasOwnProperty(key)) {
-            arr.push(questionArr[key]);
-          }
-        }
-        resolve(arr);
-      });
-    });
-  }
-
-  getRef(diff, oneQuestion = false) {
-    let randomNum;
-    if (diff == "1") {
-      randomNum = parseInt(String(Math.random() * (this.easyLastIdx - 1) + 1));
-    } else if (diff == "2") {
-      randomNum = parseInt(String(Math.random() * (this.interLastIdx - 1) + 1));
-    } else if (diff == "3") {
-      randomNum = parseInt(String(Math.random() * (this.diffLastIdx - 1) + 1));
-    }
-    let catInfo = '';
-    let field = 'DiffIdx';
-    let questionNum = Settings.easyQuestionNum;
-    if (this.selectedSubCat) {
-      field = 'DiffSubCatIdx';
-      catInfo = this.selectedSubCat;
-    }
-    else if (this.selectedCat) {
-      field = 'DiffCatIdx';
-      catInfo = this.selectedCat;
-    }
-    if (oneQuestion) {
-      questionNum = 1;
-    } else if (diff == "2") {
-      questionNum = Settings.intermediateQuestionNum;
-    }
-    else if (diff == "3") {
-      questionNum = Settings.difficultQuestionNum;
-    }
-    // return firebase.database().ref('questions/').
-    //   orderByChild(field).
-    //   startAt(diff + catInfo + randomNum.toString()).
-    //   limitToFirst(questionNum);
-
-    let q = {
-      orderByChild: field,
-      startAt: diff + catInfo + randomNum.toString(),
-      limitToFirst: questionNum
-    };
-
-    return this.afd.list('/questions/',
-      { query: q });
-  }
-
-
-
   progressInterval;
 
   loadQuestion() {
-    this.progressValue = 0;
-    this.progressInterval = setInterval(() => {
-      this.increaseProgress(this.progressInterval)
-    }, Settings.progressBarSep);
+    if (this.currentQuestion.imageUrl != '' &&
+      this.currentQuestion.imageUrl != null &&
+      typeof this.currentQuestion.imageUrl != 'undefined') {
+      setTimeout(() => {
+        this.progressValue = 0;
+        this.progressInterval = setInterval(() => {
+          this.increaseProgress(this.progressInterval)
+        }, Settings.progressBarSep);
+      }, Settings.waitingTime);
+    } else {
+      this.progressValue = 0;
+      this.progressInterval = setInterval(() => {
+        this.increaseProgress(this.progressInterval)
+      }, Settings.progressBarSep);
+    }
   }
 
   increaseProgress(interval) {
@@ -231,15 +147,24 @@ export class PlayPage {
     }
   }
 
-  terminateQuestionPanel() {
+  endQuiz() {
     this.progressValue = 100;
+
     if (this.questionIdx === Settings.questionNum - 1) {
-      setTimeout(() => {
+
+      if (this.trueAnswers >= 5) {
+        this.userPoints = this.userP.brokePreviousScore(this.currentUser, Settings.playType, this.userPoints);
+        this.userP.updateScores(this.currentUser, 'pointNum', this.userPoints, this.selectedSubCat, Settings.playType, this.trueAnswers);
+      }
+      setTimeout(() => { 
         this.navCtrl.setRoot(ResultsPage, {
-          answerArr: this.userAnswerArr,
+          trueAnswers: this.trueAnswers,
+          falseAnswers: this.trueAnswers,
           userPoints: this.userPoints,
+          answerArr: this.userAnswerArr,
           questions: this.questions,
-          type: 'play'
+          cat: this.selectedSubCat,
+          type: Settings.playType
         });
       }, Settings.waitingTime);
     }
@@ -259,7 +184,6 @@ export class PlayPage {
       this.validate();
     }
     setTimeout(() => {
-      this.loadingValue = 0;
       this.initializeQuestionPanel();
       this.getNextQuestion();
       this.loadQuestion();
@@ -271,10 +195,9 @@ export class PlayPage {
       this.questionIdx += 1;
       this.currentQuestion = this.questions[this.questionIdx];
       this.currentChoices = this.getChoices(this.currentQuestion);
+      this.showStormBtn = true;
       if (this.currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse') {
         this.showStormBtn = false;
-      } else {
-        this.showStormBtn = true;
       }
     }
   }
@@ -282,96 +205,101 @@ export class PlayPage {
   validate() {
     this.currentQuestion.userChoice = this.userAnswer;
     let userAnswerTmp = this.userAnswer;
-    let answerTmp = this.replaceNumbers(this.currentQuestion.answer);
-    answerTmp = this.replaceAleph(answerTmp);
+    let answerTmp = this.questionP.replaceNumbers(this.currentQuestion.answer);
+    answerTmp = this.questionP.replaceAleph(answerTmp);
     this.hasAnswered = true;
     if ((this.currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck') ||
       (this.currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices')) {
-      userAnswerTmp = this.replaceNumbers(this.userAnswer);
-      userAnswerTmp = this.replaceAleph(userAnswerTmp);
+      userAnswerTmp = this.questionP.replaceNumbers(this.userAnswer);
+      userAnswerTmp = this.questionP.replaceAleph(userAnswerTmp);
     }
 
     this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
     if (userAnswerTmp.toLocaleLowerCase() === answerTmp.toLocaleLowerCase()) {
       this.userPoints += Settings.questionPoint;
       this.userAnswerArr[this.questionIdx] = 'true';
+      this.trueAnswers += 1;
     } else {
       this.userAnswerArr[this.questionIdx] = 'false';
+      this.falseAnswers += 1;
       this.choiceBkgs[this.userAnswer] = Settings.dangerColor;
     }
-    this.terminateQuestionPanel();
+    this.endQuiz();
   }
 
   useJoker() {
-    if (this.progressValue < 100) {
+    if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.jokerNum > 0) {
       clearInterval(this.progressInterval);
-      this.userPoints = this.userPoints - Settings.jokerPoints;
-      this.userPoints += Settings.questionPoint;
-      this.userAnswerArr[this.questionIdx] = 'true';
-      this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
-      this.terminateQuestionPanel();
-      setTimeout(() => {
-        this.loadingValue = 0;
-        this.initializeQuestionPanel();
-        this.getNextQuestion();
-        this.loadQuestion();
-      }, Settings.waitingTime);
+      this.userP.updateScores(this.currentUser, 'joker').then(_ => {
+        this.userPoints += Settings.questionPoint;
+        this.trueAnswers += 1;
+        this.hasAnswered = true;
+        this.currentQuestion.userChoice = this.currentQuestion.answer;
+        this.userAnswerArr[this.questionIdx] = 'true';
+        this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
+        this.endQuiz();
+        setTimeout(() => {
+          this.initializeQuestionPanel();
+          this.getNextQuestion();
+          this.loadQuestion();
+        }, Settings.waitingTime);
+      });
+    } else {
+      this.questionP.showToast('لا يمكنك استخدام الجوكر!', this.toasCtrl);
     }
   }
 
   useHammer() {
-    if (this.progressValue < 100) {
+    if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.hammarNum > 0) {
       clearInterval(this.progressInterval);
       let loading = this.loadingCtrl.create({
         content: 'جاري تحميل سؤال بديل'
       });
       loading.present();
-      this.userPoints = this.userPoints - Settings.hammerPoints;
-      let ref = this.getRef(this.currentQuestion.difficulty, true);
-      let ques;
-      new Promise((resolve, reject) => {
-        ref.subscribe(questions => {
-          questions.forEach(function (child) {
-            ques = child;
-            return false;
+      this.userP.updateScores(this.currentUser, 'hammar').then(_ => {
+        let ref = this.questionP.getRef(this.currentQuestion.difficulty, this.selectedSubCat, 1)
+        let ques;
+        new Promise((resolve, reject) => {
+          ref.subscribe(questions => {
+            questions.forEach(function (child) {
+              ques = child;
+              resolve();
+            });
           });
+        }).then(_ => {
+          this.questions.push(ques);
+          this.questions.splice(this.questionIdx, 1);
+          this.questionIdx -= 1;
+          this.initializeQuestionPanel();
+          this.getNextQuestion();
+          this.loadQuestion();
+          loading.dismiss();
         });
-
-        // ref.on("value", function (snapshot) {
-        //   snapshot.forEach(function (child) {
-        //     ques = child.val();
-        //     return false;
-        //   });
-        //   resolve();
-        // });
-      }).then(_ => {
-        this.questions.push(ques);
-        this.questions.splice(this.questionIdx, 1);
-        this.questionIdx -= 1;
-        this.loadingValue = 0;
-        this.initializeQuestionPanel();
-        this.getNextQuestion();
-        this.loadQuestion();
-        loading.dismiss();
       });
+
+    } else {
+      this.questionP.showToast('لا يمكنك استخدام المطرقة!', this.toasCtrl);
     }
   }
 
   useStorm() {
-    if (this.progressValue < 100) {
-      this.userPoints = this.userPoints - Settings.stormPoints;
-      let deletedItems = 0;
-      while (true) {
-        let idx = Math.floor(Math.random() * 4);
-        if (idx < this.currentChoices.length && !this.currentChoices[idx].isTrue) {
-          this.currentChoices.splice(idx, 1);
-          deletedItems += 1;
+    if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.stormNum > 0) {
+      this.userP.updateScores(this.currentUser, 'storm').then(_ => {
+        let deletedItems = 0;
+        while (true) {
+          let idx = Math.floor(Math.random() * 4);
+          if (idx < this.currentChoices.length && !this.currentChoices[idx].isTrue) {
+            this.currentChoices.splice(idx, 1);
+            deletedItems += 1;
+          }
+          if (deletedItems === 2) {
+            this.initializeQuestionPanel();
+            break;
+          }
         }
-        if (deletedItems === 2) {
-          this.initializeQuestionPanel();
-          break;
-        }
-      }
+      });
+    } else {
+      this.questionP.showToast('لا يمكنك استخدام العاصفة!', this.toasCtrl);
     }
   }
 
@@ -424,90 +352,51 @@ export class PlayPage {
   mainCats: Array<Category> = [];
   subCats: Array<Category> = [];
 
-  getAllCats(): Promise<any> {
-    let loading = this.loadingCtrl.create({
-      content: 'جاري تحميل الكويز'
-    });
-    loading.present();
-    return new Promise((resolve, reject) => {
-      if (this.allCats.length === 0) {
-        this.categories$.subscribe(cats => {
-          cats.forEach(cat => {
-            cat.showMe = false;
-            this.allCats.push(cat);
-          });
-          loading.dismiss();
-          resolve();
-        });
-      } else {
-        loading.dismiss();
-        resolve();
-      }
-    });
-  }
-  getMainCats() {
-    for (let cat of this.allCats) {
-      if (!cat.hasParent) {
-        this.mainCats.push(cat);
-      }
-    }
-  }
+  // getAllCats(): Promise<any> {
+  //   let loading = this.loadingCtrl.create({
+  //     content: 'جاري تحميل الكويز'
+  //   });
+  //   loading.present();
+  //   return new Promise((resolve, reject) => {
+  //     if (this.allCats.length === 0) {
+  //       this.categories$.subscribe(cats => {
+  //         cats.forEach(cat => {
+  //           cat.showMe = false;
+  //           this.allCats.push(cat);
+  //         });
+  //         loading.dismiss();
+  //         resolve();
+  //       });
+  //     } else {
+  //       loading.dismiss();
+  //       resolve();
+  //     }
+  //   });
+  // }
 
-  getSubCats(parentKey) {
-    this.subCats = [];
-    for (let cat of this.allCats) {
-      if (cat.hasParent && cat.parentKey === parentKey) {
-        this.subCats.push(cat);
-      }
-    }
-  }
+
 
   selectSubCat(cat) {
     this.selectedCat = '';
     this.selectedSubCat = cat.$key;
     this.getCompetitionQuestions();
   }
+
   selectCat(cat) {
-    if (cat == null) {
-      this.selectedCat = '';
-      this.selectedSubCat = '';
-      this.getCompetitionQuestions();
-    } else if (this.selectedCat == cat.$key) {
-      this.getCompetitionQuestions();
-    } else {
-      this.selectedSubCat = '';
-      this.selectedCat = cat.$key;
-      for (let c of this.mainCats) {
-        c.showMe = false;
-      }
-      cat.showMe = true;
-      this.getSubCats(cat.$key);
+    // if (cat == null) {
+    //   this.selectedCat = '';
+    //   this.selectedSubCat = '';
+    //   this.getCompetitionQuestions();
+    // } else if (this.selectedCat == cat.$key) {
+    //   this.getCompetitionQuestions();
+    // } else {
+    this.selectedSubCat = '';
+    this.selectedCat = cat.$key;
+    for (let c of this.mainCats) {
+      c.showMe = false;
     }
-  }
-
-  replaceNumbers(s: string) {
-    s = String(s);
-    s = s.replace(/١/gi, '1');
-    s = s.replace(/٢/gi, '2');
-    s = s.replace(/٣/gi, '3');
-    s = s.replace(/٤/gi, '4');
-    s = s.replace(/٥/gi, '5');
-    s = s.replace(/٦/gi, '6');
-    s = s.replace(/٧/gi, '7');
-    s = s.replace(/٨/gi, '8');
-    s = s.replace(/٩/gi, '9');
-    s = s.replace(/٠/gi, '0');
-    return s;
-  }
-
-  replaceAleph(s: string) {
-    s = String(s);
-    s = s.replace(/أ/gi, 'ا');
-    s = s.replace(/إ/gi, 'ا');
-    s = s.replace(/آ/gi, 'ا');
-    s = s.replace(/ء/gi, 'ا');
-    s = s.replace(/ئ/gi, 'ا');
-    s = s.replace(/ى/gi, 'ا');
-    return s;
+    cat.showMe = true;
+    this.subCats = this.catProvider.getSubCats(cat.$key);
+    // }
   }
 }

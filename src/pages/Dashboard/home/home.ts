@@ -153,7 +153,7 @@ export class HomePage {
             if (question.content.indexOf(query) !== -1) {
               questionArr.push(child.val());
             }
-            if (questionArr.length == 50) {
+            if (questionArr.length == 100) {
               return true;
             }
             return false;

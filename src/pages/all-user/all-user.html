@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>الأعضاء</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-searchbar placeholder="ابحث .." (ionInput)="filterUsers($event)"></ion-searchbar>
+  <ion-list *ngFor="let u of users" color="background">
+      <ion-item class="user" color="background">
+        <ion-avatar item-start class="userAvatar">
+          <img [src]="u.imageLink" alt="جاري تحميل الصورة!">
+          <ion-icon *ngIf="u.role === 'admin'" name="bowtie"></ion-icon>
+        </ion-avatar>
+        <ion-row class="userRow">
+          <ion-col class="userCol" col-9>
+            <div>
+              <h2>{{u.name}}</h2>
+              <p> {{u.email}}</p>
+              <ion-badge small item-end>{{u.pointNum}}</ion-badge>
+            </div>
+          </ion-col>
+          <ion-col col-3>
+            <button ion-button small (click)="save(u)">حفظ</button>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+      <ion-item class='role' color="background">
+        <ion-label>الصلاحيات:</ion-label>
+        <ion-select [(ngModel)]="u.role" interface="action-sheet" cancelText="إلغاء">
+          <ion-option *ngFor="let c of roles" [value]="c.alias">{{c.arabic}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+</ion-content>

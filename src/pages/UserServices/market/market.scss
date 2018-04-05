@@ -1,6 +1,60 @@
 page-market {
+    ion-item .input-wrapper {
+        font-size: 1.2em;
+    }
+    .imgBtn{
+        background: #17577e; 
+    }
+    .imgContainer div {
+        text-align: center;
+    }
+    h1.title {
+        margin: 0;
+    }
+    ion-select {
+        max-width: 100%;
+    }
+    p.description {
+        margin: 0;
+        color: grey;
+    }
+    img.smallIcon {
+        width: 32px;
+        display: block;
+        margin: auto;
+    }
+    img.icon {
+        height: 48px;
+        margin: auto;
+        display: block;
+        margin-top: 1em;
+
+    }
+    ion-badge.badge.badge-md {
+        text-align: center;
+        margin: 1em auto .1em auto;
+        display: table;
+    }
+
     ion-label{
-        width: 90%;
-        max-width: none;
+        // width: 90%;
+        // max-width: none;
+    }
+    ion-row.option.row {
+        color: white;
+        border-bottom: 1px solid grey;
+    }
+    .disableAds{
+        color: white;
+        border-bottom: 3px solid !important;
+    }
+    .options {
+        margin-bottom: 2em;
+    }
+    .badge-md {
+        margin: 0.7em auto;
+    }
+    .select-md {
+        padding: .75em 0;
     }
 }

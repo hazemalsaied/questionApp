@@ -1,3 +1,4 @@
+import { Settings } from './../../../shared/settings/settings';
 import { AuxiliaryProvider } from './../../../providers/auxiliary/auxiliary';
 import { User } from './../../../shared/models/user';
 import { UserProvider } from './../../../providers/user/user';
@@ -45,12 +46,20 @@ export class StatisticsPage {
     this.hazemVisible = this.isHazem();
     let users$ = this.afd.list('/userProfile');
     users$.subscribe(userList => {
+      this.userStats = [];
       userList.forEach(user => {
-        this.userStats.push({ user: user.email, questionNumber: user.questionNumber, key: user.$key, visibe: false });
+        if (user.questionNumber && user.questionNumber > 0) {
+          let imageLink = Settings.userImage;
+          if (user.imageUrl) {
+            imageLink = Settings.profileImageBeg + user.imageUrl + Settings.profileImageEnd;
+          }
+          this.userStats.push({ user: user.name, imageLink: imageLink, questionNumber: user.questionNumber, key: user.$key, visibe: false });
+        }
       });
     });
 
     this.afd.list('categories/').subscribe(categoryList => {
+      this.mainCats = [];
       categoryList.forEach(category => {
         if (!category.hasParent) {
           category.showSubCats = false;

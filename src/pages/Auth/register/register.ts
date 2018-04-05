@@ -21,11 +21,11 @@ export class RegisterPage {
     this.registerForm = fb.group({
       email: ['', Validators.compose([Validators.required, Validators.pattern(EMAIL_REGEXP)])],
       // profileName: ['', Validators.compose([Validators.minLength(2), Validators.required])],
-      language: ['', Validators.compose([Validators.required]) ],
+      // language: ['', Validators.compose([Validators.required]) ],
       // phone: ['', Validators.compose([Validators.minLength(6), Validators.required])],
       password: ['', Validators.compose([Validators.minLength(6), Validators.required])],
     });
-    this.registerForm.controls['language'].setValue('arabic'); 
+    // this.registerForm.controls['language'].setValue('arabic'); 
   }
 
   registerUser() {
@@ -43,8 +43,9 @@ export class RegisterPage {
       this.authData.registerUser(
         // this.registerForm.value.profileName,
         this.registerForm.value.email,
-        this.registerForm.value.password,
-        this.registerForm.value.language)
+        this.registerForm.value.password
+        // ,this.registerForm.value.language
+      )
         // ,this.registerForm.value.phone
         .then(() => {
           loadingPopup.dismiss();

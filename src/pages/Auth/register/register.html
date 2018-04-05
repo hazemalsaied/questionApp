@@ -29,14 +29,13 @@
         <ion-input tappable formControlName="password" type="password" placeholder="كلمة المرور" [class.invalid]="!registerForm.controls.password.valid && registerForm.controls.password.dirty"></ion-input>
       </ion-item>
 
-      <ion-item>
+      <!-- <ion-item>
           <ion-label>اللغة:</ion-label>
-          <!-- [(ngModel)]=""   formControlName="language"  -->
           <ion-select  cancelText="إلغاء"  interface="action-sheet">
             <ion-option value="arabic" selected>عربي</ion-option>
             <ion-option value="english">English</ion-option>
           </ion-select>
-        </ion-item>
+        </ion-item> -->
       
 
       <ion-item class="error-message">
@@ -46,8 +45,8 @@
                 registerForm.controls.email.dirty">*الرجاء ادخال بريد الكتروني صالح</p>
         <!-- <p *ngIf="!registerForm.controls.phone.valid  &&
                 registerForm.controls.phone.dirty">*Please enter phone number.</p> -->
-        <p *ngIf="!registerForm.controls.language.valid  &&
-                registerForm.controls.language.dirty">*الرجاء اختيار اللغة !</p>
+        <!-- <p *ngIf="!registerForm.controls.language.valid  &&
+                registerForm.controls.language.dirty">*الرجاء اختيار اللغة !</p> -->
         <p *ngIf="!registerForm.controls.password.valid  &&
         registerForm.controls.password.dirty">*كلمة المرور يجب أن تحتوي على ستة محارف</p>
       </ion-item>

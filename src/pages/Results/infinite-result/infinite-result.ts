@@ -5,6 +5,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import firebase from 'firebase';
 import { AngularFireDatabase } from 'angularfire2/database-deprecated';
 import { InfiniteTestPage } from '../../Quiz/infinite-test/infinite-test';
+import { Settings } from '../../../shared/settings/settings';
 
 @IonicPage()
 @Component({
@@ -15,60 +16,36 @@ export class InfiniteResultPage {
 
   @ViewChild('doughnutCanvas') doughnutCanvas;
   doughnutChart: any;
+
   sadFaceImageUrl = "./assets/sadface.png";
   happyFaceImageUrl = "./assets/happyface.png";
-  infiniteTrueQuestionNum = 0;
-  oldInfiniteScore;
+
   hasWon = false;
+  hasPonus = false;
+  trueAnswers = 0;
+  points = 0
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public afd: AngularFireDatabase) {
-
-    if (this.navParams.get('type') == 'infinite-test') {
-      this.parametrizeInfiniteResults();
-    }
-  }
-
-  parametrizeInfiniteResults() {
-    let answerArr = this.navParams.get("answerArr");
-    for (var ii = 0; ii < answerArr.length; ii++) {
-      if (answerArr[ii] === "true") {
-        this.infiniteTrueQuestionNum += 1
+    if (this.navParams.get('trueAnswers') != null) {
+      this.trueAnswers = this.navParams.get('trueAnswers');
+      if (this.trueAnswers > 4) {
+        this.hasWon = true;
       }
     }
-    this.updateUser().then(_ => {
-      if (typeof this.oldInfiniteScore === "undefined" || this.infiniteTrueQuestionNum > this.oldInfiniteScore) {
-        this.updateUser(true).then(snapshot => {
-          this.hasWon = true;
-          this.afd.list('/userProfile/').update(snapshot.$key, snapshot);
-        });
-      }
-    });
-  }
-
-  updateUser(setScore = false): Promise<User> {
-    return new Promise((resolve, reject) => {
-      if (firebase.auth().currentUser) {
-        let uid = firebase.auth().currentUser.uid;
-        this.afd.object('/userProfile/' + uid).subscribe(user => {
-          if (setScore) {
-            user.infiniteScore = this.infiniteTrueQuestionNum;
-          } else {
-            this.oldInfiniteScore = user.infiniteScore;
-          }
-          resolve(user);
-        });
-      }
-    });
+    this.points = this.navParams.get('points');
+    if (this.trueAnswers * Settings.questionPoint != this.points) {
+      this.hasPonus = true;
+    }
   }
 
   infiniteTest() {
     this.navCtrl.setRoot(InfiniteTestPage);
   }
 
-  showQuestions(){
-    this.navCtrl.setRoot(QuizQuestionsPage,
+  showQuestions() {
+    this.navCtrl.push(QuizQuestionsPage,
       { questions: this.navParams.get('questions') });
   }
 

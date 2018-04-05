@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      ترتيب الفرق
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-card class="userCard" *ngFor="let t of teams">
+      <ion-item class="team" color="background">
+        <ion-avatar item-start class="userAvatar">
+          <img [src]="t.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+        <ion-row class="userRow">
+          <ion-col class="infoCol" col-9>
+            <h2>{{t.name}}</h2>
+            <p>{{t.slogan}}</p>
+            <ion-badge item-start>{{t.points}}</ion-badge>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+      <ion-item *ngFor="let u of t.realUsers" color="background">
+        <ion-item color="background">
+          <ion-avatar item-start class="userAvatar">
+            <img [src]="u.imageLink" alt="جاري تحميل الصورة!">
+          </ion-avatar>
+          <ion-row class="userRow">
+            <ion-col class="userCol" col-9>
+              <h2>{{u.name}}</h2>
+            </ion-col>
+            <ion-col col-3>
+              <ion-badge item-end>{{u.pointNum}}</ion-badge>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+      </ion-item>
+    </ion-card>
+
+  </ion-list>
+</ion-content>

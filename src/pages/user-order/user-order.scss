@@ -1,0 +1,34 @@
+page-user-order {
+    .helpTool ion-badge.badge.badge-md {
+        margin: .2em;
+    }
+    .item-inner {
+        border: 0px solid !important;
+    }
+    ion-item.user {
+        border-bottom: 1px solid;
+    }
+    .role{
+        border-bottom: 2px solid;
+    }
+    ion-icon.icon.icon-md.ion-md-bowtie {
+        display: block;
+        text-align: center;
+    }
+    .list-md .item-block .item-inner{
+        border-bottom: 0px solid; 
+    }
+    h2 {
+        font-size: 1.5em !important;
+    }
+    .start{
+        padding:1em;
+        font-size: 1.3em;
+    }
+    .startBtn{
+        height: 3em;
+        border-radius: 15px;
+        margin-bottom: 1em;
+        font-size: 1.3em;
+    }
+}

@@ -6,19 +6,33 @@ export interface Question {
     answerType: string;
     choices: Array<Choice>;
     imageUrl: string;
-    language: string;
+    language?: string;
     difficulty: string;
-    time: string;
+    time?: string;
     showMe?: boolean;
     user: string;
-    userName: string;
+    userName?: string;
     cat: string;
     subCat: string;
-    DiffIdx:  string;
-    DiffCatIdx:  string;
-    DiffSubCatIdx:  string;
-    userChoice?:string;
-    reported?:boolean;
+    DiffIdx?: string;
+    DiffCatIdx?: string;
+    DiffSubCatIdx?: string;
+    userChoice?: string;
+    reported?: boolean;
+
+
+    evenUserHammer?: boolean;
+    evenUserJoker?: boolean;
+    evenUserStorm?: boolean;
+
+    oddUserHammer?: boolean;
+    oddUserJoker?: boolean;
+    oddUserStorm?: boolean;
+
+
+    evenUserAnswer?: string;
+    oddUserAnswer?: string;
+
 }
 
 export interface Category {
@@ -30,7 +44,7 @@ export interface Category {
     parentKey: string,
     showMe: boolean,
     showSubCats: boolean,
-    questionNumber:number
+    questionNumber: number
 }
 
 export interface CategoryAlias {

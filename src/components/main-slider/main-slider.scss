@@ -1,0 +1,33 @@
+main-slider {
+    ion-slide, .swiper-wrapper, .swiper-container, ion-slides{
+        text-align: center !important;
+        direction: ltr;
+    }
+    h1 {
+        text-align: center;
+        color: white;
+        margin-bottom: 1.5em;
+
+    }
+    ion-slides{
+        height: 15em;
+        border-bottom: 1px solid white;
+    }
+    .swiper-wrapper {
+        height: 13em;
+    }
+
+    .imageDiv {
+        display: block;
+        overflow: hidden;
+        position: relative;
+        float: left;
+        width: 30%;
+    }
+
+    .imageDiv img {
+        width: 150px;
+        height: auto;
+        min-height: 6em;
+    }
+}

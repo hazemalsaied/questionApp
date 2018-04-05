@@ -10,27 +10,50 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-list  color="background">
-    <ion-avatar>
-      <img [src]="imageUrl" alt="جاري تحميل الصورة!">
-    </ion-avatar>
-    <button ion-button block outline color="primary" (click)="uploadImage()">
-      تحميل صورة!
-      <ion-icon name="camera" item-end></ion-icon>
-    </button>
+  <ion-list color="background">
+    <div *ngIf="showCreatePanel">
+      <ion-avatar>
+        <img [src]="imageUrl" alt="جاري تحميل الصورة!">
+      </ion-avatar>
+      <button ion-button block outline color="primary" (click)="uploadImage()">
+        تحميل صورة!
+        <ion-icon name="camera" item-end></ion-icon>
+      </button>
 
-    <ion-item class="english"  color="background">
-      <ion-label>اسم الفريق</ion-label>
-      <ion-input [(ngModel)]="team.name"></ion-input>
-    </ion-item>
+      <ion-item class="english" color="background">
+        <ion-label>اسم الفريق</ion-label>
+        <ion-input [(ngModel)]="team.name"></ion-input>
+      </ion-item>
 
-    <ion-item class="english"  color="background">
-      <ion-label>الشعار</ion-label>
-      <ion-input [(ngModel)]="team.slogan"></ion-input>
-    </ion-item>
+      <ion-item class="english" color="background">
+        <ion-label>الشعار</ion-label>
+        <ion-input [(ngModel)]="team.slogan"></ion-input>
+      </ion-item>
+      <button ion-button (click)="save()" full>
+        حفظ
+      </button>
+    </div>
 
-    <button ion-button (click)="save()" full>
-      حفظ
-    </button>
+    <<div *ngIf="showUserPanel">
+      <ion-searchbar placeholder="ابحث عن زملائلك" (ionInput)="filterUsers($event)">
+      </ion-searchbar>
+      <ion-card class="userCard" *ngFor="let u of users">
+        <ion-item color="background">
+          <ion-avatar item-start class="userAvatar">
+            <img [src]="u.imageLink" alt="جاري تحميل الصورة!">
+          </ion-avatar>
+          <ion-row class="userRow">
+            <ion-col class="infoCol" col-9>
+              <h2>{{u.name}}</h2>
+              <p>{{u.email}}</p>
+            </ion-col>
+            <ion-col col-3>
+              <button ion-button (click)="inviteUser(u)">دعوة</button>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+      </ion-card>
+      </div>
+
   </ion-list>
 </ion-content>

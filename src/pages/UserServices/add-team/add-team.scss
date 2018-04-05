@@ -9,6 +9,32 @@ page-add-team {
         height: 13em;
         
      }
+     .userRow {
+        margin: 0 !important;
+    }
+    .infoCol h2 {
+        color: white;
+        font-size: 1.4em;
+    }
+    .userCard {
+        margin: 0;
+        border-bottom: 1px solid white;
+        width: 100%;
+    }
+
+    ion-avatar.userAvatar {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 32%;
+        margin-left: 1em;
+    }
+
+    ion-avatar.userAvatar img {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100%;
+        height: auto;
+    }
      .col{
          color: white;
      }

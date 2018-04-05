@@ -1,10 +1,50 @@
 user-card {
-    ion-avatar img, ion-thumbnail img {
-        margin-bottom: 6 em;
-        margin-right: auto !important;
-        margin-left: auto !important;
-        border-radius: 50%;
-        border: 3px solid black;
+    .userCardContainer {
+        margin-bottom: 2em;
+    }
+    .user h1 {
+        color: white;
+        font-size: 2em;
+    }
+    .scores {
+        border-bottom: 2px solid white;
+    }
+    .scores div {
+        display: block;
+        margin: auto;
+        text-align: center;
+    }
+    .scores div {
+        margin-bottom: .5em !important;
+    }
+    // .scores img {
+    //     margin: auto;
+    //     display: block;
+    //     width: 40px;
+    // }
+    img{
+        border: none !important;
+    }
+    user-card .scores img {
+        /* margin: auto; */
+        display: block;
+        width: 40px !important;
+        max-width: 40px !important;
+        min-width: 40px !important;
+        margin: .5em auto !important;
+    }
+    .item-md ion-avatar img {
+        overflow: hidden;
+        width: 120px !important;
+        height: 120px !important;
+        min-width: 120px;
+    }
+    // ion-avatar img, ion-thumbnail img {
+    //     margin-bottom: 6 em;
+    //     margin-right: auto !important;
+    //     margin-left: auto !important;
+    //     border-radius: 50%;
+    //     border: 3px solid black;
         
-     }
+    //  }
 }

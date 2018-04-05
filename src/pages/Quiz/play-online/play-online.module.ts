@@ -5,8 +5,6 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { PlayOnlinePage } from './play-online';
 
-// import { ComponentsModule } from '../../components/components.module';
-
 @NgModule({
   declarations: [
     PlayOnlinePage,

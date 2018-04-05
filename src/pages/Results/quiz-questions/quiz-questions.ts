@@ -59,7 +59,7 @@ export class QuizQuestionsPage {
     })
   }
 
-  report(question: Question) {
+  report(question: Question ) {
     return new Promise((resolve, reject) => {
       if (question.reported != true) {
         question.reported = true;

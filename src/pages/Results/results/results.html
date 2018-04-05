@@ -38,12 +38,13 @@
     لقد أضفت {{newPoints}} نقطة إلى رصيدك! أحسنت!
   </ion-card>
 
-  <button ion-button (click)="play()" block>
-    إبدأ كويز آخر!
-  </button>
+  <div class='choices'>
+    <button ion-button (click)="play()" block>
+      إبدأ كويز آخر!
+    </button>
 
-  <button ion-button (click)="showQuestions()" block>
-    شاهد الأسئلة
-  </button>
-
+    <button ion-button (click)="showQuestions()" block>
+      شاهد الأسئلة
+    </button>
+  </div>
 </ion-content>

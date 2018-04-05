@@ -1,17 +1,19 @@
+import { UserProvider } from './../../../providers/user/user';
+import { QuestionProvider } from './../../../providers/question/question';
+import { Quiz } from './../../../shared/models/quiz';
 import { User } from './../../../shared/models/user';
 import { Settings } from './../../../shared/settings/settings';
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 import { Component } from '@angular/core';
-import { NavController, IonicPage } from 'ionic-angular';
+import { NavController, IonicPage, ToastController } from 'ionic-angular';
 import { FirebaseListObservable } from 'angularfire2/database-deprecated';
 
-import { QuestionProvider } from '../../../providers/question/question';
 import { CategoryProvider } from './../../../providers/category/category';
 import firebase from 'firebase';
 import { Question, Category } from '../../../shared/models/question';
 import { ResultsPage } from '../../Results/results/results';
 import { AngularFireDatabase } from 'angularfire2/database-deprecated';
-import { UserProvider } from '../../../providers/user/user';
+
 
 @IonicPage()
 @Component({
@@ -23,12 +25,13 @@ export class PlayOnlinePage {
 
   public imageBeg = Settings.imageBeg;
   public imageEnd = Settings.imageEnd;
-
+  searchingImg = "./assets/searching.png";
+  trueAnswers = 0;
+  falseAnswers = 0;
   questionIdx: number = -1;
 
   userPoints = 0;
   progressValue: number = 0;
-  loadingValue: number = 0;
 
   questions: Array<Question> = [];
   categories$: FirebaseListObservable<Category[]> = this.catProvider.getCats();;
@@ -40,22 +43,10 @@ export class PlayOnlinePage {
   selectedCat: string = '';
   selectedSubCat: string = '';
 
-  currentUser: User = {
-    email: '',
-    jokerNum: 0,
-    hammerNum: 0,
-    pointNum: 0,
-    name: '',
-    role: '',
-  };
-  partner: User = {
-    email: '',
-    jokerNum: 0,
-    hammerNum: 0,
-    pointNum: 0,
-    name: '',
-    role: '',
-  };
+  currentUser: User =Settings.emptyUser;
+  partner: User = Settings.emptyUser;
+
+  quiz;
 
   userAnswer: string = ''
   hasAnswered: boolean = false;
@@ -69,26 +60,7 @@ export class PlayOnlinePage {
   showStormBtn: boolean = false;
   showCats: boolean = true;
 
-  currentQuestion: Question = {
-    content: '',
-    questionType: 'text',
-    answer: '',
-    answerType: 'multipleChoices',
-    choices: [{ text: '' }, { text: '' }, { text: '' }],
-    imageUrl: '',
-    language: 'arabic',
-    difficulty: "2",
-    time: new Date().toISOString().slice(0, 16),
-    showMe: false,
-    user: '',
-    userName: null,
-    cat: '',
-    subCat: '',
-    DiffIdx: '',
-    DiffCatIdx: '',
-    DiffSubCatIdx: '',
-    userChoice: ''
-  };
+  currentQuestion: Question = Settings.emptyQuestion;
 
   showWaitingPanel = false;
   showQuizStart = false;
@@ -96,127 +68,81 @@ export class PlayOnlinePage {
   userImageUrl = "./assets/profile.png";
   partnerImageUrl = "./assets/profile.png";
 
+  isOddUser: boolean = false;
+  oddUserAnswers = [];
+  evenUserAnswers = [];
+
+  oddUser: User = Settings.emptyUser;
+  evenUser: User = Settings.emptyUser;
+
   constructor(public navCtrl: NavController,
     public afd: AngularFireDatabase,
+    public toasCtrl: ToastController,
     public catProvider: CategoryProvider,
     public loadingCtrl: LoadingController,
-    public usP: UserProvider) {
-    this.getAllCats().then(_ => {
-      this.getMainCats();
-    });
-    this.getLastIdx();
-    this.usP.getUser().then(us=>{
-      this.currentUser = us;
-    });
-  }
+    public questionP: QuestionProvider,
+    public userP: UserProvider) {
+      let loading = this.loadingCtrl.create({
+        content: 'جاري تهيئة الكويز'
+      }); 
+      loading.present();
+      this.userP.getUser().then(us => {
+        this.currentUser = us;
 
-
-  easyLastIdx: number = 4500;
-  interLastIdx: number = 4500;
-  diffLastIdx: number = 4500;
-
-  getLastIdx() {
-    this.afd.object('statistics').subscribe(stats => {
-      this.easyLastIdx = stats["easyQuestNum"];
-      this.interLastIdx = stats["interQuestNum"];
-      this.diffLastIdx = stats["diffQuestNum"];
-    });
-  }
-
-  getQuizQuestions(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let qs = [];
-      this.getQuestions("1", Settings.easyQuestionNum).then(questions1 => {
-
-        questions1.forEach(q => {
-          qs.push(q);
-        });
-        this.getQuestions("2", Settings.intermediateQuestionNum).then(questions2 => {
-
-          questions2.forEach(q => {
-            qs.push(q);
-          });
-          this.getQuestions("3", Settings.difficultQuestionNum).then(questions3 => {
-            questions3.forEach(q => {
-              qs.push(q);
-            });
-            resolve(qs);
-          });
+        this.catProvider.getAllCats().then(allCats => {
+          this.allCats = allCats;
+          this.mainCats = this.catProvider.getMainCats(allCats);
+          loading.dismiss();
+  
         });
       });
-    });
+
+    // this.getAllCats().then(_ => {
+    //   this.getMainCats();
+    // });
+    // this.userP.getUser().then(us => {
+    //   this.currentUser = us;
+    // });
+    //this.userP.removeQuiz(); 
   }
 
-  getQuestions(diff, quesNum): Promise<Array<any>> {
-    let questionArr = [];
-    return new Promise((resolve, reject) => {
-      let promises = [];
-      for (let i = 0; i < quesNum; i++) {
-        let p = new Promise((resolve, reject) => {
-          this.getRef(diff, true).subscribe(questions => {
-            questions.forEach(function (child) {
-              questionArr.push(child);
-              // return false;
-            });
-            resolve();
-          });
-        });
-        promises.push(p);
-      }
-      Promise.all(promises).then(function (values) {
-        resolve(questionArr);
-      });
-    });
-  }
-
-  getRef(diff, oneQuestion = false) {
-    let randomNum;
-    if (diff == "1") {
-      randomNum = parseInt(String(Math.random() * (this.easyLastIdx - 1) + 1));
-    } else if (diff == "2") {
-      randomNum = parseInt(String(Math.random() * (this.interLastIdx - 1) + 1));
-    } else if (diff == "3") {
-      randomNum = parseInt(String(Math.random() * (this.diffLastIdx - 1) + 1));
-    }
-    let catInfo = '';
-    let field = 'DiffIdx';
-    let questionNum = Settings.easyQuestionNum;
-    if (this.selectedSubCat) {
-      field = 'DiffSubCatIdx';
-      catInfo = this.selectedSubCat;
-    }
-    else if (this.selectedCat) {
-      field = 'DiffCatIdx';
-      catInfo = this.selectedCat;
-    }
-    if (oneQuestion) {
-      questionNum = 1;
-    } else if (diff == "2") {
-      questionNum = Settings.intermediateQuestionNum;
-    }
-    else if (diff == "3") {
-      questionNum = Settings.difficultQuestionNum;
-    }
-
-    let q = {
-      orderByChild: field,
-      startAt: diff + catInfo + randomNum.toString(),
-      limitToFirst: questionNum
-    };
-
-    return this.afd.list('/questions/',
-      { query: q });
-  }
-
-
+  // getQuizInfo() {
+  //   let catKey = '';
+  //   let isSubCat = false;
+  //   let isCat = false;
+  //   if (this.selectedSubCat != null && this.selectedSubCat != '') {
+  //     catKey = this.selectedSubCat;
+  //     isSubCat = true;
+  //   } else if (this.selectedCat != null && this.selectedCat != '') {
+  //     catKey = this.selectedCat;
+  //     isCat = true;
+  //   }
+  //   return {
+  //     catKey: catKey,
+  //     isSubCat: isSubCat,
+  //     isCat: isCat
+  //   }
+  // }
 
   progressInterval;
 
   loadQuestion() {
-    this.progressValue = 0;
-    this.progressInterval = setInterval(() => {
-      this.increaseProgress(this.progressInterval)
-    }, Settings.progressBarSep);
+    if (this.currentQuestion.imageUrl != '' &&
+      this.currentQuestion.imageUrl != null &&
+      typeof this.currentQuestion.imageUrl != 'undefined') {
+      setTimeout(() => {
+        this.progressValue = 0;
+        this.progressInterval = setInterval(() => {
+          this.increaseProgress(this.progressInterval)
+        }, Settings.progressBarSep);
+      }, Settings.imageQuestionInterval);
+    } else {
+      this.progressValue = 0;
+      this.progressInterval = setInterval(() => {
+        this.increaseProgress(this.progressInterval)
+      }, Settings.progressBarSep);
+    }
+
   }
 
   increaseProgress(interval) {
@@ -230,7 +156,7 @@ export class PlayOnlinePage {
     }
   }
 
-  terminateQuestionPanel() {
+  endQuiz() {
     this.progressValue = 100;
     if (this.questionIdx === Settings.questionNum - 1) {
       setTimeout(() => {
@@ -238,34 +164,30 @@ export class PlayOnlinePage {
           answerArr: this.userAnswerArr,
           userPoints: this.userPoints,
           questions: this.questions,
-          type: 'play'
+          type: 'play-online'
         });
       }, Settings.waitingTime);
     }
   }
 
-  initializeQuestionPanel() {
+  resetQuestion() {
     this.setDefaultColor();
     this.hasAnswered = false;
     this.progressValue = 0;
     this.userAnswer = '';
   }
 
-  next(choice) {
-    this.selectChoice(choice);
+  nextBtn(choice) {
     clearInterval(this.progressInterval);
-    if (this.progressValue < 100) {
-      this.validate();
-    }
+    this.selectChoiceBtn(choice);
+    this.validate();
     setTimeout(() => {
-      this.loadingValue = 0;
-      this.initializeQuestionPanel();
       this.getNextQuestion();
-      this.loadQuestion();
     }, Settings.waitingTime);
   }
 
   getNextQuestion() {
+    this.resetQuestion();
     if (this.questionIdx < (this.questions.length - 1)) {
       this.questionIdx += 1;
       this.currentQuestion = this.questions[this.questionIdx];
@@ -275,102 +197,234 @@ export class PlayOnlinePage {
       } else {
         this.showStormBtn = true;
       }
+      this.loadQuestion();
     }
   }
 
   validate() {
-    this.currentQuestion.userChoice = this.userAnswer;
-    let userAnswerTmp = this.userAnswer;
-    let answerTmp = this.replaceNumbers(this.currentQuestion.answer);
-    answerTmp = this.replaceAleph(answerTmp);
-    this.hasAnswered = true;
-    if ((this.currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck') ||
-      (this.currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices')) {
-      userAnswerTmp = this.replaceNumbers(this.userAnswer);
-      userAnswerTmp = this.replaceAleph(userAnswerTmp);
+    if (this.progressValue > 100) {
+      if (this.isOddUser) {
+        this.currentQuestion.oddUserAnswer = '';
+      } else {
+        this.currentQuestion.evenUserAnswer = '';
+      }
+      this.updateQuiz();
+      return;
     }
-
-    this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
-    if (userAnswerTmp.toLocaleLowerCase() === answerTmp.toLocaleLowerCase()) {
-      this.userPoints += Settings.questionPoint;
-      this.userAnswerArr[this.questionIdx] = 'true';
+    if (this.isOddUser) {
+      this.currentQuestion.oddUserAnswer = this.userAnswer;
     } else {
-      this.userAnswerArr[this.questionIdx] = 'false';
-      this.choiceBkgs[this.userAnswer] = Settings.dangerColor;
+      this.currentQuestion.evenUserAnswer = this.userAnswer;
     }
-    this.terminateQuestionPanel();
+    this.updateQuiz().then(_ => {
+      // this.quiz = qz;
+      this.updateUserAnswer();
+      this.currentQuestion.userChoice = this.userAnswer;
+      let userAnswerTmp = this.userAnswer;
+      let answerTmp = this.replaceNumbers(this.currentQuestion.answer);
+      answerTmp = this.replaceAleph(answerTmp);
+      this.hasAnswered = true;
+      if ((this.currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck') ||
+        (this.currentQuestion.answerType.toLocaleLowerCase() === 'multiplechoices')) {
+        userAnswerTmp = this.replaceNumbers(this.userAnswer);
+        userAnswerTmp = this.replaceAleph(userAnswerTmp);
+      }
+
+      this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
+      if (userAnswerTmp.toLocaleLowerCase() === answerTmp.toLocaleLowerCase()) {
+        this.userPoints += Settings.questionPoint;
+        this.userAnswerArr[this.questionIdx] = 'true';
+        this.trueAnswers +=1;
+      } else {
+        this.userAnswerArr[this.questionIdx] = 'false';
+        this.falseAnswers += 1;
+        this.choiceBkgs[this.userAnswer] = Settings.dangerColor;
+      }
+      // if(this.isOddUser){
+      //   this.quiz.oddUserAnwers = this.userAnswer;
+      // }else{
+      //   this.quiz.evenUserAnwers = this.userAnswer;
+      // }
+      this.endQuiz();
+    });
   }
 
+  getQuiz(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.afd.object('quiz/' + this.currentUser.quiz).subscribe(qz => {
+        this.quiz = qz;
+        resolve(qz);
+      });
+    });
+  }
+
+  updateQuiz(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.afd.list('quiz/' + this.currentUser.quiz).update(this.quiz.$key, this.quiz).then(qz => {
+        this.quiz = qz;
+        resolve();
+      })
+    });
+  }
+
+  updateUserAnswer() {
+    this.oddUserAnswers = [];
+    this.evenUserAnswers = [];
+    for (let i = 0; i < this.questions.length; i++) {
+      if (this.questions[i].oddUserAnswer != null) {
+        if (this.questions[i].oddUserAnswer == this.questions[i].answer) {
+          this.oddUserAnswers.push(true);
+        } else {
+          this.oddUserAnswers.push(false);
+        }
+      } else {
+        this.oddUserAnswers.push(null);
+      }
+      if (this.questions[i].evenUserAnswer != null) {
+        if (this.questions[i].evenUserAnswer == this.questions[i].answer) {
+          this.evenUserAnswers.push(true);
+        } else {
+          this.evenUserAnswers.push(false);
+        }
+      } else {
+        this.evenUserAnswers.push(null);
+      }
+    }
+  }
+
+  // useJoker() {
+  //   if (this.progressValue < 100) {
+  //     clearInterval(this.progressInterval);
+  //     this.userPoints = this.userPoints - Settings.jokerPoints;
+  //     this.userPoints += Settings.questionPoint;
+  //     this.userAnswerArr[this.questionIdx] = 'true';
+  //     this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
+  //     this.endQuiz();
+  //     setTimeout(() => {
+  //       this.getNextQuestion();
+  //     }, Settings.waitingTime);
+  //   }
+  // }
+
+  // useHammer() {
+  //   if (this.progressValue < 100) {
+  //     clearInterval(this.progressInterval);
+  //     let loading = this.loadingCtrl.create({
+  //       content: 'جاري تحميل سؤال بديل'
+  //     });
+  //     loading.present();
+  //     this.userPoints = this.userPoints - Settings.hammerPoints;
+  //     // let quizInfo = this.getQuizInfo();
+  //     let ques;
+  //     new Promise((resolve, reject) => {
+  //       this.questionP.getRef(this.currentQuestion.difficulty, this.selectedSubCat, 1).subscribe(questions => {
+  //         questions.forEach(function (child) {
+  //           ques = child;
+  //           return false;
+  //         });
+  //       });
+  //     }).then(_ => {
+  //       this.questions.push(ques);
+  //       this.questions.splice(this.questionIdx, 1);
+  //       this.questionIdx -= 1;
+
+  //       this.getNextQuestion();
+  //       loading.dismiss();
+  //     });
+  //   }
+  // }
+
+  // useStorm() {
+  //   if (this.progressValue < 100) {
+  //     this.userPoints = this.userPoints - Settings.stormPoints;
+  //     let deletedItems = 0;
+  //     while (true) {
+  //       let idx = Math.floor(Math.random() * 4);
+  //       if (idx < this.currentChoices.length && !this.currentChoices[idx].isTrue) {
+  //         this.currentChoices.splice(idx, 1);
+  //         deletedItems += 1;
+  //       }
+  //       if (deletedItems === 2) {
+  //         this.resetQuestion();
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }
+
   useJoker() {
-    if (this.progressValue < 100) {
+    if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.jokerNum > 0) {
       clearInterval(this.progressInterval);
-      this.userPoints = this.userPoints - Settings.jokerPoints;
-      this.userPoints += Settings.questionPoint;
-      this.userAnswerArr[this.questionIdx] = 'true';
-      this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
-      this.terminateQuestionPanel();
-      setTimeout(() => {
-        this.loadingValue = 0;
-        this.initializeQuestionPanel();
-        this.getNextQuestion();
-        this.loadQuestion();
-      }, Settings.waitingTime);
+      this.userP.updateScores(this.currentUser, 'joker').then(_ => {
+        this.userPoints += Settings.questionPoint;
+        this.trueAnswers += 1;
+        this.hasAnswered = true;
+        this.currentQuestion.userChoice = this.currentQuestion.answer;
+        this.userAnswerArr[this.questionIdx] = 'true';
+        this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
+        this.endQuiz();
+        setTimeout(() => {
+          this.resetQuestion();
+          this.getNextQuestion();
+          this.loadQuestion();
+        }, Settings.waitingTime);
+      });
+    } else {
+      this.questionP.showToast('لا يمكنك استخدام الجوكر!', this.toasCtrl);
     }
   }
 
   useHammer() {
-    if (this.progressValue < 100) {
+    if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.hammarNum > 0) {
       clearInterval(this.progressInterval);
       let loading = this.loadingCtrl.create({
         content: 'جاري تحميل سؤال بديل'
       });
       loading.present();
-      this.userPoints = this.userPoints - Settings.hammerPoints;
-      let ref = this.getRef(this.currentQuestion.difficulty, true);
-      let ques;
-      new Promise((resolve, reject) => {
-        ref.subscribe(questions => {
-          questions.forEach(function (child) {
-            ques = child;
-            return false;
+      this.userP.updateScores(this.currentUser, 'hammar').then(_ => {
+        let ref = this.questionP.getRef(this.currentQuestion.difficulty, this.selectedSubCat, 1)
+        let ques;
+        new Promise((resolve, reject) => {
+          ref.subscribe(questions => {
+            questions.forEach(function (child) {
+              ques = child;
+              resolve();
+            });
           });
+        }).then(_ => {
+          this.questions.push(ques);
+          this.questions.splice(this.questionIdx, 1);
+          this.questionIdx -= 1;
+          this.resetQuestion();
+          this.getNextQuestion();
+          this.loadQuestion();
+          loading.dismiss();
         });
-
-        // ref.on("value", function (snapshot) {
-        //   snapshot.forEach(function (child) {
-        //     ques = child.val();
-        //     return false;
-        //   });
-        //   resolve();
-        // });
-      }).then(_ => {
-        this.questions.push(ques);
-        this.questions.splice(this.questionIdx, 1);
-        this.questionIdx -= 1;
-        this.loadingValue = 0;
-        this.initializeQuestionPanel();
-        this.getNextQuestion();
-        this.loadQuestion();
-        loading.dismiss();
       });
+
+    } else {
+      this.questionP.showToast('لا يمكنك استخدام المطرقة!', this.toasCtrl);
     }
   }
 
   useStorm() {
-    if (this.progressValue < 100) {
-      this.userPoints = this.userPoints - Settings.stormPoints;
-      let deletedItems = 0;
-      while (true) {
-        let idx = Math.floor(Math.random() * 4);
-        if (idx < this.currentChoices.length && !this.currentChoices[idx].isTrue) {
-          this.currentChoices.splice(idx, 1);
-          deletedItems += 1;
+    if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.stormNum > 0) {
+      this.userP.updateScores(this.currentUser, 'storm').then(_ => {
+        let deletedItems = 0;
+        while (true) {
+          let idx = Math.floor(Math.random() * 4);
+          if (idx < this.currentChoices.length && !this.currentChoices[idx].isTrue) {
+            this.currentChoices.splice(idx, 1);
+            deletedItems += 1;
+          }
+          if (deletedItems === 2) {
+            this.resetQuestion();
+            break;
+          }
         }
-        if (deletedItems === 2) {
-          this.initializeQuestionPanel();
-          break;
-        }
-      }
+      });
+    } else {
+      this.questionP.showToast('لا يمكنك استخدام العاصفة!', this.toasCtrl);
     }
   }
 
@@ -382,7 +436,7 @@ export class PlayOnlinePage {
     return list;
   }
 
-  selectChoice(choice) {
+  selectChoiceBtn(choice) {
     this.userAnswer = choice;
     this.setDefaultColor();
     this.choiceBkgs[choice] = Settings.activeChoiceColor;
@@ -474,45 +528,61 @@ export class PlayOnlinePage {
     });
   }
 
-  waitOrFindAPartner(catKey, isCat = false) {
-    if (isCat && (this.selectedCatBfr == null || this.selectedCatBfr != catKey)) {
-      this.selectedCatBfr = catKey;
-      this.changeSubCatVis(catKey);
-    } else if ((isCat && this.selectedCatBfr == catKey) || !isCat) {
-      this.usP.getUser().then(user => {
-        this.currentUser = user;
-        console.log('user : ', user);
-        this.findPartner(catKey).then(partnerAlias => {
-          this.showCats = false;
-          if (partnerAlias == null) {
-            this.showWaitingPanel = true;
-            console.log('No partner found!')
-            this.addToWaitingList(catKey, user.$key).then(_ => {
-              this.waitListInterval = setInterval(() => {
-                this.checkForPartner(user, catKey);
-              }, Settings.waitingListStep);
-            });
-          } else {
-            this.showWaitingPanel = false;
-            this.runQuiz(partnerAlias, user, catKey);
-          }
-        });
+  waitOrFindAPartner(catKey) {
+    this.selectedSubCat = catKey;
+    this.userP.getUser().then(user => {
+      this.currentUser = user;
+      this.findPartner(catKey).then(partnerAlias => {
+        this.showCats = false;
+        if (partnerAlias == null) {
+          this.showWaitingPanel = true;
+          console.log('No partner found!')
+          this.addToWaitingList(catKey, user.$key).then(_ => {
+            this.waitListInterval = setInterval(() => {
+              this.checkForPartner(user, catKey);
+            }, Settings.waitingListStep);
+          });
+        } else {
+          this.isOddUser = true;
+          this.showWaitingPanel = false;
+          this.initQuiz(partnerAlias, user, catKey);
+        }
       });
-    }
+    });
   }
 
-  runQuiz(partnerAlias, user, catKey) {
+  findPartner(catKey): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.afd.list('waitingList/' + catKey, { query: { limitToLast: 1 } }).subscribe(partnerAliass => {
+        if (partnerAliass != null && partnerAliass.length > 0) {
+          //@TODO VERIFY IF IT IS YOU
+          resolve(partnerAliass[0]);
+        } else { resolve(null); }
+      });
+    });
+  }
+
+
+  initQuiz(partnerAlias, user, catKey) {
     this.createQuiz(user, partnerAlias).then(quiz => {
-      this.usP.addQuiz(user, quiz.key).then(_ => {
-        this.usP.getUserByKey(partnerAlias.user).then(partnerUser => {
+      this.userP.addQuiz(user, quiz.$key).then(_ => {
+        this.userP.getUserByKey(partnerAlias.user).then(partnerUser => {
+          this.partner = partnerUser;
           console.log('partnerUser', partnerUser);
-          this.usP.addQuiz(partnerUser, quiz.key).then(_ => {
+          this.userP.addQuiz(partnerUser, quiz.$key).then(_ => {
+            this.oddUser = this.currentUser;
+            this.evenUser = partnerUser;
             this.showWaitingPanel = false;
             this.showQuizStart = true;
+            this.quiz = quiz;
+            this.questions = quiz.questions;
             this.removePartner(catKey, partnerAlias.user).then(_ => {
               setTimeout(() => {
+                this.questions = quiz.questions;
                 this.showQuizStart = false;
-              }, 5000);
+                this.showQuiz = true;
+                this.getNextQuestion();
+              }, Settings.playOnlineUserCardWaitingInterval);
             });
           });
         });
@@ -521,40 +591,67 @@ export class PlayOnlinePage {
   }
 
   checkForPartner(user, catKey) {
-    this.findPartner(catKey).then(partnerAlias => {
-      if (partnerAlias != null) {
+    this.userP.getUser().then(us => {
+      if (us.quiz != null) {
         clearInterval(this.waitListInterval);
-        this.usP.getUserByKey(partnerAlias.user).then(us => {
-          this.partner = us;
-        }).then(_ => {
-          this.runQuiz(partnerAlias, user, catKey);
+        this.afd.object('quiz/' + us.quiz).subscribe(q => {
+          this.showWaitingPanel = false;
+          this.showQuizStart = true;
+          this.userP.getUserByKey(q.oddUser.key).then(us => {
+            this.oddUser = us;
+          });
+          this.evenUser = this.currentUser;
+          setTimeout(() => {
+            this.questions = q.questions;
+            this.showQuizStart = false;
+            this.showQuiz = true;
+            this.getNextQuestion();
+          }, 5000);
         });
-
       }
     });
   }
 
-  createQuiz(user, partnerAlias) {
+
+  runQuiz(q: Quiz) {
+    this.questions = q.questions;
+    this.currentQuestion = this.questions[this.questionIdx];
+    this.showQuizStart = false;
+  }
+
+  createQuiz(user, partnerAlias): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.getQuizQuestions().then(qs => {
+      // let quizInfo = this.getQuizInfo();
+      this.questionP.getPlayQuestions(this.selectedSubCat).then(qs => {
         for (let q of qs) {
-          q.usedHammer = 0;
-          q.usedJoker = 0;
-          q.usedStorm = 0;
+          q.evenUserHammer = false;
+          q.evenUserJoker = false;
+          q.evenUserStorm = false;
+          q.oddUserHammer = false;
+          q.oddUserJoker = false;
+          q.oddUserStorm = false;
+          q.evenUserAnswer = null;
+          q.oddUserAnswer = null;
         }
         this.afd.list('quiz/').push(
           {
-            user1: { key: user.$key, points: 0 },
-            user2: { key: partnerAlias.user, points: 0 },
+            evenUser: { key: user.$key, points: 0 },
+            oddUser: { key: partnerAlias.user, points: 0 },
             questions: qs,
+          }).then(quizRef => {
+            console.log(quizRef.key);
+            this.afd.object('quiz/' + quizRef.key).subscribe(quiz => {
+              this.quiz = quiz;
+              this.questions = this.quiz.questions;
+              console.log('quiz : ', quiz);
+              resolve(quiz);
+            });
 
-          }).then(quiz => {
-            console.log('quiz : ', quiz);
-            resolve(quiz);
           });
       });
     });
   }
+
 
   addToWaitingList(catKey, userKey): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -566,22 +663,19 @@ export class PlayOnlinePage {
 
   removePartner(catKey, partnerKey) {
     return new Promise((resolve, reject) => {
-      this.afd.object('waitingList/' + catKey + '/' + partnerKey).remove().then(_ => {
-        console.log('Partner was deleted!');
-        resolve();
+      this.afd.list('waitingList/' + catKey, { query: { orderByChild: 'user', equalTo: partnerKey, limitToFirst: 1 } }).subscribe(partnerList => {
+        if (partnerList != null && partnerList.length > 0) {
+          console.log(partnerList[0].$key);
+          this.afd.object('waitingList/' + catKey + '/' + partnerList[0].$key).remove().then(_ => {
+            console.log('Partner was deleted!');
+            resolve();
+          });
+        }
       });
     });
   }
 
-  findPartner(catKey): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.afd.list('waitingList/' + catKey, { query: { limitToLast: 1 } }).subscribe(partnerAliass => {
-        if (partnerAliass != null && partnerAliass.length > 0) {
-          resolve(partnerAliass[0]);
-        } else { resolve(null); }
-      });
-    });
-  }
+
 
   // selectSubCat(cat) {
   //   this.selectedCat = '';

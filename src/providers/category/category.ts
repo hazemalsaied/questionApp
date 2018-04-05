@@ -13,6 +13,51 @@ export class CategoryProvider {
     this.cats$ = this.afd.list('categories');
     this.getCategories();
   }
+  allCats = [];
+  mainCats = []
+  getAllCats(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.allCats.length > 0) {
+        resolve(this.allCats);
+      } else {
+        let allCats = [];
+        if (allCats.length === 0) {
+          this.afd.list('categories').subscribe(cats => {
+            cats.forEach(cat => {
+              cat.showMe = false;
+              allCats.push(cat);
+            });
+            this.allCats = allCats;
+            resolve(allCats);
+          });
+        }
+      }
+    });
+  }
+
+  getMainCats(cats) {
+    if (this.mainCats.length > 0) {
+      return this.mainCats;
+    }
+    let mainCats = [];
+    for (let cat of cats) {
+      if (!cat.hasParent) {
+        mainCats.push(cat);
+      }
+    }
+    this.mainCats = mainCats;
+    return mainCats;
+  }
+
+  getSubCats(parentKey): Array<Category> {
+    let subCats = [];
+    for (let cat of this.allCats) {
+      if (cat.hasParent && cat.parentKey === parentKey) {
+        subCats.push(cat);
+      }
+    }
+    return subCats
+  }
 
   getCatByKey(key: string): any {
     let catBub = null;
@@ -34,7 +79,7 @@ export class CategoryProvider {
         });
       });
       this.cats = categoryArr;
-      resolve();
+      resolve(categoryArr);
     });
   }
 
@@ -102,16 +147,55 @@ export class CategoryProvider {
     return false;
   }
 
-  getSubCats(key) {
-    let cats = [];
-    for (let c of this.cats) {
-      if (c.parentKey === key) {
-        cats.push(c);
-      }
-    }
-    return cats;
-  }
+  // getSubCats(key) {
+  //   let cats = [];
+  //   for (let c of this.cats) {
+  //     if (c.parentKey === key) {
+  //       cats.push(c);
+  //     }
+  //   }
+  //   return cats;
+  // }
+  changeQuestionNumberWithDiff(question, decrease = false) {
+    this.afd.object('/categories/' + question.cat).subscribe(cat => {
 
+      let field = 'questionNumber_' + question.difficulty;
+      if (cat[field] != null) {
+        if (decrease) {
+          cat[field] = cat[field] - 1;
+        } else {
+          cat[field] = cat[field] + 1;
+        }
+      } else {
+        if (decrease) {
+          cat[field] = 0;
+        } else {
+          cat[field] = 1;
+        }
+      }
+      this.afd.list('categories').update(cat.$key, cat);
+
+    });
+    this.afd.object('/categories/' + question.subCat).subscribe(cat => {
+      let field = 'questionNumber_' + question.difficulty;
+      if (cat[field] != null) {
+        if (decrease) {
+          cat[field] = cat[field] - 1;
+        } else {
+          cat[field] = cat[field] + 1;
+        }
+      } else {
+        if (decrease) {
+          cat[field] = 0;
+        } else {
+          cat[field] = 1;
+        }
+      }
+      this.afd.list('categories').update(cat.$key, cat);
+
+    });
+
+  }
   changeQuestionNumber(catKey, decrease = false) {
     let catBuff;
     new Promise((resolve, reject) => {

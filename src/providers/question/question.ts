@@ -1,9 +1,9 @@
+import { User } from './../../shared/models/user';
+import { Question } from './../../shared/models/question';
+import { Settings } from './../../shared/settings/settings';
 import { CategoryProvider } from './../category/category';
 import { Injectable } from '@angular/core';
-
-
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database-deprecated';
-import { Question } from '../../shared/models/question'
 
 @Injectable()
 export class QuestionProvider {
@@ -14,6 +14,181 @@ export class QuestionProvider {
     public catProv: CategoryProvider) {
 
     this.questions$ = this.afd.list('questions');
+    // this.getIndices();
+    // this.getLastIdx();
+    if (this.indices == null) {
+      this.getIndices().then(indices => {
+        this.indices = indices;
+      })
+    }
+  }
+  // easyLastIdx: number = 4500;
+  // interLastIdx: number = 4500;
+  // diffLastIdx: number = 4500;
+
+  indices = null;
+  getIndices() {
+    return new Promise((resolve, reject) => {
+      this.afd.object('indices').subscribe(indices => {
+        resolve(indices);
+      });
+    })
+
+  }
+
+  // getLastIdx() {
+  //   this.afd.object('statistics').subscribe(stats => {
+  //     this.easyLastIdx = stats["easyQuestNum"];
+  //     this.interLastIdx = stats["interQuestNum"];
+  //     this.diffLastIdx = stats["diffQuestNum"];
+  //   });
+  // }
+
+
+  getDiffLabel(diff) {
+    let label = '';
+    diff = Number(diff);
+    if (diff == 1) {
+      label = 'easy';
+    } else if (diff == 2) {
+      label = 'intermediate';
+    } else if (diff == 3) {
+      label = 'difficult';
+    }
+    return label;
+  }
+  getRef(diff, selectedSubCat, questionNum) {
+    let highestValue = this.indices[selectedSubCat][this.getDiffLabel(diff)];
+    let randomNum = parseInt(String(Math.random() * (highestValue - 1) + 1));
+
+    return this.afd.list('/questions',
+      {
+        query: {
+          orderByChild: 'DiffSubCatIdx',//'DiffSubCatIdx',//'answerType',
+          // equalTo: 'fillBlanck',
+          startAt: diff + selectedSubCat + randomNum.toString(),
+          limitToFirst: questionNum
+          // limitToLast: questionNum
+        }
+      });
+  }
+
+  getRandomQuestions(diff, selectedSubCat, quesNum): Promise<Array<any>> {
+    let questionArr = [];
+    return new Promise((resolve, reject) => {
+      let promises = [];
+      for (let i = 0; i < quesNum; i++) {
+        let p = new Promise((resolve, reject) => {
+          this.getRef(diff, selectedSubCat, 1).subscribe(questions => {
+            questions.forEach(function (child) {
+              questionArr.push(child);
+            });
+            resolve();
+          });
+        });
+        promises.push(p);
+      }
+      Promise.all(promises).then(function (values) {
+        let arr = [];
+        for (var key in questionArr) {
+          if (questionArr.hasOwnProperty(key)) {
+            arr.push(questionArr[key]);
+          }
+        }
+        resolve(arr);
+      });
+    });
+  }
+  getPlayQuestions(selectedSubCat): Promise<Array<Question>> {
+    return new Promise((resolve, reject) => {
+      let qs = [];
+      this.getQuestionPromises("1", Settings.easyQuestionNum, selectedSubCat).then(questions1 => {
+        questions1.forEach(q => {
+          qs.push(q);
+        });
+        this.getQuestionPromises("2", Settings.intermediateQuestionNum, selectedSubCat).then(questions2 => {
+          questions2.forEach(q => {
+            qs.push(q);
+          });
+          this.getQuestionPromises("3", Settings.difficultQuestionNum, selectedSubCat).then(questions3 => {
+            questions3.forEach(q => {
+              qs.push(q);
+            });
+            resolve(qs);
+          });
+        });
+      });
+    });
+  }
+
+  getQuestionPromises(diff, quesNum, selectedSubCat): Promise<Array<any>> {
+    let questionArr = [];
+    return new Promise((resolve, reject) => {
+      let promises = [];
+      for (let i = 0; i < quesNum; i++) {
+        let p = new Promise((resolve, reject) => {
+          this.getRef(diff, selectedSubCat, 1).subscribe(questions => {
+            questions.forEach(function (child) {
+              questionArr.push(child);
+            });
+            resolve();
+          });
+        });
+        promises.push(p);
+      }
+      Promise.all(promises).then(function (values) {
+        resolve(questionArr);
+      });
+    });
+  }
+
+
+  // getRef(diff, quizInfo, oneQuestion = false): Promise<FirebaseListObservable<Question[]>> {
+  //   return new Promise((resolve, reject) => {
+  //     this.getStats().then(stats => {
+  //       let randomNum;
+  //       if (diff == "1") {
+  //         randomNum = parseInt(String(Math.random() * (stats.easyQuestNum - 1) + 1));
+  //       } else if (diff == "2") {
+  //         randomNum = parseInt(String(Math.random() * (stats.interQuestNum - 1) + 1));
+  //       } else if (diff == "3") {
+  //         randomNum = parseInt(String(Math.random() * (stats.diffQuestNum - 1) + 1));
+  //       }
+  //       let catInfo = '';
+  //       let field = 'DiffIdx';
+  //       let questionNum = Settings.easyQuestionNum;
+  //       if (quizInfo.isSubCat) {
+  //         field = 'DiffSubCatIdx';
+  //       }
+  //       else if (quizInfo.isCat) {
+  //         field = 'DiffCatIdx';
+  //       }
+  //       catInfo = quizInfo.catKey;
+  //       if (oneQuestion) {
+  //         questionNum = 1;
+  //       } else if (diff == "2") {
+  //         questionNum = Settings.intermediateQuestionNum;
+  //       }
+  //       else if (diff == "3") {
+  //         questionNum = Settings.difficultQuestionNum;
+  //       }
+
+  //       let q = {
+  //         orderByChild: field,
+  //         startAt: diff + catInfo + randomNum.toString(),
+  //         limitToFirst: questionNum
+  //       };
+  //       resolve(this.afd.list('/questions/', { query: q }));
+  //     });
+  //   });
+  // }
+
+  getStats(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.afd.object('statistics').subscribe(stats => {
+        resolve(stats);
+      });
+    });
   }
 
   setCats4AllQuestions() {
@@ -270,4 +445,44 @@ export class QuestionProvider {
       console.log('Number of affected questions: ' + result);
     });
   }
+
+  replaceNumbers(s: string) {
+    s = String(s);
+    s = s.replace(/١/gi, '1');
+    s = s.replace(/٢/gi, '2');
+    s = s.replace(/٣/gi, '3');
+    s = s.replace(/٤/gi, '4');
+    s = s.replace(/٥/gi, '5');
+    s = s.replace(/٦/gi, '6');
+    s = s.replace(/٧/gi, '7');
+    s = s.replace(/٨/gi, '8');
+    s = s.replace(/٩/gi, '9');
+    s = s.replace(/٠/gi, '0');
+    return s;
+  }
+
+  replaceAleph(s: string) {
+    s = String(s);
+    s = s.replace(/أ/gi, 'ا');
+    s = s.replace(/إ/gi, 'ا');
+    s = s.replace(/آ/gi, 'ا');
+    s = s.replace(/ء/gi, 'ا');
+    s = s.replace(/ئ/gi, 'ا');
+    s = s.replace(/ى/gi, 'ا');
+    return s;
+  }
+
+  showToast(message: string, toastCtrl) {
+    const toast = toastCtrl.create({
+      message: message,
+      position: 'bottom',
+      duration: 2000
+    });
+    toast.onDidDismiss(this.dismissHandler);
+    toast.present();
+  }
+
+  private dismissHandler() {
+  }
+
 }

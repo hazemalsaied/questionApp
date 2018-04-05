@@ -4,69 +4,90 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>
-      الحساب
+      حسابي
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-list  color="background">
+  <ion-list color="background">
     <ion-avatar>
-      <img [src]="imageUrl" alt="جاري تحميل الصورة!">
+      <img [src]="user.imageLink" alt="جاري تحميل الصورة!">
     </ion-avatar>
     <button ion-button block outline color="primary" (click)="uploadImage()">
       تحميل صورة!
       <ion-icon name="camera" item-end></ion-icon>
     </button>
 
-    <ion-row  color="background">
+    <ion-row class='scores'>
+        <ion-col>
+          <img src="./assets/gold64.png" color="background">
+          <div>
+            <ion-badge item-end>{{user.goldenPoints}}</ion-badge>
+          </div>
+        </ion-col>
+        <ion-col>
+          <img src="./assets/jocker64.png" color="background">
+          <div>
+            <ion-badge item-end>{{user.jokerNum}}</ion-badge>
+          </div>
+        </ion-col>
+        <ion-col>
+          <img src="./assets/hammar64.png" color="background">
+          <div>
+            <ion-badge item-end>{{user.hammarNum}}</ion-badge>
+          </div>
+        </ion-col>
+        <ion-col>
+          <img src="./assets/storm64.png" color="background">
+          <div>
+            <ion-badge item-end>{{user.stormNum}}</ion-badge>
+          </div>
+        </ion-col>
+      </ion-row>
+    <!-- <ion-row color="background">
       <ion-col>
-        <ion-badge item-start>
+        <ion-badge small item-start>
           {{user.pointNum}}
         </ion-badge>
-        نقطة
+        <p>نقطة</p>
+      </ion-col>
+      <ion-col>
+        <ion-badge small item-start>{{user.goldenPoints}}</ion-badge>
+        <p>قطع ذهبية</p>
+      </ion-col>
+      <ion-col>
+        <ion-badge small item-start>
+          {{user.stormNum}}
+        </ion-badge>
+        <p>عاصفة</p>
       </ion-col>
 
       <ion-col>
-        <ion-badge item-start>
+        <ion-badge small item-start>
           {{user.jokerNum}}
         </ion-badge>
-        جوكر
+        <p>جوكر</p>
       </ion-col>
 
       <ion-col>
         <ion-badge item-start>
-          {{user.hammerNum}}
+          {{user.hammarNum}}
         </ion-badge>
-        مطرقة
+        <p>مطرقة</p>
       </ion-col>
-    </ion-row>
+    </ion-row> -->
 
-    <ion-item class="english"  color="background">
+    <ion-item class="english" color="background">
       <ion-label>الاسم:</ion-label>
       <ion-input [(ngModel)]="user.name"></ion-input>
     </ion-item>
 
-    <ion-item class="english"  color="background">
+    <ion-item class="english" color="background">
       <ion-label>البريد:</ion-label>
       <ion-input [(ngModel)]="user.email"></ion-input>
     </ion-item>
 
-
-    <ion-item color="background">
-      <ion-label>الجنس:</ion-label>
-      <ion-select [(ngModel)]="user.sex" interface="action-sheet" cancelText="إلغاء">
-        <ion-option value="male">ذكر</ion-option>
-        <ion-option value="female">أنثى</ion-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item  color="background">
-      <ion-label>اللغة:</ion-label>
-      <ion-select [(ngModel)]="user.language" interface="action-sheet" cancelText="إلغاء">
-        <ion-option value="arabic">العربية</ion-option>
-      </ion-select>
-    </ion-item>
 
     <ion-item color="background">
       <ion-label>البلد:</ion-label>
@@ -79,4 +100,6 @@
       حفظ
     </button>
   </ion-list>
+
+
 </ion-content>

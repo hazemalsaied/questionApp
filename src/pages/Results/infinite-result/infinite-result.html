@@ -15,25 +15,30 @@
     <ion-avatar>
       <img [src]="happyFaceImageUrl" alt="جاري تحميل الصورة!">
     </ion-avatar>
-    <ion-item color="background">
-      مبروك، لقد تجاوزت رقمك القياسي السابق، وأجبت على {{infiniteTrueQuestionNum}} سؤال!
-    </ion-item>
+    <ion-card *ngIf="!hasPonus" color="background">
+      مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية بالإجابة على {{trueAnswers}} سؤال، ولكنك لم تتمكن من تجاوز رقمك
+      القياسي السابق !
+    </ion-card>
+    <ion-card *ngIf="hasPonus" color="background">
+      مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية وتجاوزت رقمك القياسي السابق بالإجابة على {{trueAnswers}} سؤال!
+    </ion-card>
   </div>
+
 
   <div *ngIf="!hasWon">
     <ion-avatar>
       <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
     </ion-avatar>
     <ion-card color="background">
-      للأسف، لم يحالفك الحظ في تحطيم رقمك القياسي السابق
+      للأسف، لم يحالفك الحظ في الفوز بالكويز وتحطيم رقمك القياسي السابق!
     </ion-card>
   </div>
-
-  <button ion-button (click)="infiniteTest()" block>
-    عاود اللعب!
-  </button>
-  <button ion-button (click)="showQuestions()" block>
-    شاهد الأسئلة
-  </button>
-
+  <div class='choices'>
+    <button ion-button (click)="infiniteTest()" block>
+      عاود اللعب!
+    </button>
+    <button ion-button (click)="showQuestions()" block>
+      شاهد الأسئلة
+    </button>
+  </div>
 </ion-content>

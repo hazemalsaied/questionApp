@@ -1,3 +1,6 @@
+import { AngularFireDatabase } from 'angularfire2/database-deprecated';
+import { User } from 'firebase';
+import { AllUserPage } from './../pages/all-user/all-user';
 import { MainPage } from './../pages/main/main';
 import { MyTeamsPage } from './../pages/UserServices/my-teams/my-teams';
 import { Component, ViewChild } from '@angular/core';
@@ -15,13 +18,13 @@ import { PlayOnlinePage } from '../pages/Quiz/play-online/play-online';
 import { InfiniteTestPage } from './../pages/Quiz/infinite-test/infinite-test';
 import { SpeedTestPage } from './../pages/Quiz/speed-test/speed-test';
 
-import { Settings } from './../shared/settings/settings';
+// import { Settings } from './../shared/settings/settings';
 import { LoginPage } from './../pages/Auth/login/login';
 
 import { AuthData } from './../providers/auth-data/auth-data';
 
 
-import { ResultsPage } from '../pages/Results/results/results';
+// import { ResultsPage } from '../pages/Results/results/results';
 
 import { HomePage } from './../pages/Dashboard/home/home';
 import { AddQuestionPage } from '../pages/Dashboard/add-question/add-question';
@@ -45,7 +48,16 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   rootPage: any;
-
+  user = {
+    email: '',
+    jokerNum: 3,
+    hammarNum: 3,
+    pointNum: 150,
+    name: '',
+    role: 'user',
+    imageUrl: '',
+    sex: 'male'
+  };
   pages: Array<{ title: string, component: any }>;
   servicePages: Array<{ title: string, component: any }>;
   public backgroundImage: any = "./assets/bg5.jpg";
@@ -54,6 +66,7 @@ export class MyApp {
     statusBar: StatusBar,
     splashScreen: SplashScreen,
     public authData: AuthData,
+    public afd: AngularFireDatabase,
     public afAuth: AngularFireAuth) {
     platform.ready().then(() => {
       statusBar.styleDefault();
@@ -62,6 +75,9 @@ export class MyApp {
       this.afAuth.authState.subscribe((user) => {
         if (user && user.email) {
           this.rootPage = MainPage;// Settings.rootPage;
+          this.afd.object('userProfile/' + user.uid).subscribe(u => {
+            this.user = u;
+          })
         } else {
           this.rootPage = LoginPage;
         }
@@ -70,17 +86,18 @@ export class MyApp {
     });
     this.pages = [
       { title: 'الأسئلة', component: HomePage },
-      { title: 'تبويبات', component: CategoriesPage },
       { title: 'تبليغات', component: ReportedQuestionsPage },
+      { title: 'إحصائيات', component: StatisticsPage },
       { title: 'إضافة سؤال', component: AddQuestionPage },
-      { title: 'إضافة تبويب', component: AddCategoryPage },
-      { title: 'إحصائيات', component: StatisticsPage }
+      { title: 'إدارة الأعضاء', component: AllUserPage },
+      { title: 'تبويبات', component: CategoriesPage },
+      { title: 'إضافة تبويب', component: AddCategoryPage }
     ];
 
     this.servicePages = [
       { title: 'المتجر', component: MarketPage },
       { title: 'أسئلتي', component: MyQuestionsPage },
-      { title: 'تشكيل فريق', component: AddTeamPage },
+      { title: 'إضافة فريق', component: AddTeamPage },
       { title: 'فرقي', component: MyTeamsPage }
     ];
   }
@@ -102,6 +119,9 @@ export class MyApp {
   }
   openInfiniteTestPage() {
     this.nav.setRoot(InfiniteTestPage);
+  }
+  openMainPage() {
+    this.nav.setRoot(MainPage);
   }
 
   logout() {

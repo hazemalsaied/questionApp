@@ -11,13 +11,13 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let q of questions" color="background">
+    <div class='question' *ngFor="let q of questions" color="background">
       <!-- The Question -->
       <ion-card color="primary" outline (click)="showPanel(q)">
         {{q.content}}
       </ion-card>
 
-      <div *ngIf="q.showMe">
+      <div  *ngIf="q.showMe">
         <div *ngIf="q.imageUrl">
           <img [src]="imageBeg + q.imageUrl + imageEnd" style="object-fit: cover">
         </div>
@@ -30,6 +30,6 @@
           <ion-icon item-start color="valid" name="remove-circle"></ion-icon>
         </button>
       </div>
-    </ion-item>
+    </div>
   </ion-list>
 </ion-content>

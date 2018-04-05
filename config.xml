@@ -1,9 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.halsaied.quizapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Quez bank</name>
+    <name>كويزي</name>
     <description>تطبيق الاختبارات الأول في العالم العربي!</description>
     <author email="hazemalsaied@gmail.com" href="http://halsaied.me/">Hazem Al Saied</author>
     <content src="index.html" />
+    <allow-navigation href="*" />
+    <content original-src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -20,6 +22,7 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <platform name="android">
+        <!-- <preference name="loadUrlTimeoutValue" value="700000" /> -->
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
@@ -86,11 +89,4 @@
     <plugin name="cordova-plugin-camera" spec="~2.1.1" />
     <engine name="ios" spec="~4.0.1" />
     <engine name="android" spec="~5.1.1" />
-    <plugin name="cordova-plugin-facebook4" spec="~1.9.1">
-        <variable name="APP_ID" value="2027377924167773" />
-        <variable name="APP_NAME" value="quizApp" />
-    </plugin>
-    <plugin name="cordova-plugin-googleplus" spec="~5.2.1">
-        <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.235551466519-6ra9kjh1k1rgvdg8sius8nct0ke78ok9" />
-    </plugin>
 </widget>

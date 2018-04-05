@@ -1,4 +1,87 @@
 page-play-online {
+    .searching img{
+        border: none;
+    }
+    .against ion-label.label.label-md {
+        text-align: center;
+    }
+    img.searching {
+        border: none;
+    }
+    user-card .scores img {
+        /* margin: auto; */
+        display: block;
+        width: 40px !important;
+        max-width: 40px !important;
+        min-width: 40px !important;
+        margin: .5em auto !important;
+    }
+    ion-spinner {
+        position: relative;
+        display: block;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        margin: 3em auto;
+    }
+    ion-col.questionCol.col {
+        position: inherit;
+    }
+    .info ion-col img{
+        border:none;
+    }
+    .info ion-col button {
+        margin: auto !important;
+        display: block;
+        background: #17577e;
+    }
+    .info ion-col div {
+        text-align: center;
+        margin: 0.4em;
+    }
+    .choices {
+        position: absolute;
+        left: 4%;
+        right: 4%;
+        bottom: 1em;
+        width: 92%;
+    }
+    .text {
+        color: white;
+        font-size: 1.2em;
+        /* margin: auto; */
+        display: block;
+        text-align: center;
+        padding: 1em;
+    }
+    .spinner-md-crescent circle {
+        stroke: white;
+    }
+    .spinner-crescent svg {
+        margin: auto;
+        position: relative;
+    }
+
+    ion-col.oddUserAnswers.col, ion-col.evenUserAnswers.col {
+        width: 5px !important;
+        display: block;
+        max-width: 5px;
+    }
+
+    ion-col.oddUserAnswers.pos, ion-col.evenUserAnswers.pos {
+        background: green;
+    }
+    .pos ion-icon {
+        height: 2em;
+        vertical-align: middle;
+        margin: auto;
+        background: green;
+        border-bottom: 1px solid white;
+    }
+    ion-col.evenUserAnswers.neg, ion-col.evenUserAnswers.neg{
+        background: red;
+    }
+
     ion-spinner * {
         width: 28px;
         height: 28px;
@@ -67,20 +150,23 @@ page-play-online {
         border-left: 1px solid gray;
         border-right: 1px solid gray;
         padding:0.5em;
+        background: #17577e !important;
     }
     img {
         display: block;
         margin-left: auto;
         margin-right: auto;
-        max-height: 14em;
+        max-height: 12em;
         min-width: 75%;
         max-width: 80%;
         width: auto;
         padding: 0.5em auto;
         border: 1px solid white;
+        border-radius: 10px;
+
     }
     ion-card.content1.card.card-md.card-md-primary {
-        font-size: 1.2em;
+        font-size: 1.8em;
     }
 
     .button-md {

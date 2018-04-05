@@ -11,18 +11,69 @@
 
 <ion-content>
   <ion-list>
-
-      <ion-item color="primary" *ngFor="let t of teams">
-        <ion-avatar item-start>
-          <img [src]="t.imageUrl">
+    <div *ngIf="user.invitations != null && user.invitations.length > 0">
+      <ion-item class="divider" color="background">
+        <ion-label> دعوات</ion-label>
+      </ion-item>
+      <ion-card class="userCard" *ngFor="let v of invitations">
+        <ion-item color="background">
+          <ion-avatar item-start class="userAvatar">
+            <img [src]="v.imageLink" alt="جاري تحميل الصورة!">
+          </ion-avatar>
+          <ion-row class="userRow">
+            <ion-col class="infoCol" col-9>
+              <h2>{{v.name}}</h2>
+              <p>{{v.slogan}}</p>
+            </ion-col>
+            <ion-col col-3>
+              <button ion-button (click)="acceptInvitation(v)">قبول الدعوة</button>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+      </ion-card>
+    </div>
+    <div *ngIf="user.teams != null && user.teams.length > 0">
+      <ion-item class="divider" color="background">
+        <ion-label> فرقي</ion-label>
+      </ion-item>
+    <ion-card class="userCard" *ngFor="let t of teams">
+      <ion-item class="team" color="background">
+        <ion-avatar item-start class="userAvatar">
+          <img [src]="t.imageUrl" alt="جاري تحميل الصورة!">
         </ion-avatar>
-        <ion-item class="innerIonItem" color="primary">
-          <div>
+        <ion-row class="userRow">
+          <ion-col class="infoCol" col-9>
             <h2>{{t.name}}</h2>
             <p>{{t.slogan}}</p>
-          </div>
-          <ion-badge item-end color="background">{{t.points}}</ion-badge>
+            <ion-badge item-end>{{t.points}}</ion-badge>
+            <!-- <p>{{t.points}} نقطة</p> -->
+          </ion-col>
+          <ion-col col-3>
+            <ion-row>
+              <button small ion-button (click)="goToTeamPage(t)">تحرير</button>
+            </ion-row>
+            <ion-row>
+              <button small ion-button (click)=" removeTeam(t)">حذف</button>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+      <ion-item *ngFor="let u of t.realUsers" color="background">
+        <ion-item color="background">
+          <ion-avatar item-start class="userAvatar">
+            <img [src]="u.imageLink" alt="جاري تحميل الصورة!">
+          </ion-avatar>
+          <ion-row class="userRow">
+            <ion-col class="userCol" col-9>
+              <h2>{{u.name}}</h2>
+            </ion-col>
+            <ion-col col-3>
+                <ion-badge item-end>{{u.pointNum}}</ion-badge>
+            </ion-col>
+          </ion-row>
         </ion-item>
       </ion-item>
+    </ion-card>
+    </div>
   </ion-list>
 </ion-content>

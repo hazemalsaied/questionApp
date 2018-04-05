@@ -1,4 +1,11 @@
 page-speed-result {
+    .choices {
+        position: absolute;
+        left: 4%;
+        right: 4%;
+        bottom: 1em;
+        width: 92%;
+    }
     .button-block {
         width: 96%;
         margin-top: 2em;
@@ -7,6 +14,7 @@ page-speed-result {
     .card-md-background {
         box-shadow: none !important;
     }
+
 
     ion-avatar img, ion-thumbnail img {
         margin-bottom: 6 em;

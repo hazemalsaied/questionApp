@@ -1,39 +1,39 @@
 <ion-menu [content]="content" side="right">
   <ion-header color="primary">
     <ion-toolbar color="primary">
-      <ion-title>بنك الاختبارات</ion-title>
+      <ion-title>كويزي</ion-title>
     </ion-toolbar>
   </ion-header>
-  <!-- [ngStyle]="{'background-image': 'url(' + backgroundImage +')'}" -->
   <ion-content>
     <ion-list>
       <ion-item-group>
+        <button menuClose ion-item (click)="openMainPage()" color="background">
+          الرئيسية
+        </button>
+        <div *ngIf="user.role === 'admin'">
+          <ion-item-divider color="primary">لوحة التحكم</ion-item-divider>
+          <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)" color="background">
+            {{p.title}}
+          </button>
+        </div>
         <ion-item-divider color="primary">كويزات</ion-item-divider>
         <button menuClose ion-item (click)="openPlayOnlinePage()" color="background">
-          تحدي أونلاين
+          كويز أونلاين
         </button>
         <button menuClose ion-item (click)="openPlayPage()" color="background">
           اختبر معلوماتك!
         </button>
         <button menuClose ion-item (click)="openSpeedTestPage()" color="background">
-          تحدي السرعة!
+          كويز السرعة!
         </button>
         <button menuClose ion-item (click)="openInfiniteTestPage()" color="background">
-          تحدي الإجابات الصحيحة!
+          كويز السلسلة!
         </button>
 
         <ion-item-divider color="primary">خدمات</ion-item-divider>
         <button menuClose ion-item *ngFor="let p of servicePages" (click)="openPage(p)" color="background">
           {{p.title}}
         </button>
-
-
-        <ion-item-divider color="primary">لوحة التحكم</ion-item-divider>
-        <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)" color="background">
-          {{p.title}}
-        </button>
-       
-        <ion-item-divider color="primary">الحساب</ion-item-divider>
         <button menuClose ion-item (click)="openProfilePage()" color="background">
           الحساب
         </button>

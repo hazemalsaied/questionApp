@@ -1,3 +1,4 @@
+import { Settings } from './../../shared/settings/settings';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
@@ -40,16 +41,17 @@ export class AuthData {
     });
   }
 
-  registerUser( email: string, password: string, language: string){
+  registerUser( email: string, password: string){//, language: string){
     return this.afAuth.auth.createUserWithEmailAndPassword(email, password).then((newUser) => {
       firebase.database().ref('/userProfile').child(newUser.uid).set({
         email: email,
         name : email.split('@')[0],
-        language: language,
+        language: 'arabic',
         questionNum : 0,
-        jokerNum : 3, 
-        hammerNum : 6,
-        pointNum : 150,
+        jokerNum : Settings.initJokerNum, 
+        hammarNum : Settings.initHammarNum,
+        stormNum : Settings.initStormNum,
+        pointNum : Settings.initPointNum,
         role : 'user',
         unlimitedSavedQuestionNum: false
 
