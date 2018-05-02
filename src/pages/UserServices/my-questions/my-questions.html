@@ -13,7 +13,7 @@
   <ion-list>
     <div class='question' *ngFor="let q of questions" color="background">
       <!-- The Question -->
-      <ion-card color="primary" outline (click)="showPanel(q)">
+      <ion-card color="primary" (click)="showPanel(q)">
         {{q.content}}
       </ion-card>
 

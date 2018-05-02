@@ -1,3 +1,4 @@
+import { NativeAudio } from '@ionic-native/native-audio';
 import { User } from './../../shared/models/user';
 import { Question } from './../../shared/models/question';
 import { Settings } from './../../shared/settings/settings';
@@ -11,6 +12,7 @@ export class QuestionProvider {
   questions$: FirebaseListObservable<Question[]>;
 
   constructor(public afd: AngularFireDatabase,
+    private nativeAudio: NativeAudio,
     public catProv: CategoryProvider) {
 
     this.questions$ = this.afd.list('questions');
@@ -22,6 +24,7 @@ export class QuestionProvider {
       })
     }
   }
+
   // easyLastIdx: number = 4500;
   // interLastIdx: number = 4500;
   // diffLastIdx: number = 4500;
@@ -43,7 +46,21 @@ export class QuestionProvider {
   //     this.diffLastIdx = stats["diffQuestNum"];
   //   });
   // }
-
+  playMusic(type = 'true') {
+    if (Settings.onDevice) {
+      let preloadTitle = 'true';
+      if (type === 'false') {
+        preloadTitle = 'false';
+      } else if (type === 'storm') {
+        preloadTitle = 'storm';
+      } else if (type === 'jocker') {
+        preloadTitle = 'jocker';
+      } else if (type === 'hammar') {
+        preloadTitle = 'hammar';
+      }
+      this.nativeAudio.play(preloadTitle);
+    }
+  }
 
   getDiffLabel(diff) {
     let label = '';
@@ -64,11 +81,9 @@ export class QuestionProvider {
     return this.afd.list('/questions',
       {
         query: {
-          orderByChild: 'DiffSubCatIdx',//'DiffSubCatIdx',//'answerType',
-          // equalTo: 'fillBlanck',
+          orderByChild: 'DiffSubCatIdx',
           startAt: diff + selectedSubCat + randomNum.toString(),
           limitToFirst: questionNum
-          // limitToLast: questionNum
         }
       });
   }
@@ -102,19 +117,24 @@ export class QuestionProvider {
   getPlayQuestions(selectedSubCat): Promise<Array<Question>> {
     return new Promise((resolve, reject) => {
       let qs = [];
-      this.getQuestionPromises("1", Settings.easyQuestionNum, selectedSubCat).then(questions1 => {
+      this.getQuestionPromises("1", Settings.onlineEasyQuestionNum, selectedSubCat).then(questions1 => {
         questions1.forEach(q => {
           qs.push(q);
         });
-        this.getQuestionPromises("2", Settings.intermediateQuestionNum, selectedSubCat).then(questions2 => {
+        this.getQuestionPromises("2", Settings.onlineIntermediateQuestionNum, selectedSubCat).then(questions2 => {
           questions2.forEach(q => {
             qs.push(q);
           });
-          this.getQuestionPromises("3", Settings.difficultQuestionNum, selectedSubCat).then(questions3 => {
+          this.getQuestionPromises("3", Settings.onlineDifficultQuestionNum, selectedSubCat).then(questions3 => {
             questions3.forEach(q => {
               qs.push(q);
             });
-            resolve(qs);
+            this.getRandQuestionPromises(25, selectedSubCat).then(questions3 => {
+              questions3.forEach(q => {
+                qs.push(q);
+              });
+              resolve(qs);
+            });
           });
         });
       });
@@ -127,6 +147,28 @@ export class QuestionProvider {
       let promises = [];
       for (let i = 0; i < quesNum; i++) {
         let p = new Promise((resolve, reject) => {
+          this.getRef(diff, selectedSubCat, 1).subscribe(questions => {
+            questions.forEach(function (child) {
+              questionArr.push(child);
+            });
+            resolve();
+          });
+        });
+        promises.push(p);
+      }
+      Promise.all(promises).then(function (values) {
+        resolve(questionArr);
+      });
+    });
+  }
+
+  getRandQuestionPromises(quesNum, selectedSubCat): Promise<Array<any>> {
+    let questionArr = [];
+    return new Promise((resolve, reject) => {
+      let promises = [];
+      for (let i = 0; i < quesNum; i++) {
+        let p = new Promise((resolve, reject) => {
+          let diff = parseInt(String(Math.random() * (4 - 1) + 1));
           this.getRef(diff, selectedSubCat, 1).subscribe(questions => {
             questions.forEach(function (child) {
               questionArr.push(child);

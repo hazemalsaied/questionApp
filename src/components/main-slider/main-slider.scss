@@ -1,4 +1,8 @@
 main-slider {
+    .btnDiv {
+        text-align: center;
+        // background: #047caf;
+    }
     ion-slide, .swiper-wrapper, .swiper-container, ion-slides{
         text-align: center !important;
         direction: ltr;

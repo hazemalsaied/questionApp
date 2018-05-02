@@ -17,8 +17,8 @@ export class InfiniteResultPage {
   @ViewChild('doughnutCanvas') doughnutCanvas;
   doughnutChart: any;
 
-  sadFaceImageUrl = "./assets/sadface.png";
-  happyFaceImageUrl = "./assets/happyface.png";
+  sadFaceImageUrl = Settings.sadface; //"./assets/sadface.png";
+  happyFaceImageUrl = Settings.happyFace;//"./assets/happyface.png";
 
   hasWon = false;
   hasPonus = false;

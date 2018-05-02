@@ -18,11 +18,20 @@ export interface User {
     unlimitedSavedQuestionNum?: boolean;
     questions?: [QuestionKey];
     teams?: [any],
-    noAds?: false;
+    noAds?: boolean;
     quiz?: string;
     speedTestScore?:number;
     infiniteScore?:number;
     invitations?: [TeamKey];
+    userAnswers?:[boolean];
+    trueAnswers?: number;
+    falseAnswers?: number;
+    waitingCat?: string;
+    interrupted?: boolean;
+    usedJockers?: number;
+      usedStorms? : number;
+      usedHammars? : number;
+    
 }
 export interface QuestionKey {
     key: string;

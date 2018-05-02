@@ -3,7 +3,8 @@ import sys
 from random import shuffle
 
 
-def modify(data):
+def modify(path):
+    data = json.load(open(path))
     cats = getCats(data)
     data['indices'] = getIndices(data, cats)
     ranges, idxs = getCatQRang(data)
@@ -15,8 +16,10 @@ def modify(data):
             tmpIdx = idxs[q["subCat"]][label]
             whichRang = ranges[q["subCat"]][label]
             if whichRang and tmpIdx is not None and tmpIdx < len(whichRang):
-                q["DiffSubCatIdx"] = str(q["difficulty"]) + q["subCat"] + str(whichRang[tmpIdx])
+                data['questions'][qKey]["DiffSubCatIdx"] = str(q["difficulty"]) + q["subCat"] + str(whichRang[tmpIdx])
                 idxs[q["subCat"]][label] += 1
+    with open(path.split('.')[0] + '.newA.json', 'w') as f:
+        json.dump(data, f, indent=4)
 
 
 def mergeCats(newCatKey, oldCatKey, data):
@@ -140,37 +143,44 @@ def makeMathParentCat(data):
             q["cat"] = mathKey
             q["subCat"] = newSubCatKey
 
-def correctReportedQuestions(data):
+
+def correctReportedQuestions(path):
+    data = json.load(open(path))
     mathKey = '-KzTUIuq00A4xZWN-xbZ'
-    newSubCatKey = 'L91DDz2_2sJA1ptnCyw'
+    newSubCatKey = '-L91DDz2_2sJA1ptnCyw'
     reported = 0
     for qKey in data['questions']:
         q = data['questions'][qKey]
         if q["cat"] == mathKey and q["subCat"] == newSubCatKey:
             q["reported"] = False
             reported += 1
-    print reported
-def updateQuestionNumWithDiff():
+    with open(path.split('.')[0] + '.new.json', 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+def updateQuestionNumWithDiff(path):
+    data = json.load(open(path))
     cats = getCats(data)
     data['indices'] = getIndices(data, cats)
     for cat in cats:
         data['categories'][cat]['questionNumber_1'] = data['indices'][cat]["easy"]
         data['categories'][cat]['questionNumber_2'] = data['indices'][cat]["difficult"]
         data['categories'][cat]['questionNumber_3'] = data['indices'][cat]["intermediate"]
+    with open(path.split('.')[0] + '.newA.json', 'w') as f:
+        json.dump(data, f, indent=4)
+
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-path = 'backup-2-04-2018.new.json'
-data = json.load(open(path))
-#correctReportedQuestions(data)
-updateQuestionNumWithDiff()
+path = 'questionapp-fdb6a-export.json'
+
+modify(path)
+# updateQuestionNumWithDiff(path)
 
 # makeMathParentCat(data)
 # mergeCats('-KzTNzBKHu6E3qu1u16r', '-KzTV5esQWMtGKgSY7jj', data)
 # mergeCats('-KzTGlLwQ8JYTQh5FleS', '-KzTH3qIr7lm3mErV1j7', data)
 # mergeCats('-KzTIHFaCDbnJ_cr9NRm', '-KzTHunaUnY_fVEDa3lZ', data)
 # mergeCats('-KzTGJAgDewqzMpAe3Xu', '-KzS2z1T77sdYn7wSWj5', data)
-# modify(data)
-with open(path.split('.')[0] + '.newA.json', 'w') as f:
-    json.dump(data, f, indent=4)
+# modify(path)

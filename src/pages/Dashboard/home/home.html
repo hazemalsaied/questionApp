@@ -80,7 +80,7 @@
                 </button>
               </ion-col>
               <ion-col>
-                <button color="primary" ion-button outline block (click)="removeQuestion(q)">
+                <button color="outlineBtn" ion-button outline block (click)="removeQuestion(q)">
                   حذف
                   <ion-icon item-start color="primary" name="remove-circle"></ion-icon>
                 </button>
@@ -97,7 +97,7 @@
       </button>
     </ion-item>
 
-    <ion-item color="background" *ngIf="showNoResultItem">
+    <ion-item color="outlineBtn" *ngIf="showNoResultItem">
       <button (click)="showQuestions()" ion-button outline block>
         ما من نتائج للعرض!
       </button>

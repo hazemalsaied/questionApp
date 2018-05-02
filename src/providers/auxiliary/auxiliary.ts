@@ -18,7 +18,7 @@ export class AuxiliaryProvider {
     this.userProv.changeQuestionNumber(question.user, decrease = decrease);
     this.catProv.changeQuestionNumber(question.cat, decrease = decrease);
     this.catProv.changeQuestionNumber(question.subCat, decrease = decrease);
-    this.catProv.changeQuestionNumberWithDiff(question);
+    this.catProv.changeQuestionNumberWithDiff(question); 
     this.questionProv.changeQuestionNumber(decrease = decrease);
 
   }

@@ -15,11 +15,11 @@
     <ion-avatar>
       <img [src]="happyFaceImageUrl" alt="جاري تحميل الصورة!">
     </ion-avatar>
-    <ion-card *ngIf="!hasPonus" color="background">
+    <ion-card  class="resultCard" *ngIf="!hasPonus" color="background">
       مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية بالإجابة على {{trueAnswers}} سؤال، ولكنك لم تتمكن من تجاوز رقمك
       القياسي السابق !
     </ion-card>
-    <ion-card *ngIf="hasPonus" color="background">
+    <ion-card  class="resultCard" *ngIf="hasPonus" color="background">
       مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية وتجاوزت رقمك القياسي السابق بالإجابة على {{trueAnswers}} سؤال!
     </ion-card>
   </div>
@@ -27,9 +27,11 @@
 
   <div *ngIf="!hasWon">
     <ion-avatar>
-      <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
+        
+      <!-- <img src="https://media.giphy.com/media/l4pTggBKz7vqqF9TO/giphy.gif" alt="جاري تحميل الصورة!"> -->
+        <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
     </ion-avatar>
-    <ion-card color="background">
+    <ion-card  class="resultCard" color="background">
       للأسف، لم يحالفك الحظ في الفوز بالكويز وتحطيم رقمك القياسي السابق!
     </ion-card>
   </div>

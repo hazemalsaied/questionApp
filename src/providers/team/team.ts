@@ -80,6 +80,9 @@ export class TeamProvider {
           }
           if (!isAlreadyInteam) {
             user.teams.push({ key: teamAlias.key });
+            t.users.push({ key: user.$key, isAdmin: false });
+            this.afd.list('teams/' + t.$key).update(t.$key, t);
+
             this.updateTeamPoints(teamAlias.key, user.pointNum).then(_ => {
               user.invitations.splice(i, 1);
               this.afd.list('userProfile').update(user.$key, user).
@@ -116,9 +119,9 @@ export class TeamProvider {
           let p = new Promise((resolve, reject) => {
             this.afd.object('/teams/' + user.teams[i].key).subscribe(item => {
               if (item.imageUrl == null || item.imageUrl == '' || typeof item.imageUrl == "undefined") {
-                item.imageUrl = "./assets/team.jpg";
+                item.fullImageUrl = "./assets/team.jpg";
               } else {
-                item.imageUrl = Settings.teamImageBeg + item.imageUrl + Settings.imageEnd;
+                item.fullImageUrl = Settings.teamImageBeg + item.imageUrl + Settings.imageEnd;
               }
               teamArr.push(item);
               resolve();

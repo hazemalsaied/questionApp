@@ -2,12 +2,15 @@
 </ion-header>
 
 <ion-content [ngStyle]="{'background-image': 'url(' + backgroundImage +')'}">
+  <!-- <ion-content > -->
   <div class="login-container">
-    <img class="logo" src="./assets/medium_150.70391061453px_1202562_easyicon.net.png" />
-    
-    <!--*********** Form ***********-->
+    <!-- <img class="logo" src="./assets/icon.png" /> -->
+<!-- <ion-item>
+  <p class="title">تحدي المعلومات</p>
+</ion-item> -->
+    <!--*********** Form ***********--> 
     <form [formGroup]="loginForm" (submit)="login()" novalidate>
-      <ion-item >
+      <ion-item>
         <ion-label floating>البريد الالكتروني</ion-label>
         <ion-input tappable color="light" #email type="email" formControlName="email" [class.invalid]="!loginForm.controls.email.valid &&loginForm.controls.email.dirty">
         </ion-input>
@@ -29,20 +32,14 @@
       <div class="submit-box">
         <button ion-button block type="submit" color="blue2">تسجيل الدخول</button>
 
-        <!-- <button ion-button type="button" block icon-left color="facebook" outline (click)="createAccount()" margin-top>
-            الدخول عبر فيسبوك
-            <ion-icon name="logo-facebook"></ion-icon> 
-        </button>
-
-        <button ion-button type="button" block icon-left color="google" outline (click)="createAccount()" margin-top>
+        
+ 
+        <!-- <button ion-button type="button" block icon-left color="google" outline (click)="googleLogin()" margin-top>
             الدخول عبر جوجل
             <ion-icon name="logo-google"></ion-icon> 
         </button> -->
 
-        <button ion-button type="button" block icon-left color="light" outline (click)="createAccount()" margin-top>
-            إنشاء حساب جديد
-            <ion-icon name="ios-create"></ion-icon> 
-        </button>
+        
 
       </div>
     </form>
@@ -50,5 +47,42 @@
 
 </ion-content>
 <ion-footer>
-  <button class="bottom" ion-button  type="button"  clear full color="light" (click)="forgot()">نسيت كلمة المرور؟ </button>
+  <ion-row>
+      <ion-col>
+          <button class="bottom" ion-button type="button" clear full color="light" (click)="forgot()">نسيت كلمة المرور؟ </button>
+      </ion-col>
+      <ion-col>
+          <button class="bottom" ion-button type="button" clear full color="light" (click)="createAccount()" >
+               حساب جديد
+              <ion-icon name="ios-create"></ion-icon>
+            </button>
+      </ion-col>
+      <ion-col>
+          <button class="bottom" ion-button type="button" clear full color="light" (click)="facebookLogin()" >
+               فيسبوك
+              <ion-icon name="logo-facebook"></ion-icon>
+            </button>
+      </ion-col>
+  </ion-row>
+  
+  
+  
 </ion-footer>
+
+<!-- <ion-row>
+    <ion-col>
+        <button class="bottom" ion-button type="button" clear full color="light" (click)="forgot()">نسيت كلمة المرور؟ </button>
+    </ion-col>
+    <ion-col>
+        <button ion-button type="button" block icon-left color="light" outline (click)="createAccount()" margin-top>
+             حساب جديد
+            <ion-icon name="ios-create"></ion-icon>
+          </button>
+    </ion-col>
+    <ion-col>
+        <button ion-button type="button" block icon-left color="facebook" outline (click)="facebookLogin()" margin-top>
+            الدخول عبر فيسبوك
+            <ion-icon name="logo-facebook"></ion-icon>
+          </button>
+    </ion-col>
+</ion-row> -->

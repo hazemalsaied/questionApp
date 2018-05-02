@@ -19,7 +19,6 @@ export class UserProvider {
     // public teamP: TeamProvider, 
     public afa: AngularFireAuth) {
     console.log('user provider service');
-    this.removeQuiz();
 
   }
 
@@ -66,6 +65,12 @@ export class UserProvider {
   removeQuiz() {
     this.getUser().then(user => {
       if (user != null && user.quiz != null) {
+        let quizId = user.quiz;
+        this.afd.object('quiz/' + quizId).subscribe(quiz => {
+          if (quiz != null) {
+            this.afd.list('quiz/').remove(quizId);
+          }
+        });
         user.quiz = null;
         this.afd.list('/userProfile/').update(user.$key, user).
           then(_ => { console.log('User quiz removed'); });
@@ -97,20 +102,21 @@ export class UserProvider {
   }
 
   setVirtualSettings(us: User) {
-    if (us.imageUrl == null || typeof us.imageUrl == 'undefined') {
-      us.imageLink = Settings.userImage;
-    } else {
-      us.imageLink = Settings.profileImageBeg + us.imageUrl + Settings.imageEnd;
+    if (us != null) {
+      if (us.imageUrl == null || typeof us.imageUrl == 'undefined') {
+        us.imageLink = Settings.userImage;
+      } else {
+        us.imageLink = Settings.profileImageBeg + us.imageUrl + Settings.imageEnd;
+      }
+      if (us.goldenPoints == null) {
+        us.goldenPoints = 0;
+      }
+      if (us.stormNum == null) {
+        us.stormNum = 5;
+        // this.afd.list('userProfile').update(us.$key, us).then(_ => {
+        // });
+      }
     }
-    if (us.goldenPoints == null) {
-      us.goldenPoints = 0;
-    }
-    if (us.stormNum == null) {
-      us.stormNum = 5;
-      this.afd.list('userProfile').update(us.$key, us).then(_ => {
-      });
-    }
-
   }
 
   updateScores(us: User, helpTool: string, amount: number = 1, catKey: string = null, type: string = null, trueAnswers = 0): Promise<User> {
@@ -123,11 +129,10 @@ export class UserProvider {
         } else if (helpTool == 'storm') {
           us.stormNum -= amount;
         } else if (helpTool == 'pointNum') {
-          // amount = this.brokePreviousScore(us, type, amount);
           us.pointNum += amount;
           this.updateGoldPoints(us, amount);
           this.updateCatPoints(us, catKey, amount);
-          this.updateQuizTypeScore(us, type, amount, trueAnswers);
+          // this.updateQuizTypeScore(us, type, trueAnswers);
           this.updateMonthPoints(us, amount);
         }
         this.afd.list('userProfile').update(us.$key, us).then(_ => {
@@ -153,30 +158,27 @@ export class UserProvider {
     }
   }
 
-  brokePreviousScore(us, type, points) {
-    var quizPointNum = 'pointNum' + String(type);
-    if (us[quizPointNum] != null) {
-      if (points > us[quizPointNum]) {
-        points += 50;
-      }
-    } else {
-      us[quizPointNum] = points;
+  brokePreviousScore(us, type, points, trueAnswers) {
+    var quizPointNum = String(type);
+    if (us[quizPointNum] != null && trueAnswers > us[quizPointNum]) {
+      us[type] = trueAnswers;
+      points += 50;
     }
     return points;
 
   }
 
-  updateQuizTypeScore(us, type, amount, trueAnswers) {
-    if (type != null) {
-      var quizPointNum = String(type);
-      if (us[quizPointNum] == null) {
-        us[quizPointNum] = trueAnswers;
-      } else {
-        if (trueAnswers > us[quizPointNum])
-          us[quizPointNum] = trueAnswers;
-      }
-    }
-  }
+  // updateQuizTypeScore(us, type, trueAnswers) {
+  //   if (type != null) {
+  //     var quizPointNum = String(type);
+  //     if (us[quizPointNum] == null) {
+  //       us[quizPointNum] = trueAnswers;
+  //     } else {
+  //       if (trueAnswers > us[quizPointNum])
+  //         us[quizPointNum] = trueAnswers;
+  //     }
+  //   }
+  // }
   updateCatPoints(us, catKey, amount) {
     if (catKey != null) {
       var catPointNum = 'pointNum' + String(catKey);

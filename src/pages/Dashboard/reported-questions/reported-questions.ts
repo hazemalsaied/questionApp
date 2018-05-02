@@ -39,22 +39,18 @@ export class ReportedQuestionsPage {
     public authProv: AuthData,
     public auxProv: AuxiliaryProvider) {
 
-    let loading = this.loadingCtrl.create({
-      content: 'جاري تحميل الأسئلة!'
-    });
-    loading.present();
     this.currentPageIdx = 1
-    this.showQuestions(loading);
+    this.showQuestions();
     this.categories$ = catProv.getCats();
     this.getCats();
   }
 
-  showQuestions(loading) {
+  showQuestions() {
     this.showNoResultItem = false;
     this.showLoadingBtn = true;
     this.questions$ = this.afd.list('questions',
       { query: { orderByChild: 'reported', equalTo: true, limitToLast: 30 } });
-    this.getQuestions(loading);
+    this.getQuestions();
   }
 
   getQuestionUserName(qs) {
@@ -75,7 +71,7 @@ export class ReportedQuestionsPage {
     }).then(_ => { this.categories = categoryArr; });
   }
 
-  getQuestions(loading = null) {
+  getQuestions() {
     let questionArr = [];
     this.questions$.subscribe(questionList => {
       questionList.forEach(question => {
@@ -84,9 +80,7 @@ export class ReportedQuestionsPage {
       });
       this.getQuestionUserName(questionArr);
       this.questions = questionArr;
-      if (loading) {
-        loading.dismiss();
-      }
+  
       return questionArr.reverse();
     });
   }

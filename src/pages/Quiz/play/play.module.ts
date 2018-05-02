@@ -12,7 +12,7 @@ import { QuestionBarComponent } from './../../../components/question-bar/questio
     QuestionBarComponent
   ],
   imports: [
-    IonicPageModule.forChild(PlayPage),
+    IonicPageModule.forChild(PlayPage)
   ],
   schemas: []
 

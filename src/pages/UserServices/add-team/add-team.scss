@@ -1,13 +1,14 @@
 page-add-team {
+    .english {
+        padding-left: 0;
+    }
     ion-avatar img, ion-thumbnail img {
         margin-bottom: 6 em;
         margin-right: auto !important;
         margin-left: auto !important;
         border-radius: 50%;
-        border: 3px solid black;
         max-width: 55%;
         height: 13em;
-        
      }
      .userRow {
         margin: 0 !important;

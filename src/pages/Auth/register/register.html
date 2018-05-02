@@ -3,7 +3,7 @@
 
 <ion-content [ngStyle]="{'background-image': 'url(' + backgroundImage +')'}">
   <div class="login-container">
-    <img class="logo" src="./assets/medium_150.70391061453px_1202562_easyicon.net.png" />
+    <!-- <img class="logo" src="./assets/icon.png" /> -->
     <!--*********** Form ***********-->
     <form [formGroup]="registerForm" (submit)="registerUser()" novalidate>
 
@@ -36,7 +36,7 @@
             <ion-option value="english">English</ion-option>
           </ion-select>
         </ion-item> -->
-      
+
 
       <ion-item class="error-message">
         <!-- <p *ngIf="!registerForm.controls.profileName.valid  &&
@@ -51,10 +51,13 @@
         registerForm.controls.password.dirty">*كلمة المرور يجب أن تحتوي على ستة محارف</p>
       </ion-item>
       <!-- [disabled]="!form.valid" -->
-      <button ion-button full type="submit"  color="blue2">
+      <button ion-button full type="submit" color="blue2">
         إنشاء حساب
       </button>
     </form>
+    <button ion-button full (click)="openPage()" color="blue2">
+      العودة لصفحة الدخول
+    </button>
   </div>
 </ion-content>
 <ion-footer color="blue2">

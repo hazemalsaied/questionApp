@@ -19,97 +19,58 @@ export class ResultsPage {
   @ViewChild('doughnutCanvas') doughnutCanvas;
   doughnutChart: any;
 
-  questionNum;
-
-  userPoints = 0;
   user: User = Settings.emptyUser;
 
-  sadFaceImageUrl = "./assets/sadface.png";
-  happyFaceImageUrl = "./assets/happyface.png";
-
+  sadFaceImageUrl = Settings.sadface;
+  happyFaceImageUrl = Settings.happyFace;
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public afd: AngularFireDatabase,
     public userP: UserProvider) {
-  }
-  hasWon = false;
-  oldSpeedScore = 0;
-  userOldScore;
-  validQNum = 0;
 
-  parametrizePlayResults() {
-
-    this.questionNum = Settings.questionNum;
-    if (this.navParams.get('answerArr')) {
-      let answerArr = this.navParams.get("answerArr");
-      for (var i = 0; i < Settings.questionNum; i++) {
-        if (answerArr[i] === "true") {
-          this.validQNum += 1
-        }
-      }
+    if (this.navParams.get('userPoints') != null) {
+      this.points = this.navParams.get('userPoints');
     }
-    if (this.validQNum >= (this.questionNum / 2)) {
+    if (this.navParams.get('trueAnswers') != null && this.navParams.get('trueAnswers') > 4) {
+      this.trueAnswers = this.navParams.get('trueAnswers');
       this.hasWon = true;
     }
-    if (this.navParams.get('userPoints')) {
-      this.userPoints = this.navParams.get("userPoints");
+    if (this.navParams.get('falseAnswers') != null) {
+      this.falseAnswers = this.navParams.get('falseAnswers');
     }
-    this.updateUserNumber(this.navParams.get('cat'));
-  }
-
-
-
-  updateUserNumber(catKey) {
-    if (this.validQNum >= (this.questionNum / 2)) {
-      this.userP.getUser().then(us => {
-        this.userOldScore = this.user.pointNum;
-        this.userP.updateScores(us, 'pointNum', this.userPoints,catKey,'play');
-      });
+    if (this.navParams.get('userPoints') != null
+      && this.navParams.get('userPoints') > this.trueAnswers * Settings.questionPoint) {
+      this.hasPonus = true;
     }
   }
-  // if (this.validQNum >= (this.questionNum / 2)) {
-  //   new Promise((resolve, reject) => {
-  //     if (firebase.auth().currentUser) {
-  //       let uid = firebase.auth().currentUser.uid;
-  //       this.afd.object('/userProfile/' + uid).subscribe(
-  //         snapshot => {
-  //           this.user = snapshot;
-  //           this.userOldScore = this.user.pointNum;
-  //           this.user.pointNum += this.userPoints;//this.newPoints;
-  //           resolve();
-  //         });
-  //     }
-  //   }).then(_ => {
-  //     this.afd.list('/userProfile/').update(this.user.$key, this.user).
-  //       then(_ => { console.log('User edited'); });
-  //   });
-  // }
+  trueAnswers = 0;
+  falseAnswers = 0;
+  points = 0;
+  hasWon = false;
+  hasPonus = false;
+  userOldScore;
 
 
   ionViewDidLoad() {
-    if (this.navParams.get('type') == 'play') {
-      this.parametrizePlayResults();
-    }
-    if (this.navParams.get('type') == 'play') {
-      this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
-        type: 'doughnut',
-        data: {
-          labels: ["إجابات صحيحة", "إجابات خاطئة"],
-          datasets: [{
-            labels: '',
-            data: [this.validQNum, Settings.questionNum - this.validQNum],
-            backgroundColor: [
-              '#38c51c',
-              '#D01E29'
-            ],
-            hoverBackgroundColor: [],
-            borderWidth: 2
-          }]
-        }
-      });
-    }
+    this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels: [],// ["إجابات صحيحة", "إجابات خاطئة"],
+        datasets: [{
+          labels: '',
+          data: [this.trueAnswers, this.falseAnswers],
+          backgroundColor: [
+            '#38c51c',
+            '#D01E29'
+          ],
+          hoverBackgroundColor: [],
+          borderWidth: 2
+        }]
+      }
+    });
   }
+
 
   play() {
     this.navCtrl.setRoot(PlayPage);

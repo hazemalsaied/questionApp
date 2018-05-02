@@ -2,21 +2,40 @@ page-market {
     ion-item .input-wrapper {
         font-size: 1.2em;
     }
+
+
+    .content {
+        margin: .5em 1em 0;
+        display: block;
+        overflow: hidden;
+        padding-right: .5em;
+    }
+    .payBtn {
+        margin: 1.3em auto 0 !important;
+        overflow: hidden;
+        display: block;
+    }
+    .imgContainer {
+        margin: 1em auto;
+    }
     .imgBtn{
-        background: #17577e; 
+        background: map-get($colors, background);
+        margin: .1em auto;
+        display: block;
     }
     .imgContainer div {
         text-align: center;
     }
     h1.title {
         margin: 0;
+        font-size: 1.5em;
     }
     ion-select {
         max-width: 100%;
     }
     p.description {
         margin: 0;
-        color: grey;
+        color: #37FF8B;;
     }
     img.smallIcon {
         width: 32px;
@@ -25,32 +44,30 @@ page-market {
     }
     img.icon {
         height: 48px;
-        margin: auto;
         display: block;
-        margin-top: 1em;
+        margin: .5em 0;
 
     }
-    ion-badge.badge.badge-md {
+    ion-badge.badge.badge-md,.badge-ios {
         text-align: center;
         margin: 1em auto .1em auto;
         display: table;
     }
 
-    ion-label{
-        // width: 90%;
-        // max-width: none;
+    .options {
+        margin: auto;
+        margin: auto 1em;
+        width: 96%;
     }
     ion-row.option.row {
         color: white;
-        border-bottom: 1px solid grey;
+        border-bottom: 1px solid white;
     }
     .disableAds{
         color: white;
         border-bottom: 3px solid !important;
     }
-    .options {
-        margin-bottom: 2em;
-    }
+
     .badge-md {
         margin: 0.7em auto;
     }

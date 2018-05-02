@@ -19,8 +19,10 @@ export class SpeedResultPage {
   @ViewChild('doughnutCanvas') doughnutCanvas;
 
   doughnutChart: any;
-  sadFaceImageUrl = "./assets/sadface.png";
-  happyFaceImageUrl = "./assets/happyface.png";
+  // sadFaceImageUrl = "./assets/sadface.png";
+  // happyFaceImageUrl = "./assets/happyface.png";
+  sadFaceImageUrl = Settings.sadface; //"./assets/sadface.png";
+  happyFaceImageUrl = Settings.happyFace;//"./assets/happyface.png";
   hasWon = false;
   speedTrueQuestionNum = 0;
   speedFalseQuestionNum = 0;

@@ -1,4 +1,152 @@
 page-play-online {
+    ion-badge.badge.badge-md, .badge-ios {
+        text-align: right;
+        margin: 0 !important;
+    }
+
+    .resultCard ion-avatar {
+        margin-bottom: 2em;
+    }
+    .partnerName {
+        text-align: left;
+    }
+     .userAvatar img {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        max-height: 50px;
+    }
+    .uCard .userAvatar img {
+        border-radius: 50%;
+        width: 14em;
+        height: 14em;
+        max-height: 14em;
+    }
+    .scores img {
+        width: 50px;
+        max-width: 50px !important;
+        min-width: 50px !important;
+        height: 50px;
+        display: block;
+        margin: .5em auto !important;
+    }
+    ion-badge.badge.badge-md,.badge-ios {
+        margin-bottom: .5em !important;
+    }
+    .user ion-badge {
+        text-align: center;
+        margin: auto !important;
+        display: block;
+        overflow: hidden;
+        width: 20%;
+    }
+    .user h1 {
+        text-align: center;
+        font-size: 2.5em !important;
+        margin-top: .5em !important;
+        color: white;
+    }
+    .user {
+        border-bottom: 1px solid;
+    }
+    .badge-md {
+        background: #A06B9A;
+    }
+    //user card css begining
+    .uCard .userCardContainer {
+        padding-bottom: 2em;
+        background: map-get($colors, background);
+    }
+    .uCard .scores {
+        border-bottom: 2px solid white;
+    }
+    .uCard .scores div {
+        display: block;
+        margin: auto;
+        text-align: center;
+    }
+    .uCard .scores div {
+        margin-bottom: .5em !important;
+    }
+    // img{
+    //     border: none !important;
+    // }
+   
+    .uCard .item-md ion-avatar img {
+        overflow: hidden;
+        width: 120px !important;
+        height: 120px !important;
+        min-width: 120px;
+    }
+//user card css end
+
+
+
+    .user .item-inner { 
+        border: none !important;
+    }
+    .user ion-badge.badge.badge-md, .user .badge-ios {
+        margin: 0;
+    }
+    .user ion-label.label.label-md {
+        margin: 0;
+    }
+    .choice {
+        width: 98%;
+        margin: .1em 1%;
+        font-size: 1.2em;
+        height: 2.5em !important;
+        border-radius: 5px;
+        // background: map-get($colors, contrast);
+    }
+    
+    ion-spinner * {
+        width: 48px !important;
+        height: 48px !important;
+        stroke: #444;
+        fill: #222;
+      }
+    .catContainer img {
+        height: 5em;
+        border-radius: 3px;
+        max-width: 100% !important;
+        width: 100% !important;
+        border-radius: 50%;
+    }
+    .catContainer.card.card-md, .catContainer.card-ios {
+        width: 22%;
+        float: right;
+        margin: 0.5em 0 .5em 3%;
+    }
+
+    h1.title {
+        font-size: 1.3em;
+        text-align: center;
+        margin-top: .5em;
+        vertical-align: middle;
+    }
+    .catContainer p {
+        margin: 0 0 2px;
+        font-size: 1.2rem;
+        font-weight: normal;
+        line-height: 1.5;
+
+        text-align: center;
+        margin: 0 1em;
+    }
+    .pos, .neg{
+        display: block;
+        overflow: hidden;
+        height: 30px;
+        border-bottom: 1px solid white;
+        width: 5px;
+    }
+    .pos {
+        background: green;
+    }
+    .neg {
+        background: red;
+    }
     .searching img{
         border: none;
     }
@@ -8,14 +156,7 @@ page-play-online {
     img.searching {
         border: none;
     }
-    user-card .scores img {
-        /* margin: auto; */
-        display: block;
-        width: 40px !important;
-        max-width: 40px !important;
-        min-width: 40px !important;
-        margin: .5em auto !important;
-    }
+    
     ion-spinner {
         position: relative;
         display: block;
@@ -33,7 +174,7 @@ page-play-online {
     .info ion-col button {
         margin: auto !important;
         display: block;
-        background: #17577e;
+        // background: #17577e;
     }
     .info ion-col div {
         text-align: center;
@@ -53,6 +194,7 @@ page-play-online {
         display: block;
         text-align: center;
         padding: 1em;
+        background: map-get($colors, background);
     }
     .spinner-md-crescent circle {
         stroke: white;
@@ -66,6 +208,8 @@ page-play-online {
         width: 5px !important;
         display: block;
         max-width: 5px;
+        margin:0 5px;
+
     }
 
     ion-col.oddUserAnswers.pos, ion-col.evenUserAnswers.pos {
@@ -132,45 +276,42 @@ page-play-online {
         width: 94%;
     } 
 
-    ion-card.card.card-md {
+    ion-card.card.card-md, .catContainer {
         margin: 0;
         width: 100%;
     }
-    .card-content-md{
-        background: #D01E29;
-    }
+    // .card-content-md{
+        // background: #D01E29;
+    // }
     .card-content-md p{
         color: white;
     }
     .imgContainer{
-        max-height: 15em !important;
+        max-height: 12em !important;
         display: block;
         background-color: transparent !important;
-        border-top: 1px solid gray;
-        border-left: 1px solid gray;
-        border-right: 1px solid gray;
-        padding:0.5em;
-        background: #17577e !important;
+        // border-top: 1px solid gray;
+        // border-left: 1px solid gray;
+        // border-right: 1px solid gray;
+        padding:0;
+        background: map-get($colors, background);
     }
     img {
         display: block;
         margin-left: auto;
         margin-right: auto;
-        max-height: 12em;
-        min-width: 75%;
-        max-width: 80%;
+        max-height: 10em;
+        // min-width: 75%;
+        // max-width: 80%;
         width: auto;
         padding: 0.5em auto;
-        border: 1px solid white;
         border-radius: 10px;
 
     }
-    ion-card.content1.card.card-md.card-md-primary {
-        font-size: 1.8em;
-    }
+   
 
     .button-md {
-        font-size: 1.6rem;
+        font-size: 1.3rem;
     }
 
     .card-content-md {
@@ -203,8 +344,8 @@ page-play-online {
         height: 3em;
     }
     ion-card.content1{
-        padding: 1em;
-        font-size: 1.4em;
+        padding: 0.3em .5em;
+        font-size: 1.7em;
     }
     .content1 ion-label.label.label-md {
         color: white;

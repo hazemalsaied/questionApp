@@ -95,7 +95,7 @@ export class MyTeamsPage {
       if (accepted) {
         this.showToast('bottom', 'لقد تمت إضافتك للفريق!');
         // this.getInvitations(this.user);
-        // this.getTeams(this.user);
+        this.getTeams(this.user);
       } else {
         this.showToast('bottom', 'أنت عضو في الفريق مسبقاً!');
       }

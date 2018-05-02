@@ -1,3 +1,4 @@
+import { LoginPage } from './../login/login';
 import { IonicPage, NavController,LoadingController, AlertController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -11,7 +12,7 @@ import { AuthData } from '../../../providers/auth-data/auth-data';
 })
 export class ForgotPage {
   public resetPasswordForm;
-  public backgroundImage: any = "./assets/bg3.jpg"; 
+  public backgroundImage: any = "./assets/splash.png";  
 
   constructor(public authData: AuthData, public fb: FormBuilder, public nav: NavController, public loadingCtrl: LoadingController, public alertCtrl: AlertController) {
 
@@ -28,7 +29,8 @@ export class ForgotPage {
 
       let loadingPopup = this.loadingCtrl.create({
         spinner: 'crescent', 
-        content: ''
+        content: '',
+        enableBackdropDismiss:true
       });
       loadingPopup.present();
       this.authData.resetPassword(this.resetPasswordForm.value.email)
@@ -50,5 +52,8 @@ export class ForgotPage {
       buttons: ['موافق']
     });
     alert.present();
+  }
+  openPage(){
+    this.nav.setRoot(LoginPage); 
   }
 }

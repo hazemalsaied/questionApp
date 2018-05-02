@@ -25,7 +25,7 @@
           <ion-icon small name="checkmark-circle" item-start></ion-icon>
           {{getAnswerTxt(q)}}
         </ion-item>
-        <ion-item no-lines *ngIf="q.answer !== q.userChoice" color="yellowC">
+        <ion-item no-lines *ngIf="q.answer !== q.userChoice" >
           <ion-icon small name="close-circle" item-start></ion-icon>
           {{getAnswerTxt(q, false)}}
         </ion-item>
@@ -39,7 +39,7 @@
             </button>
           </ion-col>
           <ion-col>
-            <button color="primary" ion-button outline block (click)="report(q)">
+            <button color="outlineBtn" ion-button outline block (click)="report(q)">
               تبليغ
               <ion-icon item-start color="primary" name="warning"></ion-icon>
             </button>

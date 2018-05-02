@@ -1,3 +1,4 @@
+import { LoginPage } from './../login/login';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, LoadingController, AlertController } from 'ionic-angular';
 import { FormBuilder, Validators } from '@angular/forms';
@@ -12,7 +13,7 @@ import { AuthData } from '../../../providers/auth-data/auth-data';
 })
 export class RegisterPage {
   public registerForm;
-  public backgroundImage: any = "./assets/bg2.jpg";
+  public backgroundImage: any = "./assets/splash.png";  
 
   constructor(public nav: NavController, public authData: AuthData, public fb: FormBuilder, public loadingCtrl: LoadingController, public alertCtrl: AlertController) {
 
@@ -36,7 +37,8 @@ export class RegisterPage {
 
       let loadingPopup = this.loadingCtrl.create({
         spinner: 'crescent',
-        content: 'جاري الإنشاء..'
+        content: 'جاري الإنشاء..',
+        enableBackdropDismiss:true
       });
       loadingPopup.present();
 
@@ -49,9 +51,9 @@ export class RegisterPage {
         // ,this.registerForm.value.phone
         .then(() => {
           loadingPopup.dismiss();
-          this.nav.setRoot('HomePage');
+          this.nav.setRoot('MainPage');
         }, (error) => {
-          var errorMessage: string = error.message;
+          var errorMessage: string = error.message; 
           loadingPopup.dismiss();
           console.log(errorMessage);
           this.presentAlert('لم نتمكن من إنشاء الحساب. الرجاء المحاولة لاحقاً');
@@ -64,5 +66,8 @@ export class RegisterPage {
       buttons: ['موافق']
     });
     alert.present();
+  }
+  openPage(){
+    this.nav.setRoot(LoginPage); 
   }
 }

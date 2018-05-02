@@ -15,7 +15,7 @@
       <ion-avatar>
         <img [src]="imageUrl" alt="جاري تحميل الصورة!">
       </ion-avatar>
-      <button ion-button block outline color="primary" (click)="uploadImage()">
+      <button ion-button block outline color="outlineBtn" (click)="uploadImage()">
         تحميل صورة!
         <ion-icon name="camera" item-end></ion-icon>
       </button>
@@ -43,11 +43,11 @@
             <img [src]="u.imageLink" alt="جاري تحميل الصورة!">
           </ion-avatar>
           <ion-row class="userRow">
-            <ion-col class="infoCol" col-9>
+            <ion-col class="infoCol" col-8>
               <h2>{{u.name}}</h2>
               <p>{{u.email}}</p>
             </ion-col>
-            <ion-col col-3>
+            <ion-col col-4>
               <button ion-button (click)="inviteUser(u)">دعوة</button>
             </ion-col>
           </ion-row>

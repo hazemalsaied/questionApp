@@ -1,0 +1,157 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      {{appName}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-item class="user" color="background">
+    <ion-avatar item-start class="userAvatar">
+      <img [src]="user.imageLink" alt="جاري تحميل الصورة!">
+      <ion-icon *ngIf="user != null && user.role === 'admin'" name="bowtie"></ion-icon>
+    </ion-avatar>
+    <div>
+      <h1>{{user.name}}</h1>
+      <p> {{user.email}}</p>
+      <ion-badge small item-end>{{user.pointNum}} نقطة</ion-badge>
+    </div>
+  </ion-item>
+
+
+  <ion-row class='scores'>
+    <ion-col>
+      <img src="./assets/gold64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.goldenPoints}}</ion-badge>
+      </div>
+    </ion-col>
+    <ion-col>
+      <img src="./assets/jocker64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.jokerNum}}</ion-badge>
+      </div>
+    </ion-col>
+    <ion-col>
+      <img src="./assets/hammar64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.hammarNum}}</ion-badge>
+      </div>
+    </ion-col>
+    <ion-col>
+      <img src="./assets/storm64.png" color="background">
+      <div>
+        <ion-badge item-end>{{user.stormNum}}</ion-badge>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <main-slider></main-slider>
+
+  <ion-slides class="order" autoplay="3000" [pager]="true" [loop]="true" [paginationType]="progress">
+    <ion-slide class='slider2'>
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل اللاعبين </h1>
+        <div class="info">
+          <h1 class="">{{bestUser.name}} </h1>
+          <ion-badge small item-start>{{bestUser.pointNum}} نقطة</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="bestUser.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <div class='btnDiv' color="sliderBck">
+        <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+      </div>
+    </ion-slide>
+
+
+    <ion-slide class='slider2'>
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل اللاعبين هذا الشهر </h1>
+        <div class="info">
+          <h1 class="">{{bestMonthUser.name}} </h1>
+          <ion-badge small item-start>{{bestMonthUser.pointNum}} نقطة</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="bestMonthUser.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <div class='btnDiv' color="sliderBck">
+        <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+      </div>
+    </ion-slide>
+
+    <ion-slide class='slider2'>
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل اللاعبين في كويز السلسلة </h1>
+        <div class="info">
+          <h1 class="">{{infiniteBestUser.name}} </h1>
+          <ion-badge small item-start>{{infiniteBestUser.infiniteTest}} سؤال</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="infiniteBestUser.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <div class='btnDiv' color="sliderBck">
+        <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+      </div>
+    </ion-slide>
+
+    <ion-slide class='slider2'>
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل اللاعبين في كويز السرعة </h1>
+        <div class="info">
+          <h1 class="">{{speedBestUser.name}} </h1>
+          <ion-badge small item-start>{{speedBestUser.speedTest}} سؤال</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="speedBestUser.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <div class='btnDiv' color="sliderBck">
+        <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+      </div>
+    </ion-slide>
+
+    <ion-slide class='slider2'>
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل اللاعبين في اختبار المعلومات </h1>
+        <div class="info">
+          <h1 class="">{{playBestUser.name}} </h1>
+          <ion-badge small item-start>{{playBestUser.play}} سؤال</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="playBestUser.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <div class='btnDiv' color="sliderBck">
+        <button ion-button small (click)='openPage("UserOrderPage")'>شاهد ترتيب الأعضاء</button>
+      </div>
+    </ion-slide>
+
+    <ion-slide class='slider2'>
+
+      <ion-item class="user" color="background">
+        <h1 class='sliderTitle'> أفضل الفرق </h1>
+        <div class="info">
+          <h1 class="">{{bestTeam.name}} </h1>
+          <p class="">{{bestTeam.slogan}} </p>
+          <ion-badge small item-start>{{bestTeam.points}} نقطة</ion-badge>
+        </div>
+        <ion-avatar item-end class="userAvatar">
+          <img [src]="bestTeam.imageLink" alt="جاري تحميل الصورة!">
+        </ion-avatar>
+      </ion-item>
+      <div class='btnDiv' color="sliderBck">
+        <button ion-button small (click)='openPage("TeamOrderPage")'>شاهد ترتيب الفرق</button>
+      </div>
+    </ion-slide>
+
+  </ion-slides>
+</ion-content>

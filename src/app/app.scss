@@ -16,16 +16,27 @@
 // automatically applied to the <body> element in the app.
 @import '../theme/variables.scss';
 
-ion-content.content.content-md, ion-list.list.list-md {
+.content-ios, ion-content, ion-content.content.content-md, ion-list.list.list-md {
     background: $background;
 }
 ion-item-divider.item.item-divider {
     font-size: 1.4em;
 }
-.item-md {
-    padding-left: 0;
+.toolbar-title.toolbar-title-md {
+    text-align: center;
 }
-
+.badge-md {
+    background: map-get($colors, badge);
+}
+.catTitle {
+    background: map-get($colors, catTitle);
+}
+.choices span.button-inner {
+    color: #37FF8B;
+}
+.catContainer p {
+    color: #37FF8B;
+}
 .icnClass img {
     width: 48px !important;
     height: 48px !important;
@@ -40,19 +51,57 @@ ion-item-divider.item.item-divider {
     float: left;
     width: 30%;
     background: #17577e;
-    // box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2), 1px 1px 1px 1px rgba(0, 0, 0, 0.19);
     margin: 1em 1%;
-    // padding: .5em;
-    // border-radius: 20px;
-    
 }
 .icnsClass {
     display: block;
     overflow: hidden;
     
 }
-.icnClass ion-badge.badge.badge-md {    
+.icnClass ion-badge.badge.badge-md, .icnClass .badge-ios {    
     margin: .5em auto 0;
     display: block;
     width: 40%;
+}
+.choice{
+    width:98%;
+    margin: 0 1%;
+}
+.choice {
+    width: 98%;
+    margin: .1em 1%;
+    font-size: 1.2em;
+    height: 2.5em !important;
+    border-radius: 5px;
+    // background: map-get($colors, contrast);
+}
+.info ion-col button {
+    background: map-get($colors, background);
+}
+.resultCard {
+    text-align: center;
+}
+.userAnswerInput {
+    background: map-get($colors, questionCardBck);
+    padding: .5em 1em;
+    width: 100%;
+    margin: 0;
+}
+.userAnswerLabel {
+    color: black;
+    padding-left: 1em;
+}
+.userAnswerItem{
+    width: 96% !important;
+    padding: 0 !important;
+    margin: .5em auto !important;
+    border-radius: 5px !important;
+}
+button.item-ios:not([detail-none]) .item-inner {
+    padding-right: 0;
+    padding-left: 32px;
+    background-image: none;
+}
+.badge-ios{
+    background-color: map-get($colors, contrast);
 }

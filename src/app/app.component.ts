@@ -1,7 +1,11 @@
+import { NativeAudio } from '@ionic-native/native-audio';
+import { AdMobFreeProvider } from './../providers/admonfree/admobfree';
+import { TabsPage } from './../pages/Main/tabs/tabs';
+import { AdMobFree, AdMobFreeBannerConfig } from '@ionic-native/admob-free';
 import { AngularFireDatabase } from 'angularfire2/database-deprecated';
 import { User } from 'firebase';
-import { AllUserPage } from './../pages/all-user/all-user';
-import { MainPage } from './../pages/main/main';
+import { AllUserPage } from './../pages/Dashboard/all-user/all-user';
+import { MainPage } from './../pages/Main/main/main';
 import { MyTeamsPage } from './../pages/UserServices/my-teams/my-teams';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
@@ -22,7 +26,7 @@ import { SpeedTestPage } from './../pages/Quiz/speed-test/speed-test';
 import { LoginPage } from './../pages/Auth/login/login';
 
 import { AuthData } from './../providers/auth-data/auth-data';
-
+import firebase from 'firebase';
 
 // import { ResultsPage } from '../pages/Results/results/results';
 
@@ -58,8 +62,21 @@ export class MyApp {
     imageUrl: '',
     sex: 'male'
   };
-  pages: Array<{ title: string, component: any }>;
-  servicePages: Array<{ title: string, component: any }>;
+  pages: Array<{ title: string, component: any }> = [
+    { title: 'الأسئلة', component: HomePage },
+    { title: 'تبليغات', component: ReportedQuestionsPage },
+    { title: 'إحصائيات', component: StatisticsPage },
+    { title: 'إضافة سؤال', component: AddQuestionPage },
+    { title: 'إدارة الأعضاء', component: AllUserPage },
+    { title: 'تبويبات', component: CategoriesPage },
+    { title: 'إضافة تبويب', component: AddCategoryPage }
+  ];
+  servicePages: Array<{ title: string, component: any }> = [
+    { title: 'المتجر', component: MarketPage },
+    { title: 'أسئلتي', component: MyQuestionsPage },
+    { title: 'إضافة فريق', component: AddTeamPage },
+    { title: 'فرقي', component: MyTeamsPage }
+  ];
   public backgroundImage: any = "./assets/bg5.jpg";
 
   constructor(platform: Platform,
@@ -67,41 +84,34 @@ export class MyApp {
     splashScreen: SplashScreen,
     public authData: AuthData,
     public afd: AngularFireDatabase,
-    public afAuth: AngularFireAuth) {
+    public afAuth: AngularFireAuth,
+    public admob: AdMobFreeProvider,
+    public nativeAudio: NativeAudio) {
     platform.ready().then(() => {
       statusBar.styleDefault();
       splashScreen.hide();
-
+      this.loadSounds();
       this.afAuth.authState.subscribe((user) => {
         if (user && user.email) {
-          this.rootPage = MainPage;// Settings.rootPage;
           this.afd.object('userProfile/' + user.uid).subscribe(u => {
             this.user = u;
+            this.admob.showBanner(this.user);
           })
+          this.rootPage = MainPage;
         } else {
           this.rootPage = LoginPage;
         }
       });
-
     });
-    this.pages = [
-      { title: 'الأسئلة', component: HomePage },
-      { title: 'تبليغات', component: ReportedQuestionsPage },
-      { title: 'إحصائيات', component: StatisticsPage },
-      { title: 'إضافة سؤال', component: AddQuestionPage },
-      { title: 'إدارة الأعضاء', component: AllUserPage },
-      { title: 'تبويبات', component: CategoriesPage },
-      { title: 'إضافة تبويب', component: AddCategoryPage }
-    ];
-
-    this.servicePages = [
-      { title: 'المتجر', component: MarketPage },
-      { title: 'أسئلتي', component: MyQuestionsPage },
-      { title: 'إضافة فريق', component: AddTeamPage },
-      { title: 'فرقي', component: MyTeamsPage }
-    ];
   }
 
+  loadSounds() {
+    this.nativeAudio.preloadSimple('true', 'assets/sound/true.mp3');
+    this.nativeAudio.preloadSimple('false', 'assets/sound/false.mp3');
+    this.nativeAudio.preloadSimple('jocker', 'assets/sound/jocker.mp3');
+    this.nativeAudio.preloadSimple('storm', 'assets/sound/storm.mp3');
+    this.nativeAudio.preloadSimple('hammar', 'assets/sound/hammar.mp3');
+  }
   openPage(page) {
     this.nav.setRoot(page.component);
   }
@@ -125,8 +135,13 @@ export class MyApp {
   }
 
   logout() {
-    this.authData.logoutUser();
-    this.nav.setRoot(LoginPage);
+    firebase.auth().signOut().then(function () {
+      console.log(' Sign-out successful.');
+    }, function (error) {
+      // An error happened.
+    });
+    // this.authData.logoutUser();
+    // this.nav.setRoot(LoginPage);
 
   }
 }

@@ -21,7 +21,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 })
 export class AddTeamPage {
 
-  team: any = Settings.emptyTeam; 
+  team: any = Settings.emptyTeam;
   imageUrl = "./assets/team.jpg";
   showCreatePanel = true;
 
@@ -37,6 +37,9 @@ export class AddTeamPage {
   ) {
     if (navParams.get('team')) {
       this.team = navParams.get('team');
+      if (this.team.imageUrl != null && this.team.imageUrl.trim() != '') {
+        this.imageUrl = Settings.teamImageBeg + this.team.imageUrl + Settings.teamImageEnd;
+      }
       this.showCreatePanel = true;
       this.showUserPanel = true;
     }
@@ -94,40 +97,52 @@ export class AddTeamPage {
   }
 
   async uploadImage() {
-    if (this.team.imageUrl) {
+    if (this.team.imageUrl != null && this.team.imageUrl.trim != '') {
       this.removeImage();
-    } else {
-      try {
-        const cameraOptions: CameraOptions = {
-          sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
-          mediaType: this.camera.MediaType.PICTURE,
-          destinationType: this.camera.DestinationType.DATA_URL,
-          quality: 50,
-          targetWidth: 600,
-          targetHeight: 600,
-          encodingType: this.camera.EncodingType.JPEG
-          // ,correctOrientation: true
-        };
-        const result = await this.camera.getPicture(cameraOptions);
-        let imageName = new Date().toISOString() + '.jpg';
-        const pictures = storage().ref('teams/' + imageName);
-        const base64Image = result; //'data:image/jpeg;base64,{result}';// + imageData;
-        pictures.putString(base64Image, 'base64').then((_) => {
-          this.team.imageUrl = imageName;
-          pictures.getDownloadURL().then((url) => {
-            this.imageUrl = url;
-          });
+    }
+    try {
+      const cameraOptions: CameraOptions = {
+        sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+        mediaType: this.camera.MediaType.PICTURE,
+        destinationType: this.camera.DestinationType.DATA_URL,
+        quality: 50,
+        targetWidth: 600,
+        targetHeight: 600,
+        encodingType: this.camera.EncodingType.JPEG
+        // ,correctOrientation: true
+      };
+      const result = await this.camera.getPicture(cameraOptions);
+      let imageName = new Date().toISOString() + '.jpg';
+      const pictures = storage().ref('teams/' + imageName);
+      const base64Image = result; //'data:image/jpeg;base64,{result}';// + imageData;
+      pictures.putString(base64Image, 'base64').then((_) => {
+        this.team.imageUrl = imageName;
+        pictures.getDownloadURL().then((url) => {
+          this.imageUrl = url;
         });
+      });
 
-      } catch (error) {
-        console.log(error);
-      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  removeImage() {
-    this.imageP.removeImage('team', this.team.imageUrl).then(_ => {
-      this.team.imageUrl = '';
+
+  removeImage(): Promise<any> {
+    return new Promise((resolve, rejeect) => {
+      const picture = storage().ref('teams/' + this.team.imageUrl);
+      picture.getDownloadURL().then(onResolve, onReject);
+
+      function onResolve(foundURL) {
+        this.imageP.removeImage('team', this.team.imageUrl).then(_ => {
+          this.team.imageUrl = '';
+          resolve();
+        });
+      }
+      function onReject(error) {
+        //fill not found
+        resolve();
+      }
     });
   }
 

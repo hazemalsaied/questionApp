@@ -17,14 +17,9 @@ user-card {
     .scores div {
         margin-bottom: .5em !important;
     }
-    // .scores img {
-    //     margin: auto;
-    //     display: block;
-    //     width: 40px;
+    // img{
+    //     border: none !important;
     // }
-    img{
-        border: none !important;
-    }
     user-card .scores img {
         /* margin: auto; */
         display: block;
@@ -39,12 +34,4 @@ user-card {
         height: 120px !important;
         min-width: 120px;
     }
-    // ion-avatar img, ion-thumbnail img {
-    //     margin-bottom: 6 em;
-    //     margin-right: auto !important;
-    //     margin-left: auto !important;
-    //     border-radius: 50%;
-    //     border: 3px solid black;
-        
-    //  }
 }

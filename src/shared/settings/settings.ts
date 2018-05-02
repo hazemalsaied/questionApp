@@ -4,11 +4,35 @@ import { Question } from './../models/question';
 import { ProfilePage } from '../../pages/Auth/profile/profile';
 
 export class Settings {
+  static readonly onDevice = true;
+  static readonly onlineEasyQuestionNum = 2;
+  static readonly onlineIntermediateQuestionNum = 3;
+  static readonly onlineDifficultQuestionNum = 2;
+  static readonly onlineQuestionNum = Settings.onlineEasyQuestionNum + Settings.onlineIntermediateQuestionNum + Settings.onlineDifficultQuestionNum;
+  static readonly sadface = 'https://media.giphy.com/media/3oFzmhVbv3iq7WH38s/giphy.gif';
+  static readonly happyFace = 'https://media.giphy.com/media/l0HU3Lauhf9MLOQ8w/giphy.gif';
+  static readonly btnsClass = "choices";
+  static readonly btnsAnimClass = "choices animated bounceInLeft";
+  static readonly validAnswer = 'choice block animated tada';
+  static readonly nonValidAnswer = 'choice block animated flash';
+  static readonly selectedAnimAnswer = 'choice block animated shake';
+  static readonly fixAnswer = 'choice block';
+
+  static readonly contentAnimClass = 'list card animated bounceInRight';
+  static readonly contentFixClass = 'list card ';
+  static readonly stormAnimClass = 'animated flash '
+  static readonly stormFixClass = '';
+  static readonly jokerAnimClass = 'animated flash ';
+  static readonly jokerFixClass = '';
+  static readonly hammarAnimClass = 'animated wobble';
+  static readonly hammarFixClass = '';
+
   static readonly infiniteTestType = 'infiniteTest';
   static readonly playType = 'play';
   static readonly playOnlineType = 'playOnline';
   static readonly speedTestType = 'speedTest';
-  static readonly playOnlineUserCardWaitingInterval = 3000;
+  static readonly playOnlineUserCardWaitingInterval = 1000;
+  static readonly playOnlineExpireInterval = 90000;
   static readonly infiniteTestQPoint = 5;
   static readonly playQPoint = 5;
   static readonly playOnlineQPoint = 5;
@@ -22,7 +46,7 @@ export class Settings {
   static readonly freeSavedQuestionNum = 50;
   static readonly questionPoint = 5;
 
-  static readonly initQuesNumForInfiniteTest = 20;
+  static readonly initQuesNumForInfiniteTest = 30;
   static readonly initQuesNumForSpeedTest = 80;
 
   static readonly initJokerNum = 5;
@@ -34,7 +58,7 @@ export class Settings {
   static readonly waitingTimeSpeed = 500;
   static readonly progressBarSep = 1500;
   static readonly progressBarSpeed = 1200;
-  static readonly waitingListStep = 3000;
+  static readonly waitingListStep = 5000;
   static readonly imageQuestionInterval = 2000;
   static readonly loadingStep = 400;
 
@@ -44,13 +68,12 @@ export class Settings {
 
   static readonly rootPage = ProfilePage; //PlayPage;//HomePage;//ResultsPage //  ProfilePage;
 
-  static readonly yellowCColor = '#FCC744';
-  static readonly yellowCDarkColor = 'rgb(252, 180, 0)';
-  static readonly yellowCLightColor = '#fae0a8';
+
+
   static readonly dangerColor = '#ca0c35';
   static readonly validColor = '#00A234';//'#1fa804';
-  static readonly primaryColor = '#D01E29';
   static readonly choiceColor = '#4C4C4C'; //'#FCC744';
+
   static readonly activeChoiceColor = '#ebae15';
   static readonly imageBeg = 'https://firebasestorage.googleapis.com/v0/b/questionapp-fdb6a.appspot.com/o/pictures%2F';
   static readonly imageEnd = '?alt=media';
@@ -60,7 +83,7 @@ export class Settings {
   static readonly profileImageEnd = '?alt=media';
   static readonly teamImage = "./assets/team.jpg"
   static readonly userImage = "./assets/profile.png"
-  
+
   static readonly sotrmIcn = "./assets/storm64.png";
   static readonly goldIcn = "./assets/gold64.png";
   static readonly jockerIcn = "./assets/jocker64.png";
@@ -71,8 +94,7 @@ export class Settings {
   static readonly stormPrice = 0.25;
   static readonly noAdsPrice = 1;
   static readonly appName = 'كويزي';
-  static readonly addToPanelTxt = 'أضف';
-  static readonly removeFromPanelTxt = 'حذف';
+
   static readonly emptyUser: User = {
     email: '',
     jokerNum: 3,
@@ -81,7 +103,8 @@ export class Settings {
     pointNum: 150,
     name: '',
     role: 'user',
-    imageUrl: ''
+    imageUrl: '',
+    imageLink:''
   };
   static readonly emptyQuestion: Question = {
     content: '',
@@ -101,6 +124,15 @@ export class Settings {
     points: 0,
     imageUrl: '',
     admin: ''
+  };
+
+  static readonly emptyQuiz = {
+    $key: '',
+    questions: [Settings.emptyQuestion],
+    oddUser: { key: '', points: 0 },
+    evenUser: { key: '', points: 0 },
+    oddUserAnswers : [],
+    evenUserAnswers : [],
   };
 
 

@@ -1,11 +1,14 @@
+import { UserProvider } from './../../../providers/user/user';
+import { Settings } from './../../../shared/settings/settings';
+import { AngularFireDatabase } from 'angularfire2/database-deprecated';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, LoadingController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, LoadingController, AlertController, ToastController } from 'ionic-angular';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AuthData } from '../../../providers/auth-data/auth-data';
 import { AngularFireAuth } from 'angularfire2/auth';
 import firebase from 'firebase';
-// import { Facebook } from '@ionic-native/facebook';
-// import { GooglePlus } from '@ionic-native/google-plus';
+import { Facebook } from '@ionic-native/facebook';
+import { GooglePlus } from '@ionic-native/google-plus';
 
 
 @IonicPage()
@@ -15,8 +18,8 @@ import firebase from 'firebase';
 })
 export class LoginPage {
   public loginForm: any;
-  public backgroundImage: any = "./assets/bg1.jpg";
-  public imgLogo: any = "./assets/medium_150.70391061453px_1202562_easyicon.net.png";
+  public backgroundImage: any = "./assets/splash.png";
+  // public imgLogo: any = "./assets/splash.png";
 
   constructor(public navCtrl: NavController,
     public authData: AuthData,
@@ -24,16 +27,13 @@ export class LoginPage {
     public alertCtrl: AlertController,
     public loadingCtrl: LoadingController,
     public afAuth: AngularFireAuth,
-    // public facebook: Facebook,
-    // private googlePlus: GooglePlus
+    public facebook: Facebook,
+    private googlePlus: GooglePlus,
+    public toastCtrl: ToastController,
+    public afd: AngularFireDatabase,
+    public userP: UserProvider
   ) {
 
-
-    this.afAuth.authState.subscribe((user) => {
-      if (user && user.email) {
-        this.navCtrl.setRoot('HomePage');
-      }
-    });
     let EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
     this.loginForm = fb.group({
       email: ['', Validators.compose([Validators.required, Validators.pattern(EMAIL_REGEXP)])],
@@ -48,7 +48,8 @@ export class LoginPage {
     } else {
       let loadingPopup = this.loadingCtrl.create({
         spinner: 'crescent',
-        content: ''
+        content: '',
+        enableBackdropDismiss:true
       });
       loadingPopup.present();
 
@@ -56,7 +57,8 @@ export class LoginPage {
         .then(authData => {
           console.log("Auth pass");
           loadingPopup.dismiss();
-          this.navCtrl.setRoot('HomePage');
+          this.userP.removeQuiz();
+          this.navCtrl.setRoot('MainPage');
         }, error => {
           if (false) { // error.code === 'auth/network-request-failed') {
             // console.log('hazz');
@@ -81,36 +83,104 @@ export class LoginPage {
     }
   }
 
-  // facebookLogin(): Promise<any> {
-  //   return this.facebook.login(['email'])
-  //     .then(response => {
-  //       const facebookCredential = firebase.auth.FacebookAuthProvider
-  //         .credential(response.authResponse.accessToken);
+  facebookLogin(): Promise<any> {
+    if (Settings.onDevice) {
+      return this.facebook.login(['email'])
+        .then(response => {
+          const facebookCredential = firebase.auth.FacebookAuthProvider
+            .credential(response.authResponse.accessToken);
 
-  //       firebase.auth().signInWithCredential(facebookCredential)
-  //         .then(success => {
-  //           console.log("Firebase success: " + JSON.stringify(success));
-  //         });
+          firebase.auth().signInWithCredential(facebookCredential)
+            .then(success => {
+              this.afd.object('userProfile/' + success.uid).subscribe(user => {
+                if (user != null && user.email === success.email) {
+                  this.userP.removeQuiz();
+                  this.navCtrl.setRoot('MainPage');
+                } else {
+                  firebase.database().ref('/userProfile').child(success.uid).set({
+                    email: success.email,
+                    name: success.displayName,
+                    language: 'arabic',
+                    // imageLink: success.photoURL,
+                    questionNum: 0,
+                    jokerNum: Settings.initJokerNum,
+                    hammarNum: Settings.initHammarNum,
+                    stormNum: Settings.initStormNum,
+                    pointNum: Settings.initPointNum,
+                    role: 'user',
+                    unlimitedSavedQuestionNum: false
+                  }).then(user => {
+                    this.navCtrl.setRoot('MainPage');
+                  });
+                }
+              });
+              // if (success.lastLoginAt === success.createdAt) {
+              //   firebase.database().ref('/userProfile').child(success.uid).set({
+              //     email: success.email,
+              //     name: success.displayName,
+              //     language: 'arabic',
+              //     imageLink: success.photoURL,
+              //     questionNum: 0,
+              //     jokerNum: Settings.initJokerNum,
+              //     hammarNum: Settings.initHammarNum,
+              //     stormNum: Settings.initStormNum,
+              //     pointNum: Settings.initPointNum,
+              //     role: 'user',
+              //     unlimitedSavedQuestionNum: false
+              //   });
+              // } else{
+              //   this.userP.removeQuiz();
+              // }
+              console.log("Firebase success: " + JSON.stringify(success));
+            });
+        }).catch((error) => {
+          this.showToast('تعذر الاتصال عن طريق فيسبوك!');
+          console.log(error)
+        });
+    }
+    else {
+      return new Promise((resolve, reject) => { resolve(); });
+    }
+  }
+  googleLogin(): void {
+    if (Settings.onDevice) {
+      this.googlePlus.login({
+        'webClientId': '235551466519-6ra9kjh1k1rgvdg8sius8nct0ke78ok9.apps.googleusercontent.com',
+        // 'webClientId': '235551466519-olq2vn6ol8c5mp92j6k854qo71848njl.apps.googleusercontent.com',
+        
+        'offline': true
+      }).then(res => {
+        const googleCredential = firebase.auth.GoogleAuthProvider
+          .credential(res.idToken);
 
-  //     }).catch((error) => { console.log(error) });
-  // }
+        firebase.auth().signInWithCredential(googleCredential)
+          .then(response => {
+            this.showToast(response);
+            this.userP.removeQuiz();
+            console.log("Firebase success: " + JSON.stringify(response));
+            this.showToast(JSON.stringify(response));
+          });
+      }, err => {
+        console.error("Error: ", err);
+        this.showToast(err);
+        this.showToast('تعذر الاتصال عن طريق جوجل!')
+      });
+    } else {
+      new Promise((resolve, reject) => { resolve(); });
+    }
+  }
 
-  // googleLogin(): void {
-  //   this.googlePlus.login({
-  //     'webClientId': '235551466519-6ra9kjh1k1rgvdg8sius8nct0ke78ok9.apps.googleusercontent.com',
-  //     'offline': true
-  //   }).then(res => {
-  //     const googleCredential = firebase.auth.GoogleAuthProvider
-  //       .credential(res.idToken);
-
-  //     firebase.auth().signInWithCredential(googleCredential)
-  //       .then(response => {
-  //         console.log("Firebase success: " + JSON.stringify(response));
-  //       });
-  //   }, err => {
-  //     console.error("Error: ", err)
-  //   });
-  // }
+  showToast(message: string) {
+    const toast = this.toastCtrl.create({
+      message: message,
+      position: 'bottom',
+      duration: 2000
+    });
+    toast.onDidDismiss(this.dismissHandler);
+    toast.present();
+  }
+  dismissHandler() {
+  }
 
   forgot() {
     this.navCtrl.push('ForgotPage');

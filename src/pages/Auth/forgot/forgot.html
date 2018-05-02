@@ -3,7 +3,7 @@
 
 <ion-content [ngStyle]="{'background-image': 'url(' + backgroundImage +')'}">
   <div class="login-container">
-    <img class="logo" src="./assets/medium_150.70391061453px_1202562_easyicon.net.png" />
+    <!-- <img class="logo" src="./assets/medium_150.70391061453px_1202562_easyicon.net.png" /> -->
     <form [formGroup]="resetPasswordForm" (submit)="resetPassword()" novalidate>
 
       <ion-item>
@@ -18,8 +18,10 @@
       <button ion-button block type="submit" color="blue2">
         إعادة ضبط كلمة
       </button>
-
     </form>
+    <button ion-button full (click)="openPage()" color="blue2">
+      العودة لصفحة الدخول
+    </button>
 
   </div>
 </ion-content>

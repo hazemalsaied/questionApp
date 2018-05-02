@@ -1,9 +1,11 @@
-import { TeamOrderPageModule } from './../pages/team-order/team-order.module';
-import { TeamOrderPage } from './../pages/team-order/team-order';
-
-// import { UserCardComponent } from './../components/user-card/user-card';
-import { MainPageModule } from './../pages/main/main.module';
-import { MainPage } from './../pages/main/main';
+import { NativeAudio } from '@ionic-native/native-audio';
+import { AdMobFreeProvider } from './../providers/admonfree/admobfree';
+import { TabsPageModule } from './../pages/Main/tabs/tabs.module';
+import { TabsPage } from './../pages/Main/tabs/tabs';
+// import { TeamOrderPageModule } from './../pages/Main/team-order/team-order.module';
+// import { TeamOrderPage } from './../pages/Main/team-order/team-order';
+import { MainPageModule } from './../pages/Main/main/main.module';
+import { MainPage } from './../pages/Main/main/main';
 import { QuizQuestionsPageModule } from './../pages/Results/quiz-questions/quiz-questions.module';
 import { MarketPageModule } from './../pages/UserServices/market/market.module';
 import { ReportedQuestionsPageModule } from './../pages/Dashboard/reported-questions/reported-questions.module';
@@ -22,7 +24,7 @@ import { InfiniteResultPage } from './../pages/Results/infinite-result/infinite-
 import { AuxiliaryProvider } from './../providers/auxiliary/auxiliary';
 import { PlayOnlinePageModule } from './../pages/Quiz/play-online/play-online.module';
 import { PlayPageModule } from './../pages/Quiz/play/play.module';
-import { SortQuestionNum } from './../pipes/sortByQuestionNum';
+
 import { Camera } from '@ionic-native/camera';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
@@ -44,15 +46,15 @@ import { LoginPage } from '../pages/Auth/login/login';
 import { LoginPageModule } from '../pages/Auth/login/login.module';
 
 import { ForgotPage } from '../pages/Auth/forgot/forgot';
-import { ForgotPageModule } from '../pages/Auth/forgot/forgot.module'; 
+import { ForgotPageModule } from '../pages/Auth/forgot/forgot.module';
 import { RegisterPageModule } from '../pages/Auth/register/register.module';
 import { RegisterPage } from '../pages/Auth/register/register';
 
-import { AddQuestionPageModule  } from '../pages/Dashboard/add-question/add-question.module';
-import { AddQuestionPage  } from '../pages/Dashboard/add-question/add-question';
+import { AddQuestionPageModule } from '../pages/Dashboard/add-question/add-question.module';
+import { AddQuestionPage } from '../pages/Dashboard/add-question/add-question';
 
-import { AddCategoryPageModule  } from '../pages/Dashboard/add-category/add-category.module';
-import { AddCategoryPage  } from '../pages/Dashboard/add-category/add-category';
+import { AddCategoryPageModule } from '../pages/Dashboard/add-category/add-category.module';
+import { AddCategoryPage } from '../pages/Dashboard/add-category/add-category';
 
 import { AfterLoginPageModule } from '../pages/Auth/after-login/after-login.module';
 import { AfterLoginPage } from '../pages/Auth/after-login/after-login';
@@ -60,11 +62,11 @@ import { ProfilePage } from '../pages/Auth/profile/profile';
 import { ProfilePageModule } from '../pages/Auth/profile/profile.module';
 import { CategoryProvider } from '../providers/category/category';
 
-import { CategoriesPageModule  } from '../pages/Dashboard/categories/categories.module';
-import { CategoriesPage  } from '../pages/Dashboard/categories/categories';
+import { CategoriesPageModule } from '../pages/Dashboard/categories/categories.module';
+import { CategoriesPage } from '../pages/Dashboard/categories/categories';
 
-import { StatisticsPageModule  } from '../pages/Dashboard/statistics/statistics.module';
-import { StatisticsPage  } from '../pages/Dashboard/statistics/statistics';
+import { StatisticsPageModule } from '../pages/Dashboard/statistics/statistics.module';
+import { StatisticsPage } from '../pages/Dashboard/statistics/statistics';
 
 import { UserProvider } from '../providers/user/user';
 import { PlayPage } from '../pages/Quiz/play/play';
@@ -79,36 +81,29 @@ import { MyQuestionsPage } from '../pages/UserServices/my-questions/my-questions
 import { TeamProvider } from '../providers/team/team';
 import { ImageProvider } from '../providers/image/image';
 import { PayPal } from '@ionic-native/paypal';
-import { AllUserPage } from '../pages/all-user/all-user';
-import { AllUserPageModule } from '../pages/all-user/all-user.module';
-import { UserOrderPage } from '../pages/user-order/user-order';
-import { UserOrderPageModule } from '../pages/user-order/user-order.module';
-// import { Facebook } from '@ionic-native/facebook'
-// import { GooglePlus } from '@ionic-native/google-plus';
+import { AllUserPage } from '../pages/Dashboard/all-user/all-user';
+import { AllUserPageModule } from '../pages/Dashboard/all-user/all-user.module';
+// import { UserOrderPage } from '../pages/Main/user-order/user-order';
+// import { UserOrderPageModule } from '../pages/Main/user-order/user-order.module';
+import { Facebook } from '@ionic-native/facebook'
+import { GooglePlus } from '@ionic-native/google-plus';
+import { AdMobFree } from '@ionic-native/admob-free';
 
 
 export const config = {
-  // questionXP
-  // apiKey: "AIzaSyAhimhsmVgWXzPzjJveJ0ex3I-k61FCK74",
-  // authDomain: "questionxp-9fdf5.firebaseapp.com",
-  // databaseURL: "https://questionxp-9fdf5.firebaseio.com",
-  // projectId: "questionxp-9fdf5",
-  // storageBucket: "questionxp-9fdf5.appspot.com",
-  // messagingSenderId: "246180879985"
-
   // questionAPP
   apiKey: "AIzaSyDLdC5Irud7dDOWK8ie8GZHnjPtGApdI6g",
   authDomain: "questionapp-fdb6a.firebaseapp.com",
   databaseURL: "https://questionapp-fdb6a.firebaseio.com",
   projectId: "questionapp-fdb6a",
-  storageBucket: "questionapp-fdb6a.appspot.com",  
+  storageBucket: "questionapp-fdb6a.appspot.com",
   messagingSenderId: "235551466519"
 };
 
 @NgModule({
   declarations: [
     MyApp,
-    SortQuestionNum,
+
   ],
   imports: [
     BrowserModule,
@@ -141,8 +136,8 @@ export const config = {
     QuizQuestionsPageModule,
     MainPageModule,
     AllUserPageModule,
-    // UserOrderPageModule,
-    // TeamOrderPageModule
+    TabsPageModule,
+    // BrowserAnimationsModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -163,7 +158,7 @@ export const config = {
     InfiniteTestPage,
     ResultsPage,
     InfiniteResultPage,
-    SpeedResultPage, 
+    SpeedResultPage,
     MyQuestionsPage,
     MyTeamsPage,
     AddTeamPage,
@@ -172,14 +167,13 @@ export const config = {
     QuizQuestionsPage,
     MainPage,
     AllUserPage,
-    // UserOrderPage,
-    // TeamOrderPage
+    TabsPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     AuthData,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     QuestionProvider,
     CategoryProvider,
     Camera,
@@ -187,7 +181,12 @@ export const config = {
     AuxiliaryProvider,
     TeamProvider,
     ImageProvider,
-    PayPal
+    PayPal,
+    Facebook,
+    GooglePlus,
+    AdMobFree,
+    NativeAudio,
+    AdMobFreeProvider
   ]
-}) 
-export class AppModule {}
+})
+export class AppModule { }

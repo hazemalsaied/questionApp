@@ -17,23 +17,26 @@
     <ion-avatar>
       <img [src]="happyFaceImageUrl" alt="جاري تحميل الصورة!">
     </ion-avatar>
-    <ion-card color="background">
-      مبروك، لقد تجاوزت رقمك القياسي السابق، وأجبت على {{speedTrueQuestionNum}} سؤال!
-    </ion-card>
+    <!-- <ion-card color="background">
+      مبروك، لقد تجاوزت رقمك القياسي السابق، وأجبت على {{trueAnswers}} سؤال!
+    </ion-card> -->
+    <ion-card  class="resultCard"  *ngIf="!hasPonus" color="background">
+        مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية بالإجابة على {{trueAnswers}} سؤال، ولكنك لم تتمكن من تجاوز رقمك
+        القياسي السابق !
+      </ion-card>
+      <ion-card  class="resultCard" *ngIf="hasPonus" color="background">
+        مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية وتجاوزت رقمك القياسي السابق بالإجابة على {{trueAnswers}} سؤال!
+      </ion-card>
   </div>
 
   <div *ngIf="!hasWon">
     <ion-avatar>
       <img [src]="sadFaceImageUrl" alt="جاري تحميل الصورة!">
     </ion-avatar>
-    <ion-card *ngIf="!hasPonus" color="background">
-      مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية بالإجابة على {{trueAnswers}} سؤال، ولكنك لم تتمكن من تجاوز رقمك
-      القياسي السابق !
-    </ion-card>
-    <ion-card *ngIf="hasPonus" color="background">
-      مبروك، لقد فزت ب {{points}} نقطة و {{points}} قطعة ذهبية وتجاوزت رقمك القياسي السابق بالإجابة على {{trueAnswers}} سؤال!
-    </ion-card>
-
+    
+    <ion-card class="resultCard" *ngIf="!hasWon" color="background">
+        للأسف، لم تتمكن من الفوز.
+      </ion-card>
 
     <!-- <ion-card color="background">
        لقد أجبت على {{speedTrueQuestionNum}} سؤال بشكل صحيح!

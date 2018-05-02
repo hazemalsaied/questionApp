@@ -9,12 +9,12 @@ import { User } from 'firebase';
 export class AuthData {
 
   authState: any = null;
- 
+
   constructor(public afAuth: AngularFireAuth) {
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth;
     });
-  } 
+  }
 
   loginUser(newEmail: string, newPassword: string) {
     return this.afAuth.auth.signInWithEmailAndPassword(newEmail, newPassword);
@@ -33,29 +33,50 @@ export class AuthData {
 
   isLogged() {
     this.afAuth.authState.subscribe(user => {
-      if (user && user.email){
+      if (user && user.email) {
         return true;
-      }else{
-        return false;    
+      } else {
+        return false;
       }
     });
   }
 
-  registerUser( email: string, password: string){//, language: string){
+  registerUser(email: string, password: string, name = null, imageUrl = null, imageLink = null) {//, language: string){
+    if (name == null) {
+      name = email.split('@')[0];
+    }
     return this.afAuth.auth.createUserWithEmailAndPassword(email, password).then((newUser) => {
+      // this.createUserProfile(newUser.uid, email, imageLink, name);
       firebase.database().ref('/userProfile').child(newUser.uid).set({
         email: email,
-        name : email.split('@')[0],
+        name: name,
         language: 'arabic',
-        questionNum : 0,
-        jokerNum : Settings.initJokerNum, 
-        hammarNum : Settings.initHammarNum,
-        stormNum : Settings.initStormNum,
-        pointNum : Settings.initPointNum,
-        role : 'user',
+        imageLink: imageLink,
+        questionNum: 0,
+        jokerNum: Settings.initJokerNum,
+        hammarNum: Settings.initHammarNum,
+        stormNum: Settings.initStormNum,
+        pointNum: Settings.initPointNum,
+        role: 'user',
         unlimitedSavedQuestionNum: false
-
       });
+    });
+  }
+
+  createUserProfile(uid, email, imageLink = null, name = null) {
+    firebase.database().ref('/userProfile').child(uid).set({
+      email: email,
+      name: name,
+      language: 'arabic',
+      imageLink: imageLink,
+      questionNum: 0,
+      jokerNum: Settings.initJokerNum,
+      hammarNum: Settings.initHammarNum,
+      stormNum: Settings.initStormNum,
+      pointNum: Settings.initPointNum,
+      role: 'user',
+      unlimitedSavedQuestionNum: false
+
     });
   }
   // Returns true if user is logged in
@@ -69,7 +90,7 @@ export class AuthData {
   }
 
   // Returns
-  get currentUserObservable(){
+  get currentUserObservable() {
     return this.afAuth.authState;
   }
 

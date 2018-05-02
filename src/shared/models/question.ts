@@ -6,6 +6,7 @@ export interface Question {
     answerType: string;
     choices: Array<Choice>;
     imageUrl: string;
+    imageLink?:string;
     language?: string;
     difficulty: string;
     time?: string;
@@ -44,7 +45,8 @@ export interface Category {
     parentKey: string,
     showMe: boolean,
     showSubCats: boolean,
-    questionNumber: number
+    questionNumber: number,
+    subCats?:Array<any>
 }
 
 export interface CategoryAlias {

@@ -1,10 +1,12 @@
 page-login {
 
-  ion-content {
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-color: transparent;
-  }
+  ion-content,.content-ios {
+    background-position: top !important;
+    background-repeat: no-repeat!important;
+    background-size: 100% !important;
+    background-color: #2D85CC !important;
+}
+
   .scroll-content {
     margin-top: 0 !important;
   }
@@ -48,8 +50,10 @@ page-login {
   .login-container {
     color: white;
     position: absolute;
-    top: 0;
-    padding: 5vw;
+    top: auto;
+    bottom:44px;
+    padding: 2vw 5vw;
+    background: #2D85CC;
     text-align: center;
     width: 100%;
     margin: 0 auto;

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "235551466519-q1623dn9r1hk2evv0o3i8mo9u27e53ci.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.halsaied.quizapp",
+            "certificate_hash": "da3026a4fa8f2b16fe0574ec9e599a28b5fd73fd"
+          }
+        },
+        {
           "client_id": "235551466519-olq2vn6ol8c5mp92j6k854qo71848njl.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,20 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "235551466519-olq2vn6ol8c5mp92j6k854qo71848njl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "235551466519-6ra9kjh1k1rgvdg8sius8nct0ke78ok9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.halsaied.quizapp"
+              }
+            }
+          ]
         },
         "ads_service": {
           "status": 2

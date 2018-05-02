@@ -33,49 +33,51 @@ $app-direction: ltr;
 // colors so you can add, rename and remove colors as needed.
 // The "primary" color is the only required color in the map.
 
-// $background: #E9EBEB;
-// $background: #022048;
-// $background:#207EA6;
-$background:#17577e;
+// $background:#17577e;
+
+// $colors: (
+//   primary:#D01E29,
+//   secondary: #FE5258,
+//   danger:     #ca0c35,
+//   light:      #FE5258,
+//   facebook:   rgb(68, 104, 172),
+//   google:     rgb(234, 65, 60),
+//   valid:      #35b31c,
+//   choice:#FFF,
+//   badge: #FCC744, 
+//   background:#17577e,
+//   questioBck:rgb(223, 223, 223),
+//   prgressBar :#FF5B25,
+//   catHeader:#aa9a95,
+//   catBody:#17577e
+// ); 
+
+
+$background:  #2789B4;
 
 $colors: (
-  primary:#D01E29,
-  primaryTextbox:#D01E29,
-  secondary: #FE5258,
+  primary:    #1b6b91,
+  secondary:  #3b8db1,
+  background: #2789B4,
+  contrast: #A06B9A,
+  // sliderBck: #047caf,
   danger:     #ca0c35,
   light:      #FE5258,
-  dark:       rgb(4, 90, 128),
   facebook:   rgb(68, 104, 172),
   google:     rgb(234, 65, 60),
   valid:      #35b31c,
-  orange: #fcad04,
-  // choice: #FCC744, 
-  choice:#FFF,
-  activeChoice: #ebae15, 
-  yellowC: #FCC744, 
-  // background:#022048,
-  // background:#207EA6,
-  background:#17577e,
-  questioBck:#DFDFDF,
-  // background: #E9EBEB,
-  yellowCDark: #d19601, 
-  yellowCLight:#fae0a8,
-  prgressBar :#FF5B25
-);
+  choice:     #FFF,
+  badge:      #A06B9A, 
+  badge2:     #FCC744, 
+  questioBck: rgb(223, 223, 223),
+  prgressBar :#FF5B25,
+  catBody:    #2789B4,
+  outlineBtn: white,
+  catTitle:   #8D9EC6,
+  questionCardBck: #dfdfdf
 
-// $colors: (
-//   primary:#006CB2, //titlebar
-//   itemBckg: #00B0E0,//background
-//   primaryTextbox:#FF5B25,
-//   valid:  #00A234,
-//   facebook:   rgb(68, 104, 172),
-//   google:     rgb(234, 65, 60),
-// orange: #B3CC33,
-//   yellowC: #edc951,
-//   yellowCDark: #eb6841,
-//   yellowCLight :#fae0a8,
-//   prgressBar :#FF5B25
-// );
+
+); 
 
 
 // App iOS Variables

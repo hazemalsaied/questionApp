@@ -1,4 +1,4 @@
-<ion-slides autoplay="3000" #slides [pager]="true" [paginationType]="progress">
+<ion-slides autoplay="2000" #slides [pager]="true" [loop]="true" [paginationType]="progress">
 
     <!-- </ion-slides> (ionSlideDidChange)="slideChanged()"> -->
     <ion-slide class='slider1'>
@@ -7,29 +7,37 @@
         </div>
 
         <h1>اختبر معلوماتك!</h1>
-        <button ion-button (click)='openPage("PlayPage")'>إلعب!</button>
+        <div class='btnDiv' color="sliderBck">
+            <button ion-button (click)='openPage("PlayPage")'>إلعب!</button>
+        </div>
     </ion-slide>
 
     <ion-slide class='slider1'>
         <div class="imageDiv">
             <img [src]="playOnlineQuizImg" alt="جاري تحميل الصورة!">
         </div>
-        
+
         <h1>كويز أون لاين!</h1>
-        <button ion-button (click)='openPage("PlayOnlinePage")'>إلعب!</button>
+        <div class='btnDiv' color="sliderBck">
+            <button ion-button (click)='openPage("PlayOnlinePage")'>إلعب!</button>
+        </div>
     </ion-slide>
     <ion-slide class='slider1'>
         <div class="imageDiv">
             <img [src]="infiniteQuizImg" alt="جاري تحميل الصورة!">
         </div>
         <h1>كويز السلسلة</h1>
-        <button ion-button (click)='openPage("InfiniteTestPage")'>إلعب!</button>
+        <div class='btnDiv' color="sliderBck">
+            <button ion-button (click)='openPage("InfiniteTestPage")'>إلعب!</button>
+        </div>
     </ion-slide>
     <ion-slide class='slider1'>
         <div class="imageDiv">
             <img [src]="speedQuizImg" alt="جاري تحميل الصورة!">
         </div>
         <h1>كويز السرعة</h1>
-        <button ion-button (click)='openPage("SpeedTestPage")'>إلعب!</button>
+        <div class='btnDiv' color="sliderBck">
+            <button ion-button (click)='openPage("SpeedTestPage")'>إلعب!</button>
+        </div>
     </ion-slide>
 </ion-slides>

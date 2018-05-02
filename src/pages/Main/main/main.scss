@@ -1,0 +1,104 @@
+page-main {
+    .btnDiv {
+        text-align: center;
+        // background: #047caf;
+    }
+    ion-slide.slider1.swiper-slide, .swiper-container-horizontal > .swiper-pagination-bullets {
+        // background: #047caf;
+    }
+    .scores {
+        border-bottom: 2px solid white;
+    }
+    .scores div {
+        display: block;
+        margin: auto;
+        text-align: center;
+    }
+    .scores img {
+        margin: auto;
+        display: block;
+        width: 40px;
+    }
+    h1.sliderTitle {
+        font-size: 1em;
+        color: rgb(174, 0, 255);
+    }
+    .user h1, .user p {
+        text-align: right !important;
+    }
+    .col{
+        color:white;
+    }
+    ion-list.list.list-md.list-md-background {
+        border-bottom: 2px solid white;
+    }
+    .info h1 {
+        font-size: 2em;
+        text-align: right;
+    }
+    .userRow h1{
+        font-size: 2em;
+    }
+    .userRow p {
+        text-align: right;
+    }
+    ion-avatar.userAvatar img {
+        width: 90px;
+        height: 90px;
+    }
+    ion-badge.badge.badge-md, .badge-ios {
+        margin: .5em;
+    }
+    .scoreRow{
+        border-bottom: 2px solid white;
+    }
+    .scores, p{
+        text-align: center;
+    }
+    .scores p {
+        display: block;
+        margin: .25em !important;
+        /* overflow: hidden; */
+    }
+    ion-icon.icon.icon-md.ion-md-bowtie {
+        display: block;
+        text-align: center;
+    }
+
+    ion-slide, .swiper-wrapper, .swiper-container, ion-slides{
+        text-align: center !important;
+        direction: ltr;
+    }
+    h1 {
+        text-align: center;
+        color: white;
+        margin-bottom: 1em;
+        font-size: 2em;
+    }
+    ion-slides{
+        height: 14em;
+        border-bottom: 0px solid white;
+    }
+    .swiper-wrapper {
+        height: 13em;
+    }
+
+    .imageDiv {
+        display: block;
+        overflow: hidden;
+        position: relative;
+        float: left;
+        width: 30%;
+    }
+
+    .imageDiv img {
+        width: 150px;
+        height: auto;
+    }
+    .slider2 .item-md.item-block .item-inner {
+        border: none !important;
+    }
+    ion-slides.order.slides.slides-md.slides-0 {
+        border-top: 1px solid white;
+    }
+}

@@ -1,3 +1,4 @@
+import { AdMobFreeProvider } from './../../../providers/admonfree/admobfree';
 import { User } from './../../../shared/models/user';
 import { QuestionProvider } from './../../../providers/question/question';
 import { Settings } from './../../../shared/settings/settings';
@@ -19,9 +20,17 @@ import { UserProvider } from '../../../providers/user/user';
   templateUrl: 'speed-test.html',
 })
 export class SpeedTestPage {
+  btnsClass = Settings.btnsClass;
+  choiceClass = {};
+  contentClass = Settings.contentAnimClass;
+  jokerClass = Settings.jokerFixClass;
+  stormClass = Settings.stormFixClass;
+  hammarClass = Settings.hammarFixClass;
+
 
   public imageBeg = Settings.imageBeg;
   public imageEnd = Settings.imageEnd;
+
 
   trueAnswers = 0;
   falseAnswers = 0;
@@ -36,7 +45,6 @@ export class SpeedTestPage {
 
   currentChoices = [];
   choiceBkgs = {};
-  quizType: string = 'all';
   selectedCat: string = '';
   selectedSubCat: string = '';
 
@@ -61,18 +69,14 @@ export class SpeedTestPage {
     public userP: UserProvider,
     public questionP: QuestionProvider,
     public loadingCtrl: LoadingController,
-    public toasCtrl: ToastController) {
+    public toasCtrl: ToastController,
+    public admob: AdMobFreeProvider) {
 
-    let loading = this.loadingCtrl.create({
-      content: 'جاري تهيئة الكويز'
-    });
-    loading.present();
     this.userP.getUser().then(us => {
       this.currentUser = us;
       this.catProvider.getAllCats().then(allCats => {
         this.mainCats = this.catProvider.getMainCats(allCats);
-        loading.dismiss();
-
+        this.catProvider.getAllSubCats();
       });
     });
   }
@@ -94,23 +98,20 @@ export class SpeedTestPage {
     });
   }
 
-
+  questionImageUrl = '';
   getNextQuestion() {
     this.initializeQuestionPanel();
     if (this.questionIdx < (this.questions.length - 1)) {
       this.questionIdx += 1;
+      // this.questionImageUrl = '';
       this.currentQuestion = this.questions[this.questionIdx];
-
-      if (this.currentQuestion.imageUrl != '' &&
-        this.currentQuestion.imageUrl != null &&
-        typeof this.currentQuestion.imageUrl != 'undefined') {
-        this.progressValue -= 4;
-      }
-
+      this.questionImageUrl = Settings.imageBeg + this.currentQuestion.imageUrl + Settings.imageEnd;
       this.currentChoices = this.getChoices(this.currentQuestion);
-      this.showStormBtn = true;
-      if (this.currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse') {
+      if (this.currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse' ||
+        this.currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck') {
         this.showStormBtn = false;
+      } else {
+        this.showStormBtn = true;
       }
     }
   }
@@ -119,11 +120,16 @@ export class SpeedTestPage {
     this.selectChoice(choice);
     this.validate();
     setTimeout(() => {
+      this.questionImageUrl = '';
+    }, Settings.waitingTimeSpeed * 0.7);
+    setTimeout(() => {
       this.getNextQuestion();
     }, Settings.waitingTimeSpeed);
   }
 
   validate() {
+    this.contentClass = Settings.contentFixClass;
+    this.btnsClass = Settings.btnsClass;
     this.currentQuestion.userChoice = this.userAnswer;
     let userAnswerTmp = this.userAnswer;
     let answerTmp = this.questionP.replaceNumbers(this.currentQuestion.answer);
@@ -136,14 +142,24 @@ export class SpeedTestPage {
     }
 
     this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
+    this.choiceClass[this.currentQuestion.answer] = Settings.validAnswer;
     if (userAnswerTmp.toLocaleLowerCase() === answerTmp.toLocaleLowerCase()) {
+      this.questionP.playMusic();
+      //TODO
+      this.choiceClass['fillBlank'] = Settings.validAnswer;
+      this.choiceBkgs['fillBlank'] = Settings.validColor;
       this.userPoints += Settings.questionPoint;
       this.userAnswerArr[this.questionIdx] = 'true';
       this.trueAnswers += 1;
     } else {
+      this.questionP.playMusic('false');
       this.userAnswerArr[this.questionIdx] = 'false';
-      this.falseAnswers += 1
+      this.falseAnswers += 1;
+      this.choiceClass[this.userAnswer] = Settings.nonValidAnswer;
       this.choiceBkgs[this.userAnswer] = Settings.dangerColor;
+      //TODO
+      this.choiceBkgs['fillBlank'] = Settings.dangerColor;
+      this.choiceClass['fillBlank'] = Settings.nonValidAnswer;
     }
   }
 
@@ -215,6 +231,11 @@ export class SpeedTestPage {
   // }
 
   initializeQuestionPanel() {
+    this.btnsClass = Settings.btnsAnimClass;
+    this.contentClass = Settings.contentAnimClass;
+    this.jokerClass = Settings.jokerFixClass;
+    this.stormClass = Settings.stormFixClass;
+    this.hammarClass = Settings.hammarFixClass;
     this.setDefaultColor();
     this.hasAnswered = false;
     this.userAnswer = '';
@@ -249,6 +270,9 @@ export class SpeedTestPage {
     this.userAnswer = choice;
     this.setDefaultColor();
     this.choiceBkgs[choice] = Settings.activeChoiceColor;
+    this.choiceClass[this.currentQuestion.answer] = Settings.selectedAnimAnswer;
+    this.choiceClass[choice] = Settings.selectedAnimAnswer;
+    this.choiceClass['fillBlank'] = Settings.selectedAnimAnswer;
   }
 
   getChoices(q: Question) {
@@ -273,18 +297,39 @@ export class SpeedTestPage {
     if (this.currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse') {
       this.choiceBkgs['true'] = Settings.choiceColor;
       this.choiceBkgs['false'] = Settings.choiceColor;
+      this.choiceClass['true'] = Settings.fixAnswer;
+      this.choiceClass['false'] = Settings.fixAnswer;
+    } else if (this.currentQuestion.answerType.toLocaleLowerCase() === 'fillblanck') {
+      this.choiceBkgs['fillBlank'] = Settings.choiceColor;
+      this.choiceClass['fillBlank'] = Settings.fixAnswer;
     }
     else {
       for (let c of this.currentQuestion.choices) {
         this.choiceBkgs[c.text] = Settings.choiceColor;
+        this.choiceClass[c.text] = Settings.fixAnswer;
       }
       this.choiceBkgs[this.currentQuestion.answer] = Settings.choiceColor;
+      this.choiceClass[this.currentQuestion.answer] = Settings.fixAnswer;
     }
   }
 
-  allCats: Array<Category> = [];
+  // setDefaultColor() {
+  //   this.choiceBkgs = {};
+  //   if (this.currentQuestion.answerType.toLocaleLowerCase() === 'trueorfalse') {
+  //     this.choiceBkgs['true'] = Settings.choiceColor;
+  //     this.choiceBkgs['false'] = Settings.choiceColor;
+  //   }
+  //   else {
+  //     for (let c of this.currentQuestion.choices) {
+  //       this.choiceBkgs[c.text] = Settings.choiceColor;
+  //     }
+  //     this.choiceBkgs[this.currentQuestion.answer] = Settings.choiceColor;
+  //   }
+  // }
+
+  // allCats: Array<Category> = [];
   mainCats: Array<Category> = [];
-  subCats: Array<Category> = [];
+  // subCats: Array<Category> = [];
 
   selectSubCat(cat) {
     this.selectedCat = '';
@@ -292,70 +337,66 @@ export class SpeedTestPage {
     this.startQuiz();
   }
 
-  selectCat(cat) {
-    if (cat == null) {
-      this.selectedCat = '';
-      this.selectedSubCat = '';
-      this.startQuiz();
-      // } else if (this.selectedCat == cat.$key) {
-      //   this.startQuiz();
-    } else {
-      this.selectedSubCat = '';
-      this.selectedCat = cat.$key;
-      for (let c of this.mainCats) {
-        c.showMe = false;
-      }
-      cat.showMe = true;
-      this.subCats = this.catProvider.getSubCats(cat.$key);
-    }
-  }
-
-  // easyLastIdx: number = 4500;
-  // interLastIdx: number = 4500;
-  // diffLastIdx: number = 4500;
-
-  // getLastIdx() {
-  //   this.afd.object('statistics').subscribe(stats => {
-  //     this.easyLastIdx = stats["easyQuestNum"];
-  //     this.interLastIdx = stats["interQuestNum"];
-  //     this.diffLastIdx = stats["diffQuestNum"];
-  //   });
+  // selectCat(cat) {
+  //   if (cat == null) {
+  //     this.selectedCat = '';
+  //     this.selectedSubCat = '';
+  //     this.startQuiz();
+  //     // } else if (this.selectedCat == cat.$key) {
+  //     //   this.startQuiz();
+  //   } else {
+  //     this.selectedSubCat = '';
+  //     this.selectedCat = cat.$key;
+  //     for (let c of this.mainCats) {
+  //       c.showMe = false;
+  //     }
+  //     cat.showMe = true;
+  //     this.subCats = this.catProvider.getSubCats(cat.$key);
+  //   }
   // }
 
-
   endQuiz() {
-    if (this.trueAnswers >= 5) {
-      this.userPoints = this.userP.brokePreviousScore(this.currentUser,Settings.speedTestType,this.userPoints);
-      // if (this.currentUser.speedTestScore != null && this.userPoints > this.currentUser.speedTestScore) {
-      //   this.currentUser.speedTestScore = this.userPoints;
-      //   this.userPoints += 50;
-      // }
-      this.userP.updateScores(
-        this.currentUser, 'pointNum', this.userPoints,this.selectedSubCat, Settings.speedTestType, this.trueAnswers);
+    this.admob.launchInterstitial(this.currentUser).then(_ => {
+      if (this.trueAnswers >= 5) {
+        this.userPoints = this.userP.brokePreviousScore(this.currentUser, Settings.speedTestType, this.userPoints, this.trueAnswers);
+        // if (this.currentUser.speedTestScore != null && this.userPoints > this.currentUser.speedTestScore) {
+        //   this.currentUser.speedTestScore = this.userPoints;
+        //   this.userPoints += 50;
+        // }
+        this.userP.updateScores(
+          this.currentUser, 'pointNum', this.userPoints, this.selectedSubCat, Settings.speedTestType, this.trueAnswers);
 
-    }
-    this.navCtrl.setRoot(SpeedResultPage, {
-      userPoints: this.userPoints,
-      trueAnswers:this.trueAnswers,
-      falseAnswers: this.trueAnswers,
-      answerArr: this.userAnswerArr,
-      questions: this.questions,
-      type: Settings.speedTestType
+      }
+      this.navCtrl.setRoot(SpeedResultPage, {
+        userPoints: this.userPoints,
+        trueAnswers: this.trueAnswers,
+        falseAnswers: this.trueAnswers,
+        answerArr: this.userAnswerArr,
+        questions: this.questions,
+        type: Settings.speedTestType
 
+      });
     });
-
   }
 
   useJoker() {
     if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.jokerNum > 0) {
-      // clearInterval(this.progressInterval);
+      this.questionP.playMusic('jocker');
+      this.jokerClass = Settings.jokerAnimClass;
       this.userP.updateScores(this.currentUser, 'joker').then(_ => {
         this.userPoints += Settings.questionPoint;
-        this.trueAnswers +=1;
+        this.trueAnswers += 1;
         this.currentQuestion.userChoice = this.currentQuestion.answer;
         this.hasAnswered = true;
         this.userAnswerArr[this.questionIdx] = 'true';
         this.choiceBkgs[this.currentQuestion.answer] = Settings.validColor;
+        this.choiceClass[this.currentQuestion.answer] = Settings.validAnswer;
+        this.choiceBkgs['fillBlank'] = Settings.validColor;
+        this.choiceClass['fillBlank'] = Settings.validAnswer;
+        this.userAnswer = this.currentQuestion.answer;
+        setTimeout(() => {
+          this.questionImageUrl = '';
+        }, Settings.waitingTimeSpeed * 0.7);
         setTimeout(() => {
           this.getNextQuestion();
         }, Settings.waitingTime);
@@ -367,11 +408,13 @@ export class SpeedTestPage {
 
   useHammar() {
     if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.hammarNum > 0) {
-      // clearInterval(this.progressInterval);
+      this.questionP.playMusic('hammar');
+      this.hammarClass = Settings.hammarAnimClass;
       let loading = this.loadingCtrl.create({
         content: 'جاري تحميل سؤال بديل'
       });
       loading.present();
+      this.questionImageUrl = '';
       this.userP.updateScores(this.currentUser, 'hammar').then(_ => {
 
         let ref = this.questionP.getRef(this.currentQuestion.difficulty, this.selectedSubCat, 1);
@@ -399,8 +442,9 @@ export class SpeedTestPage {
 
   useStorm() {
     if (!this.hasAnswered && this.progressValue < 100 && this.currentUser.stormNum > 0) {
+      this.questionP.playMusic('storm');
       this.userP.updateScores(this.currentUser, 'storm').then(_ => {
-
+        this.stormClass = Settings.stormAnimClass;
         let deletedItems = 0;
         while (true) {
           let idx = Math.floor(Math.random() * 4);

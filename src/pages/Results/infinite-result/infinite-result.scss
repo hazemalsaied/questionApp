@@ -17,12 +17,11 @@ page-infinite-result {
     }
 
     ion-avatar img, ion-thumbnail img {
-        margin-bottom: 6 em;
+        margin-bottom: 3 em;
         margin-right: auto !important;
         margin-left: auto !important;
-        border-radius: 50%;
-        border: 3px solid black;
-        height: 20em;
+        // border-radius: 50%;
+        height: 12em;
         width: 20em;
     }
 }

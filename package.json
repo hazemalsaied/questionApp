@@ -12,7 +12,6 @@
     "ionic:serve": "ionic-app-scripts serve"
   },
   "dependencies": {
-    "@angular/animations": "^4.0.0",
     "@angular/common": "4.4.4",
     "@angular/compiler": "4.4.4",
     "@angular/compiler-cli": "4.4.4",
@@ -21,28 +20,67 @@
     "@angular/http": "4.4.4",
     "@angular/platform-browser": "4.4.4",
     "@angular/platform-browser-dynamic": "4.4.4",
+    "@ionic-native/admob-free": "^4.6.0",
     "@ionic-native/camera": "^4.4.2",
     "@ionic-native/core": "4.3.2",
-    "@ionic-native/facebook": "^4.5.3",
-    "@ionic-native/google-plus": "^4.5.3",
+    "@ionic-native/file": "^4.7.0",
+    "@ionic-native/native-audio": "^4.7.0",
     "@ionic-native/paypal": "^4.5.3",
     "@ionic-native/splash-screen": "4.3.2",
     "@ionic-native/status-bar": "4.3.2",
     "@ionic/storage": "2.0.1",
     "angularfire2": "^5.0.0-rc.3",
+    "animate.css": "^3.6.1",
+    "card.io.cordova.mobilesdk": "^2.1.0",
     "chart.js": "^2.7.1",
+    "com.paypal.cordova.mobilesdk": "^3.5.0",
+    "cordova-admob-sdk": "^0.16.0",
+    "cordova-ios": "~4.5.4",
+    "cordova-plugin-admob-free": "^0.16.0",
+    "cordova-plugin-camera": "^4.0.3",
+    "cordova-plugin-device": "1.1.4",
+    "cordova-plugin-facebook4": "git+https://github.com/amritk/cordova-plugin-facebook4.git",
+    "cordova-plugin-ionic-webview": "^1.1.11",
+    "cordova-plugin-nativeaudio": "^3.0.9",
+    "cordova-plugin-splashscreen": "~4.0.1",
+    "cordova-plugin-whitelist": "1.2.1",
+    "cordova-promise-polyfill": "0.0.2",
     "crypto-md5": "^1.0.0",
     "firebase": "^4.6.0",
+    "ionic": "^3.20.0",
     "ionic-angular": "3.8.0",
+    "ionic-plugin-keyboard": "^2.2.1",
     "ionicons": "3.0.0",
     "rxjs": "5.4.3",
     "sw-toolbox": "3.6.0",
     "web-animations-js": "^2.3.1",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "cordova-android": "~7.0.0"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.0.1",
     "typescript": "2.3.4"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "cordova": {
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-device": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-camera": {},
+      "cordova-plugin-nativeaudio": {},
+      "com.paypal.cordova.mobilesdk": {},
+      "ionic-plugin-keyboard": {},
+      "cordova-plugin-facebook4": {
+        "APP_ID": "2027377924167773",
+        "APP_NAME": "quizApp"
+      },
+      "cordova-plugin-admob-free": {}
+    }
+  }
 }

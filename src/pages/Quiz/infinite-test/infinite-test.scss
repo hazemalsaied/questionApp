@@ -1,11 +1,39 @@
 page-infinite-test {
+
+    .catContainer img {
+        height: 5em;
+        border-radius: 3px;
+        max-width: 100% !important;
+        width: 100% !important;
+        border-radius: 50%;
+    }
+    .catContainer.card.card-md, .card-ios.catContainer {
+        width: 22%;
+        float: right;
+        margin: 0.5em 0 .5em 3%;
+    }
+
+    h1.title {
+        font-size: 1.3em;
+        text-align: center;
+        margin-top: .5em;
+        vertical-align: middle;
+    }
+    .catContainer p {
+        margin: 0 0 2px;
+        font-size: 1.2rem;
+        font-weight: normal;
+        line-height: 1.5;
+        text-align: center;
+        margin: 0 1em;
+    }
     .info ion-col img{
         border:none;
     }
     .info ion-col button {
         margin: auto !important;
         display: block;
-        background: #17577e;
+        // background: map-get($colors, background);
     }
     .info ion-col div {
         text-align: center;
@@ -50,7 +78,7 @@ page-infinite-test {
     .list-md .item-block .item-inner {
         border-bottom: 0px solid #dedede;
     }
-    ion-card.card.card-md {
+    ion-card.card.card-md, .card-ios {
         box-shadow: none;
     }
     
@@ -62,25 +90,25 @@ page-infinite-test {
         width: 94%;
     } 
 
-    ion-card.card.card-md {
+    ion-card.card.card-md, .catContainer {
         margin: 0;
         width: 100%;
     }
-    .card-content-md{
-        background: #D01E29;
-    }
+    // .card-content-md{
+    //     background: #D01E29;
+    // }
     .card-content-md p{
         color: white;
     }
     .imgContainer{
-        max-height: 15em !important;
+        max-height: 12em !important;
         display: block;
         background-color: transparent !important;
-        border-top: 1px solid gray;
-        border-left: 1px solid gray;
-        border-right: 1px solid gray;
-        padding:0.5em;
-        background: #17577e !important;
+        // border-top: 1px solid gray;
+        // border-left: 1px solid gray;
+        // border-right: 1px solid gray;
+        padding:0;
+        background: map-get($colors, background);
 
     }
     img {
@@ -92,12 +120,8 @@ page-infinite-test {
         max-width: 80%;
         width: auto;
         padding: 0.5em auto;
-        border: 1px solid white;
         border-radius: 10px;
 
-    }
-    ion-card.content1.card.card-md.card-md-primary {
-        font-size: 1.8em;
     }
 
     .button-md {
@@ -134,8 +158,8 @@ page-infinite-test {
         height: 3em;
     }
     ion-card.content1{
-        padding: 1em;
-        font-size: 1.4em;
+        padding: 0.3em .5em;
+        font-size: 1.7em;
     }
     .content1 ion-label.label.label-md {
         color: white;
